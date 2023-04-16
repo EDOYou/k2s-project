@@ -3,6 +3,9 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+###Ignoring script that contains the credentianls###
+run-app.sh
+stop_app.sh
 
 ### STS ###
 .apt_generated
