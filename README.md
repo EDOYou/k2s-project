@@ -24,7 +24,7 @@ A web application for managing a beauty salon's work schedule, is going to be bu
 
 ## Code style
 
-Link to the Google Java code style XML: https://google.github.io/styleguide/intellij-java-google-style.xml
+Link to the Google Java code style XML: https://google.github.io/styleguide/intellij-java-google-style.xml:
 
 ## Plan:
 
