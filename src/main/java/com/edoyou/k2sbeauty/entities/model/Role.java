@@ -1,4 +1,4 @@
-package com.edoyou.k2sbeauty.model;
+package com.edoyou.k2sbeauty.entities.model;
 
 import java.util.HashSet;
 import java.util.Set;

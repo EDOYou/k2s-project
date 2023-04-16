@@ -1,5 +1,4 @@
-package com.edoyou.k2sbeauty.model;
-
+package com.edoyou.k2sbeauty.entities.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
