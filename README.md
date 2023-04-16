@@ -22,6 +22,10 @@ A web application for managing a beauty salon's work schedule, is going to be bu
 1. Open the browser and navigate to http://localhost:8080/.
 2. Use the application with the available features according to the assigned role.
 
+## Code style
+
+Link to the Google Java code style XML: https://google.github.io/styleguide/intellij-java-google-style.xml
+
 ## Plan:
 
 1. Designing the data model and creating the database:
