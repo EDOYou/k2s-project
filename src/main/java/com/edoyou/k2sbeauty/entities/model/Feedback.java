@@ -1,7 +1,7 @@
 package com.edoyou.k2sbeauty.entities.model;
 
 import java.time.LocalDateTime;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "feedbacks")
@@ -12,7 +12,7 @@ public class Feedback {
   private Long id;
 
   @ManyToOne
-  @JoinColumn(name = "client_id", nullable = false)
+  @JoinColumn(nullable = false)
   private Client client;
 
   @Column(nullable = false)

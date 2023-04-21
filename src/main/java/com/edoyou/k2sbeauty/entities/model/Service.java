@@ -1,6 +1,6 @@
 package com.edoyou.k2sbeauty.entities.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "service")

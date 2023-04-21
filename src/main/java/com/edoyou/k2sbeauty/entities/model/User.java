@@ -1,6 +1,6 @@
 package com.edoyou.k2sbeauty.entities.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,7 +25,7 @@ public class User {
   @Column(nullable = false)
   private String password;
 
-  @Column(nullable = false)
+  @Column(name = "phone_number", nullable = false)
   private String phone;
 
   @Column(nullable = false)

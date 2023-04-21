@@ -1,6 +1,6 @@
 package com.edoyou.k2sbeauty.entities.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -11,18 +11,18 @@ public class Appointment {
   private Long id;
 
   @ManyToOne
-  @JoinColumn(name = "client_id", nullable = false)
+  @JoinColumn(nullable = false)
   private Client client;
 
   @ManyToOne
-  @JoinColumn(name = "hairdresser_id", nullable = false)
+  @JoinColumn(nullable = false)
   private Hairdresser hairdresser;
 
   @Column(nullable = false)
   private LocalDateTime appointmentTime;
 
   @ManyToOne
-  @JoinColumn(name = "service_id", nullable = false)
+  @JoinColumn(nullable = false)
   private Service service;
 
   public void setId(Long id) {
