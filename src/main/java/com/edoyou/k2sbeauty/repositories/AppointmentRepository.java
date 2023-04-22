@@ -1,5 +1,9 @@
-package com.edoyou.k2sbeauty.entities.model;
+package com.edoyou.k2sbeauty.repositories;
 
+import com.edoyou.k2sbeauty.entities.model.Appointment;
+import com.edoyou.k2sbeauty.entities.model.Client;
+import com.edoyou.k2sbeauty.entities.model.Hairdresser;
+import com.edoyou.k2sbeauty.entities.model.Service;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
