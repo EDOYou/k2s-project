@@ -12,7 +12,7 @@ public class Feedback {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(nullable = false)
   private Client client;
 
