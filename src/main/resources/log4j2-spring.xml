@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN"> <!-- Set the status logger level -->
+    <Properties>
+        <!-- Define properties for use in the configuration -->
+        <Property name="PID">%pid</Property> <!-- Process ID -->
+        <Property name="LOG_DIRECTORY">/media/edoyou/HDD/Kanan/k2s-project/k2sbeauty/logs
+        </Property> <!-- Log directory -->
+        <Property name="LOG_EXCEPTION_CONVERSION_WORD">%xwEx</Property> <!-- Exception conversion pattern -->
+        <Property name="LOG_LEVEL_PATTERN">%5p</Property> <!-- Log level pattern -->
+        <Property name="LOG_DATEFORMAT_PATTERN">yyyy-MM-dd HH:mm:ss.SSS</Property> <!-- Date format pattern -->
+        <Property name="CONSOLE_LOG_PATTERN">%clr{%d{${LOG_DATEFORMAT_PATTERN}}}{faint} %clr{${LOG_LEVEL_PATTERN}}
+            %clr{${sys:PID}}{magenta} %clr{---}{faint} %clr{[%15.15t]}{faint} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint}
+            %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}
+        </Property> <!-- Console log pattern -->
+        <Property name="FILE_LOG_PATTERN">%d{${LOG_DATEFORMAT_PATTERN}} ${LOG_LEVEL_PATTERN} ${sys:PID} --- [%t]
+            %-40.40c{1.} : %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}
+        </Property> <!-- File log pattern -->
+    </Properties>
+
+    <Appenders>
+        <!-- Console Appender -->
+        <Console name="Console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}"/>
+        </Console>
+        <!-- Info File Appender -->
+        <RollingFile name="InfoFile" fileName="${LOG_DIRECTORY}/info.log"
+                     filePattern="${LOG_DIRECTORY}/logs/info-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${sys:FILE_LOG_PATTERN}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/> <!-- Log rotation policy -->
+            </Policies>
+            <DefaultRolloverStrategy max="10"/> <!-- Log retention policy -->
+            <Filters>
+                <ThresholdFilter level="INFO" onMatch="NEUTRAL" onMismatch="DENY"/>
+                <ThresholdFilter level="warn" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+        </RollingFile>
+        <!-- Error File Appender -->
+        <RollingFile name="ErrorFile" fileName="${LOG_DIRECTORY}/error.log"
+                     filePattern="${LOG_DIRECTORY}/logs/error-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${sys:FILE_LOG_PATTERN}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/> <!-- Log rotation policy -->
+            </Policies>
+            <DefaultRolloverStrategy max="10"/> <!-- Log retention policy -->
+            <Filters>
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+                <ThresholdFilter level="warn" onMatch="DENY" onMismatch="DENY"/>
+            </Filters>
+        </RollingFile>
+        <!-- Warn File Appender -->
+        <RollingFile name="WarnFile" fileName="${LOG_DIRECTORY}/warn.log"
+                     filePattern="${LOG_DIRECTORY}/logs/warn-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${sys:FILE_LOG_PATTERN}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/> <!-- Log rotation policy -->
+            </Policies>
+            <DefaultRolloverStrategy max="10"/> <!-- Log retention policy -->
+            <Filters>
+                <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+                <ThresholdFilter level="info" onMatch="DENY" onMismatch="DENY"/>
+            </Filters>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- Root logger configuration -->
+        <Root level="info"> <!-- Set the root logger level -->
+            <AppenderRef ref="Console"/> <!-- Reference to the Console Appender -->
+            <AppenderRef ref="InfoFile"/> <!-- Reference to the Info File Appender -->
+            <AppenderRef ref="WarnFile"/> <!-- Reference to the Warn File Appender -->
+            <AppenderRef ref="ErrorFile"/> <!-- Reference to the Error File Appender -->
+        </Root>
+    </Loggers>
+</Configuration>

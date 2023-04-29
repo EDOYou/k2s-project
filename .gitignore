@@ -7,6 +7,9 @@ target/
 run-app.sh
 stop_app.sh
 
+### Ignoring /logs file ###
+logs
+
 ### STS ###
 .apt_generated
 .classpath
