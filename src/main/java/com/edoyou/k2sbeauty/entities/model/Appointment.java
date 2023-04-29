@@ -12,18 +12,18 @@ public class Appointment {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(nullable = false)
   private Client client;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(nullable = false)
   private Hairdresser hairdresser;
 
   @Column(nullable = false)
   private LocalDateTime appointmentTime;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(nullable = false)
   private Service service;
 
