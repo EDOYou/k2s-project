@@ -1,6 +1,7 @@
 # Beauty Salon
 
-A web application for managing a beauty salon's work schedule, is going to be built using Spring Boot.
+A web application for managing a beauty salon's work schedule, is going to be built using Spring
+Boot.
 
 ## Roles
 
@@ -14,8 +15,8 @@ A web application for managing a beauty salon's work schedule, is going to be bu
 1. Clone the repository: git clone https://github.com/edoyou/k2s-project.git
 2. Import the project into your favorite IDE (Eclipse, IntelliJ, etc.).
 3. Configure the database connection settings in the `application.properties` file.
-4. Run the application using the IDE or by executing the following command in the project directory: `./mvnw spring-boot:run`
-
+4. Run the application using the IDE or by executing the following command in the project
+   directory: `./mvnw spring-boot:run`
 
 ## Running
 
@@ -24,14 +25,16 @@ A web application for managing a beauty salon's work schedule, is going to be bu
 
 ## Code style
 
-Link to the Google Java code style XML: https://google.github.io/styleguide/intellij-java-google-style.xml:
+Link to the Google Java code style
+XML: https://google.github.io/styleguide/intellij-java-google-style.xml:
 
 ## Plan:
 
 1. Designing the data model and creating the database:
+
 - Designing the data model, including entities and relationships.
 - Creating the database MySQL.
-- The database connection configuration in the application. 
+- The database connection configuration in the application.
 
 2. Implementing the data access layer:
 
@@ -62,7 +65,7 @@ Link to the Google Java code style XML: https://google.github.io/styleguide/inte
 
 - Configuring i18n support with Spring Boot Starter I18N.
 - Adding language-specific message files.
-- Implementing language switching in the application. 
+- Implementing language switching in the application.
 
 7. Implementing the front-end user interface:
 

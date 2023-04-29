@@ -1,6 +1,7 @@
 package com.edoyou.k2sbeauty.entities.model;
 
 import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 
 @Entity

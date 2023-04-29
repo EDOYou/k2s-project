@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface HairdresserRepository extends JpaRepository<Hairdresser, Long> {
-    List<Hairdresser> findBySpecialization(String specialization);
+
+  List<Hairdresser> findBySpecialization(String specialization);
 }

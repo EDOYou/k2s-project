@@ -1,11 +1,13 @@
 package com.edoyou.k2sbeauty.entities.model;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "appointments")
 public class Appointment {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

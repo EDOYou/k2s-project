@@ -12,9 +12,14 @@ import java.util.List;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
-    List<Appointment> findByClient(Client client);
-    List<Appointment> findByHairdresser(Hairdresser hairdresser);
-    List<Appointment> findByService(Service service);
-    List<Appointment> findByAppointmentTimeBetween(LocalDateTime start, LocalDateTime end);
-    List<Appointment> findByClientAndHairdresser(Client client, Hairdresser hairdresser);
+
+  List<Appointment> findByClient(Client client);
+
+  List<Appointment> findByHairdresser(Hairdresser hairdresser);
+
+  List<Appointment> findByService(Service service);
+
+  List<Appointment> findByAppointmentTimeBetween(LocalDateTime start, LocalDateTime end);
+
+  List<Appointment> findByClientAndHairdresser(Client client, Hairdresser hairdresser);
 }

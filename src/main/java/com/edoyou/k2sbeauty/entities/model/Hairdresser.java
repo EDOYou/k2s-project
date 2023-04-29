@@ -1,12 +1,14 @@
 package com.edoyou.k2sbeauty.entities.model;
 
 import jakarta.persistence.*;
+
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "hairdressers")
 public class Hairdresser extends User {
+
   @Column(nullable = false)
   private String specialization;
 
