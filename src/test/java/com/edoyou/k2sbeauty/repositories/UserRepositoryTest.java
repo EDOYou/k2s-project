@@ -72,4 +72,28 @@ public class UserRepositoryTest {
     assertThat(foundClient.get().getLastName()).isEqualTo(client.getLastName());
   }
 
+  @Test
+  public void shouldUpdateClient() {
+    Client savedClient = userRepository.save(client);
+    String updatedFirstName = "UpdatedBarbara";
+    String updatedLastName = "UpdatedO'Conner";
+    savedClient.setFirstName(updatedFirstName);
+    savedClient.setLastName(updatedLastName);
+    userRepository.save(savedClient);
+
+    Optional<User> updatedClient = userRepository.findByEmail(client.getEmail());
+    assertThat(updatedClient.isPresent()).isTrue();
+    assertThat(updatedClient.get().getFirstName()).isEqualTo(updatedFirstName);
+    assertThat(updatedClient.get().getLastName()).isEqualTo(updatedLastName);
+  }
+
+  @Test
+  public void shouldDeleteClient() {
+    Client savedClient = userRepository.save(client);
+    userRepository.delete(savedClient);
+
+    Optional<User> deletedClient = userRepository.findByEmail(client.getEmail());
+    assertThat(deletedClient.isPresent()).isFalse();
+  }
+
 }
