@@ -6,7 +6,7 @@ import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 
 import java.util.List;
 
-public interface ClientService {
+public interface ClientService extends UserService {
 
   /**
    * Find a client by their appointment.

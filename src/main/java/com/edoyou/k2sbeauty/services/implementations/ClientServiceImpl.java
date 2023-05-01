@@ -4,6 +4,7 @@ import com.edoyou.k2sbeauty.entities.model.Appointment;
 import com.edoyou.k2sbeauty.entities.model.Client;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.repositories.ClientRepository;
+import com.edoyou.k2sbeauty.repositories.UserRepository;
 import com.edoyou.k2sbeauty.services.interfaces.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,12 +21,13 @@ import java.util.List;
  * @see Client
  */
 @Service
-public class ClientServiceImpl implements ClientService {
+public class ClientServiceImpl extends UserServiceImpl implements ClientService {
 
   private final ClientRepository clientRepository;
 
   @Autowired
-  public ClientServiceImpl(ClientRepository clientRepository) {
+  public ClientServiceImpl(UserRepository userRepository, ClientRepository clientRepository) {
+    super(userRepository);
     this.clientRepository = clientRepository;
   }
 

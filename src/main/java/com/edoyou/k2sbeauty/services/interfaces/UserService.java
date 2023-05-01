@@ -3,13 +3,11 @@ package com.edoyou.k2sbeauty.services.interfaces;
 import com.edoyou.k2sbeauty.entities.model.User;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.stereotype.Service;
 
 /**
  * UserService interface represents the service layer for User related operations.
  */
 
-@Service
 public interface UserService {
 
   /**
