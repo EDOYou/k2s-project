@@ -25,7 +25,7 @@ public class Appointment {
 
   @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(nullable = false)
-  private Service service;
+  private BeautyService beautyService;
 
   public void setId(Long id) {
     this.id = id;
@@ -43,8 +43,8 @@ public class Appointment {
     this.appointmentTime = appointmentTime;
   }
 
-  public void setService(Service service) {
-    this.service = service;
+  public void setBeautyService(BeautyService beautyService) {
+    this.beautyService = beautyService;
   }
 
   public Long getId() {
@@ -63,7 +63,7 @@ public class Appointment {
     return appointmentTime;
   }
 
-  public Service getService() {
-    return service;
+  public BeautyService getBeautyService() {
+    return beautyService;
   }
 }

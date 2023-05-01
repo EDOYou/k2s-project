@@ -1,9 +1,9 @@
 package com.edoyou.k2sbeauty.repositories;
 
 import com.edoyou.k2sbeauty.entities.model.Appointment;
+import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Client;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
-import com.edoyou.k2sbeauty.entities.model.Service;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +17,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
   List<Appointment> findByHairdresser(Hairdresser hairdresser);
 
-  List<Appointment> findByService(Service service);
+  List<Appointment> findByBeautyService(BeautyService beautyService);
 
   List<Appointment> findByAppointmentTimeBetween(LocalDateTime start, LocalDateTime end);
 

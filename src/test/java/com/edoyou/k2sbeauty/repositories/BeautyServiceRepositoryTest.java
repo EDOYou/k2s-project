@@ -2,7 +2,7 @@ package com.edoyou.k2sbeauty.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.edoyou.k2sbeauty.entities.model.Service;
+import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,26 +13,26 @@ import org.springframework.test.context.TestPropertySource;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class ServiceRepositoryTest {
+public class BeautyServiceRepositoryTest {
 
   @Autowired
-  private ServiceRepository serviceRepository;
-  private Service service;
+  private BeautyServiceRepository beautyServiceRepository;
+  private BeautyService beautyService;
 
   @BeforeEach
   void setUp() {
-    service = new Service();
-    service.setName("Hair colouring");
-    service.setDescription("We are colouring the hair and washing.");
-    service.setPrice(10d);
+    beautyService = new BeautyService();
+    beautyService.setName("Hair colouring");
+    beautyService.setDescription("We are colouring the hair and washing.");
+    beautyService.setPrice(10d);
   }
 
   @Test
   public void shouldFindByName() {
-    Service savedService = serviceRepository.save(service);
+    BeautyService savedBeautyService = beautyServiceRepository.save(beautyService);
 
-    assertThat(savedService.getName()).isNotNull();
-    assertThat(savedService.getId()).isNotNull();
+    assertThat(savedBeautyService.getName()).isNotNull();
+    assertThat(savedBeautyService.getId()).isNotNull();
   }
 
 }

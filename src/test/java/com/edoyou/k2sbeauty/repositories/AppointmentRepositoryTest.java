@@ -3,9 +3,9 @@ package com.edoyou.k2sbeauty.repositories;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.edoyou.k2sbeauty.entities.model.Appointment;
+import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Client;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
-import com.edoyou.k2sbeauty.entities.model.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,16 +44,16 @@ public class AppointmentRepositoryTest {
     hairdresser.setUpdatedAt(LocalDateTime.now());
     hairdresser.setSpecialization("Hairstyling");
 
-    Service service = new Service();
-    service.setName("Haircut");
-    service.setDescription("Sport style");
-    service.setPrice(25.0);
+    BeautyService beautyService = new BeautyService();
+    beautyService.setName("Haircut");
+    beautyService.setDescription("Sport style");
+    beautyService.setPrice(25.0);
 
     appointment = new Appointment();
     appointment.setClient(client);
     appointment.setHairdresser(hairdresser);
     appointment.setAppointmentTime(LocalDateTime.now());
-    appointment.setService(service);
+    appointment.setBeautyService(beautyService);
   }
 
   @Test
@@ -77,7 +77,7 @@ public class AppointmentRepositoryTest {
   public void shouldFindByService() {
     appointmentRepository.save(appointment);
 
-    List<Appointment> foundAppointments = appointmentRepository.findByService(appointment.getService());
+    List<Appointment> foundAppointments = appointmentRepository.findByBeautyService(appointment.getBeautyService());
     assertThat(foundAppointments).isNotNull();
     assertThat(foundAppointments).hasSize(1);
     assertThat(foundAppointments.get(0)).isEqualTo(appointment);
