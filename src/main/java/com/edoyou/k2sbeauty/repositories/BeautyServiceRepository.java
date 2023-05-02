@@ -10,4 +10,6 @@ import java.util.List;
 public interface BeautyServiceRepository extends JpaRepository<BeautyService, Long> {
 
   List<BeautyService> findByNameContainingIgnoreCase(String name);
+
+  List<BeautyService> findByPriceBetween(Double minPrice, Double maxPrice);
 }
