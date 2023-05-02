@@ -1,5 +1,7 @@
 package com.edoyou.k2sbeauty.entities.model;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
@@ -22,6 +24,11 @@ public class Feedback {
   @Column(nullable = false)
   private LocalDateTime createdAt;
 
+  @Column(nullable = false)
+  @Min(1)
+  @Max(5)
+  private Integer rating;
+
   public void setId(Long id) {
     this.id = id;
   }
@@ -38,6 +45,10 @@ public class Feedback {
     this.createdAt = createdAt;
   }
 
+  public void setRating(int rating) {
+    this.rating = rating;
+  }
+
   public Long getId() {
     return id;
   }
@@ -52,5 +63,9 @@ public class Feedback {
 
   public LocalDateTime getCreatedAt() {
     return createdAt;
+  }
+
+  public int getRating() {
+    return rating;
   }
 }

@@ -37,6 +37,7 @@ public class FeedbackRepositoryTest {
     feedback.setClient(client);
     feedback.setComment("Excellent!");
     feedback.setCreatedAt(LocalDateTime.now());
+    feedback.setRating(5);
   }
 
   @Test
