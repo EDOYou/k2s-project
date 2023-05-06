@@ -12,6 +12,9 @@ public class Hairdresser extends User {
   @Column(nullable = false)
   private String specialization;
 
+  @Column(nullable = false)
+  private double rating;
+
   @OneToMany(mappedBy = "hairdresser")
   private Set<BeautyService> beautyServices = new HashSet<>();
 
@@ -30,6 +33,10 @@ public class Hairdresser extends User {
     this.beautyServices = beautyServices;
   }
 
+  public void setRating(Double rating) {
+    this.rating = rating;
+  }
+
   public String getSpecialization() {
     return specialization;
   }
@@ -40,5 +47,9 @@ public class Hairdresser extends User {
 
   public Set<BeautyService> getBeautyServices() {
     return beautyServices;
+  }
+
+  public double getRating() {
+    return rating;
   }
 }

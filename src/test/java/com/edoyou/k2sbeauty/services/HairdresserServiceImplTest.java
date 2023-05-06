@@ -99,9 +99,9 @@ public class HairdresserServiceImplTest {
 
   @Test
   void shouldFindAllHairdressers_SortedByName() {
-    when(hairdresserRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))).thenReturn(Arrays.asList(hairdresser));
+    when(hairdresserRepository.findAll(Sort.by(Sort.Direction.ASC, "lastName"))).thenReturn(Arrays.asList(hairdresser));
 
-    List<Hairdresser> foundHairdressers = hairdresserService.findAllHairdressers("name");
+    List<Hairdresser> foundHairdressers = hairdresserService.findAllHairdressers("lastName");
 
     assertThat(foundHairdressers).isNotEmpty();
     assertThat(foundHairdressers.size()).isEqualTo(1);

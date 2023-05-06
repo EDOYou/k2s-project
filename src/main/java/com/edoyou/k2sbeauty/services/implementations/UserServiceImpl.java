@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
  * deleting, and finding users by their email address or ID. This class
  * uses the {@link com.edoyou.k2sbeauty.repositories.UserRepository} for interacting with the underlying database.
  */
-@Service
+@Service("userServiceImpl")
 public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;

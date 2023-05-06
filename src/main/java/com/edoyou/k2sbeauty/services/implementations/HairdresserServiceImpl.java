@@ -41,8 +41,8 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
     }
 
     Sort sort;
-    if ("name".equalsIgnoreCase(sortBy)) {
-      sort = Sort.by(Sort.Direction.ASC, "name");
+    if ("lastName".equalsIgnoreCase(sortBy)) {
+      sort = Sort.by(Sort.Direction.ASC, "lastName");
     } else if ("rating".equalsIgnoreCase(sortBy)) {
       sort = Sort.by(Sort.Direction.DESC, "rating");
     } else {
