@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Services</title>
+  <!-- Add necessary CSS and JavaScript files -->
+</head>
+<body>
+<h1>Services</h1>
+
+<div>
+  <form th:action="@{/guest/services}" method="get">
+    <label for="hairdresser">Hairdresser:</label>
+    <select id="hairdresser" name="hairdresser">
+      <option value="">All</option>
+      <option th:each="hairdresser : ${hairdressers}"
+              th:value="${hairdresser.id}"
+              th:selected="${selectedHairdresser == hairdresser.id}"
+              th:text="${hairdresser.lastName}"></option>
+    </select>
+
+    <label for="service">Service:</label>
+    <select id="service" name="service">
+      <option value="">All</option>
+      <!-- Add service options here, similar to the hairdresser options -->
+    </select>
+
+    <label for="sort">Sort by:</label>
+    <select id="sort" name="sort">
+      <option th:selected="${sort == 'lastName'}" value="lastName">Name</option>
+      <option th:selected="${sort == 'rating'}" value="rating">Rating</option>
+    </select>
+
+    <button type="submit">Filter</button>
+  </form>
+</div>
+
+<div>
+  <table>
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Price</th>
+      <th>Hairdresser</th>
+      <th>Rating</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="service : ${services}">
+      <td th:text="${service.name}"></td>
+      <td th:text="${service.description}"></td>
+      <td th:text="${service.price}"></td>
+      <td th:text="${service.hairdresser.lastName}"></td>
+      <td th:text="${service.hairdresser.rating}"></td>
+    </tr>
+    </tbody>
+
+  </table>
+</div>
+</body>
+</html>
