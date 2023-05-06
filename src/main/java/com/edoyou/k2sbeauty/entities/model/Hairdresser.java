@@ -13,6 +13,9 @@ public class Hairdresser extends User {
   private String specialization;
 
   @OneToMany(mappedBy = "hairdresser")
+  private Set<BeautyService> beautyServices = new HashSet<>();
+
+  @OneToMany(mappedBy = "hairdresser")
   private Set<Appointment> appointments = new HashSet<>();
 
   public void setSpecialization(String specialization) {
@@ -23,11 +26,19 @@ public class Hairdresser extends User {
     this.appointments = appointments;
   }
 
+  public void setBeautyServices(Set<BeautyService> beautyServices) {
+    this.beautyServices = beautyServices;
+  }
+
   public String getSpecialization() {
     return specialization;
   }
 
   public Set<Appointment> getAppointments() {
     return appointments;
+  }
+
+  public Set<BeautyService> getBeautyServices() {
+    return beautyServices;
   }
 }

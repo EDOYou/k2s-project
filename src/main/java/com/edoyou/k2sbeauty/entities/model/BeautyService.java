@@ -19,6 +19,10 @@ public class BeautyService {
   @Column(nullable = false)
   private double price;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "hairdresser_id")
+  private Hairdresser hairdresser;
+
   public void setId(Long id) {
     this.id = id;
   }
@@ -35,6 +39,10 @@ public class BeautyService {
     this.price = price;
   }
 
+  public void setHairdresser(Hairdresser hairdresser) {
+    this.hairdresser = hairdresser;
+  }
+
   public Long getId() {
     return id;
   }
@@ -49,5 +57,9 @@ public class BeautyService {
 
   public double getPrice() {
     return price;
+  }
+
+  public Hairdresser getHairdresser() {
+    return hairdresser;
   }
 }

@@ -3,7 +3,7 @@
     <Properties>
         <!-- Define properties for use in the configuration -->
         <Property name="PID">%pid</Property> <!-- Process ID -->
-        <Property name="LOG_DIRECTORY">/media/edoyou/HDD/Kanan/k2s-project/k2sbeauty/logs
+        <Property name="LOG_DIRECTORY">/media/edoyou/HDD1/Kanan/k2s-project/k2sbeauty/logs
         </Property> <!-- Log directory -->
         <Property name="LOG_EXCEPTION_CONVERSION_WORD">%xwEx</Property> <!-- Exception conversion pattern -->
         <Property name="LOG_LEVEL_PATTERN">%5p</Property> <!-- Log level pattern -->
