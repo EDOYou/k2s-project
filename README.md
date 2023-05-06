@@ -48,11 +48,13 @@ XML: https://google.github.io/styleguide/intellij-java-google-style.xml:
 - Implementing the business logic for each service.
 - Writing unit tests for the service layer using Mockito.
 
-4. Implementing the controller layer:
+4. Implementing the controller layer with Thymeleaf templates:
 
 - Creating the controller classes.
 - Implementing the RESTful API endpoints for each controller.
-- Testing the API endpoints using tools like Postman or curl.
+- Creating Thymeleaf templates for each view.
+- Mapping the controller methods to the templates.
+- Testing the controllers and templates.
 
 5. Implementing the security and authentication features:
 
@@ -70,7 +72,6 @@ XML: https://google.github.io/styleguide/intellij-java-google-style.xml:
 7. Implementing the front-end user interface:
 
 - Choosing a front-end framework (Bootstrap, Materialize, etc.).
-- Creating the HTML templates using Thymeleaf.
 - Implementing the necessary JavaScript and CSS for the user interface.
 
 8. Implementing error handling and exception handling:
