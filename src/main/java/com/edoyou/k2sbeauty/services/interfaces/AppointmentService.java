@@ -71,4 +71,20 @@ public interface AppointmentService {
    * @return A list of appointments for the given client and hairdresser.
    */
   List<Appointment> findByClientAndHairdresser(Client client, Hairdresser hairdresser);
+
+  /**
+   * Find all appointments.
+   *
+   * @return A list of all appointments.
+   */
+  List<Appointment> findAllAppointments();
+
+  /**
+   * Update an existing appointment.
+   *
+   * @param id The ID of the appointment to update.
+   * @param appointmentDetails The updated appointment details.
+   * @return The updated Appointment object.
+   */
+  Appointment updateAppointment(Long id, Appointment appointmentDetails);
 }

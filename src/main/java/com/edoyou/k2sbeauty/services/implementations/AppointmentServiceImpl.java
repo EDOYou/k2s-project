@@ -184,4 +184,21 @@ public class AppointmentServiceImpl implements AppointmentService {
         .sorted(Comparator.comparing(Appointment::getAppointmentTime).reversed())
         .collect(Collectors.toList());
   }
+
+  @Override
+  public List<Appointment> findAllAppointments() {
+    return appointmentRepository.findAll();
+  }
+
+  @Override
+  public Appointment updateAppointment(Long id, Appointment appointmentDetails) {
+    Appointment existingAppointment = appointmentRepository.findById(id)
+        .orElseThrow(() -> new IllegalStateException("Appointment with id " + id + " does not exist."));
+
+    existingAppointment.setClient(appointmentDetails.getClient());
+    existingAppointment.setHairdresser(appointmentDetails.getHairdresser());
+    existingAppointment.setBeautyService(appointmentDetails.getBeautyService());
+    existingAppointment.setAppointmentTime(appointmentDetails.getAppointmentTime());
+    return appointmentRepository.save(existingAppointment);
+  }
 }

@@ -64,7 +64,46 @@ public class AppointmentServiceImplTest {
     verify(appointmentRepository, times(1)).save(appointment);
   }
 
-  // ... other test cases for saveAppointment
+  @Test
+  @DisplayName("Save appointment with past appointment time")
+  public void saveAppointment_pastAppointmentTime() {
+    LocalDateTime pastAppointmentTime = LocalDateTime.now().minusDays(1);
+    appointment.setAppointmentTime(pastAppointmentTime);
+
+    assertThatThrownBy(() -> appointmentService.saveAppointment(appointment))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Appointment time must be in the future.");
+  }
+
+  @Test
+  @DisplayName("Save appointment with hairdresser unavailable")
+  public void saveAppointment_hairdresserUnavailable() {
+    List<Appointment> hairdresserAppointments = Collections.singletonList(appointment);
+    when(appointmentRepository.findByHairdresser(hairdresser)).thenReturn(hairdresserAppointments);
+
+    Appointment newAppointment = new Appointment();
+    newAppointment.setHairdresser(hairdresser);
+    newAppointment.setAppointmentTime(appointment.getAppointmentTime());
+
+    assertThatThrownBy(() -> appointmentService.saveAppointment(newAppointment))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("Hairdresser is not available during the appointment time.");
+  }
+
+  @Test
+  @DisplayName("Save appointment with client unavailable")
+  public void saveAppointment_clientUnavailable() {
+    List<Appointment> clientAppointments = Collections.singletonList(appointment);
+    when(appointmentRepository.findByClient(client)).thenReturn(clientAppointments);
+
+    Appointment newAppointment = new Appointment();
+    newAppointment.setClient(client);
+    newAppointment.setAppointmentTime(appointment.getAppointmentTime());
+
+    assertThatThrownBy(() -> appointmentService.saveAppointment(newAppointment))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("You already have an appointment scheduled at the same time.");
+  }
 
   @Test
   @DisplayName("Delete existing appointment")
@@ -88,7 +127,18 @@ public class AppointmentServiceImplTest {
         .hasMessageContaining("Appointment with id " + appointmentId + " does not exist.");
   }
 
-  // ... other test cases for deleteAppointment
+  @Test
+  @DisplayName("Delete appointment within 24 hours of appointment time")
+  public void deleteAppointment_within24Hours() {
+    long appointmentId = 1L;
+    LocalDateTime appointmentTime = LocalDateTime.now().plusHours(23);
+    appointment.setAppointmentTime(appointmentTime);
+    when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.of(appointment));
+
+    assertThatThrownBy(() -> appointmentService.deleteAppointment(appointmentId))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("Cannot cancel appointments within 24 hours of the appointment time.");
+  }
 
   @Test
   @DisplayName("Find appointments by client")
@@ -154,5 +204,50 @@ public class AppointmentServiceImplTest {
 
     assertThat(foundAppointments).isEqualTo(appointments);
     verify(appointmentRepository, times(1)).findByClientAndHairdresser(client, hairdresser);
+  }
+
+  @Test
+  @DisplayName("Find all appointments")
+  public void findAllAppointments() {
+    List<Appointment> appointments = Collections.singletonList(appointment);
+    when(appointmentRepository.findAll()).thenReturn(appointments);
+
+    List<Appointment> foundAppointments = appointmentService.findAllAppointments();
+
+    assertThat(foundAppointments).isEqualTo(appointments);
+    verify(appointmentRepository, times(1)).findAll();
+  }
+
+  @Test
+  @DisplayName("Update existing appointment")
+  public void updateAppointment_existing() {
+    Long appointmentId = 1L;
+    when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.of(appointment));
+    when(appointmentRepository.save(any(Appointment.class))).thenReturn(appointment);
+
+    Appointment updatedAppointmentDetails = new Appointment();
+    updatedAppointmentDetails.setClient(new Client());
+    updatedAppointmentDetails.setHairdresser(new Hairdresser());
+    updatedAppointmentDetails.setBeautyService(new BeautyService());
+    updatedAppointmentDetails.setAppointmentTime(LocalDateTime.now().plusDays(2));
+
+    Appointment updatedAppointment = appointmentService.updateAppointment(appointmentId, updatedAppointmentDetails);
+
+    assertThat(updatedAppointment).isEqualTo(appointment);
+    verify(appointmentRepository, times(1)).findById(appointmentId);
+    verify(appointmentRepository, times(1)).save(appointment);
+  }
+
+  @Test
+  @DisplayName("Update non-existing appointment")
+  public void updateAppointment_nonExisting() {
+    Long appointmentId = 1L;
+    when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.empty());
+
+    Appointment updatedAppointmentDetails = new Appointment();
+
+    assertThatThrownBy(() -> appointmentService.updateAppointment(appointmentId, updatedAppointmentDetails))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("Appointment with id " + appointmentId + " does not exist.");
   }
 }
