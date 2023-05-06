@@ -109,7 +109,7 @@ public class BeautyServiceServiceImpl implements BeautyServiceService {
    */
   @Override
   public List<BeautyService> findAll() {
-    return beautyServiceRepository.findAll();
+    return beautyServiceRepository.findAllWithHairdressers();
   }
 
   /**
