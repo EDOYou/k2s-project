@@ -135,5 +135,3 @@ public class BeautyServiceServiceImpl implements BeautyServiceService {
     return beautyServiceRepository.findByPriceBetween(minPrice, maxPrice);
   }
 }
-
-

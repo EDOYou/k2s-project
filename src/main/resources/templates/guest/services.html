@@ -2,60 +2,93 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>Services</title>
-  <!-- Add necessary CSS and JavaScript files -->
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" th:href="@{/css/pages/services.css}"/>
 </head>
 <body>
-<h1>Services</h1>
 
-<div>
-  <form th:action="@{/guest/services}" method="get">
-    <label for="hairdresser">Hairdresser:</label>
-    <select id="hairdresser" name="hairdresser">
-      <option value="">All</option>
-      <option th:each="hairdresser : ${hairdressers}"
-              th:value="${hairdresser.id}"
-              th:selected="${selectedHairdresser == hairdresser.id}"
-              th:text="${hairdresser.lastName}"></option>
-    </select>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Beauty Salon</a>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="/guest/services">Services</a>
+      </li>
+    </ul>
+  </div>
+</nav>
 
-    <label for="service">Service:</label>
-    <select id="service" name="service">
-      <option value="">All</option>
-      <!-- Add service options here, similar to the hairdresser options -->
-    </select>
+<div class="container">
+  <h1 class="my-3">Services</h1>
 
-    <label for="sort">Sort by:</label>
-    <select id="sort" name="sort">
-      <option th:selected="${sort == 'lastName'}" value="lastName">Name</option>
-      <option th:selected="${sort == 'rating'}" value="rating">Rating</option>
-    </select>
+  <div>
+    <form th:action="@{/guest/services}" method="get" class="mb-3">
+      <div class="form-row">
+        <div class="col-md-2">
+          <label for="sort">Sort by:</label>
+          <select id="sort" name="sort" class="form-control">
+            <option th:selected="${sort == 'serviceName'}" value="serviceName">Service Name</option>
+            <option th:selected="${sort == 'lastName'}" value="lastName">Hairdresser
+              Name
+            </option>
+            <option th:selected="${sort == 'rating'}" value="rating">Rating</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label for="hairdresser">Hairdresser:</label>
+          <select id="hairdresser" name="hairdresser" class="form-control">
+            <option value="">All Hairdressers</option>
+            <option th:each="hairdresser : ${hairdressers}"
+                    th:value="${hairdresser.id}"
+                    th:selected="${selectedHairdresser == hairdresser.id}"
+                    th:text="${hairdresser.lastName + ' ' + hairdresser.firstName}">
+            </option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label for="service">Service:</label>
+          <select id="service" name="service" class="form-control">
+            <option value="">All Services</option>
+            <option th:each="service : ${services}"
+                    th:value="${service.id}"
+                    th:selected="${selectedService == service.id}"
+                    th:text="${service.name}">
+            </option>
+          </select>
+        </div>
+        <div class="col-md-2 align-self-end">
+          <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+      </div>
+    </form>
+  </div>
 
-    <button type="submit">Filter</button>
-  </form>
-</div>
-
-<div>
-  <table>
-    <thead>
-    <tr>
-      <th>Name</th>
-      <th>Description</th>
-      <th>Price</th>
-      <th>Hairdresser</th>
-      <th>Rating</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="service : ${services}">
-      <td th:text="${service.name}"></td>
-      <td th:text="${service.description}"></td>
-      <td th:text="${service.price}"></td>
-      <td th:text="${service.hairdresser.lastName}"></td>
-      <td th:text="${service.hairdresser.rating}"></td>
-    </tr>
-    </tbody>
-
-  </table>
+  <div>
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th>Service Name</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th>Hairdresser</th>
+        <th>Rating</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="service : ${filteredServices}">
+        <td th:text="${service.name}"></td>
+        <td th:text="${service.description}"></td>
+        <td th:text="${service.price}"></td>
+        <td th:text="${service.hairdresser.lastName + ' ' + service.hairdresser.firstName}"></td>
+        <td th:text="${service.hairdresser.rating}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 </body>
 </html>

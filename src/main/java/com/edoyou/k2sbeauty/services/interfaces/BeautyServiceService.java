@@ -18,7 +18,7 @@ public interface BeautyServiceService {
   /**
    * Updates an existing beauty service.
    *
-   * @param id The ID of the beauty service to update.
+   * @param id            The ID of the beauty service to update.
    * @param beautyService The updated beauty service.
    * @return The updated beauty service.
    * @throws IllegalArgumentException If the provided ID or beauty service is invalid.

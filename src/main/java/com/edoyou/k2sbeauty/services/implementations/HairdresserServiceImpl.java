@@ -12,9 +12,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * HairdresserServiceImpl is the implementation of the {@link com.edoyou.k2sbeauty.services.interfaces.HairdresserService} interface.
- * This class provides the necessary functionality for handling Hairdresser related operations
- * such as finding hairdressers by specialization.
+ * HairdresserServiceImpl is the implementation of the
+ * {@link com.edoyou.k2sbeauty.services.interfaces.HairdresserService} interface. This class
+ * provides the necessary functionality for handling Hairdresser related operations such as finding
+ * hairdressers by specialization.
  *
  * @see Hairdresser
  */
@@ -24,7 +25,8 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
   private final HairdresserRepository hairdresserRepository;
 
   @Autowired
-  public HairdresserServiceImpl(UserRepository userRepository, HairdresserRepository hairdresserRepository) {
+  public HairdresserServiceImpl(UserRepository userRepository,
+      HairdresserRepository hairdresserRepository) {
     super(userRepository);
     this.hairdresserRepository = hairdresserRepository;
   }
@@ -40,6 +42,11 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
       return hairdresserRepository.findAll();
     }
 
+    if ("serviceName".equalsIgnoreCase(sortBy) || "price".equalsIgnoreCase(sortBy)) {
+      // Delegate sorting by service name or price to the findAllHairdressersByServiceId method
+      return findAllHairdressersByServiceId(sortBy, null);
+    }
+
     Sort sort;
     if ("lastName".equalsIgnoreCase(sortBy)) {
       sort = Sort.by(Sort.Direction.ASC, "lastName");
@@ -52,6 +59,44 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
     return hairdresserRepository.findAll(sort);
   }
 
+  /**
+   * Finds all hairdressers filtered by service ID and sorted by the given criteria.
+   *
+   * @param sortBy    The field to sort hairdressers by.
+   * @param serviceId The ID of the beauty service to filter hairdressers by.
+   * @return A list of hairdressers sorted by the given criteria and filtered by the given service
+   * ID.
+   */
+  @Override
+  public List<Hairdresser> findAllHairdressersByServiceId(String sortBy, Long serviceId) {
+    Sort sort;
+    if ("serviceName".equalsIgnoreCase(sortBy) || "price".equalsIgnoreCase(sortBy)) {
+      sort = createSortByServiceNameAndPrice(sortBy);
+    } else {
+      sort = createSortBy(sortBy);
+    }
+
+    return hairdresserRepository.findAllByService(serviceId, sort);
+  }
+
+  private Sort createSortByServiceNameAndPrice(String sortBy) {
+    return switch (sortBy) {
+      case "serviceName" -> Sort.by(Sort.Direction.ASC, "s.name");
+      case "price" -> Sort.by(Sort.Direction.ASC, "s.price");
+      default -> throw new IllegalArgumentException("Invalid sortBy value: " + sortBy);
+    };
+  }
+
+  private Sort createSortBy(String sortBy) {
+    if ("lastName".equalsIgnoreCase(sortBy)) {
+      return Sort.by(Sort.Direction.ASC, "lastName");
+    } else if ("rating".equalsIgnoreCase(sortBy)) {
+      return Sort.by(Sort.Direction.DESC, "rating");
+    } else {
+      throw new IllegalArgumentException("Invalid sortBy value: " + sortBy);
+    }
+  }
+
   @Override
   public Hairdresser updateHairdresser(Hairdresser hairdresserDetails) {
     if (hairdresserDetails.getId() == null) {
@@ -59,7 +104,8 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
     }
 
     Hairdresser existingHairdresser = hairdresserRepository.findById(hairdresserDetails.getId())
-        .orElseThrow(() -> new ResourceNotFoundException("Hairdresser not found with ID: " + hairdresserDetails.getId()));
+        .orElseThrow(() -> new ResourceNotFoundException(
+            "Hairdresser not found with ID: " + hairdresserDetails.getId()));
 
     existingHairdresser.setFirstName(hairdresserDetails.getFirstName());
     existingHairdresser.setLastName(hairdresserDetails.getLastName());
