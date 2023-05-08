@@ -82,9 +82,12 @@ public interface AppointmentService {
   /**
    * Update an existing appointment.
    *
-   * @param id The ID of the appointment to update.
+   * @param id                 The ID of the appointment to update.
    * @param appointmentDetails The updated appointment details.
    * @return The updated Appointment object.
    */
   Appointment updateAppointment(Long id, Appointment appointmentDetails);
+
+  boolean isHairdresserAvailable(Long hairdresserId, Long serviceId,
+      LocalDateTime appointmentDateTime);
 }

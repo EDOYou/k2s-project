@@ -43,7 +43,6 @@ public class AppointmentServiceImpl implements AppointmentService {
    *                               appointment time.
    */
   @Override
-  // TODO: Add any necessary business logic before saving the appointment.
   public Appointment saveAppointment(Appointment appointment) {
     LocalDateTime now = LocalDateTime.now();
 
@@ -79,7 +78,6 @@ public class AppointmentServiceImpl implements AppointmentService {
    *                               within 24 hours of the appointment time.
    */
   @Override
-  // TODO: Add any necessary business logic before deleting the appointment.
   public void deleteAppointment(Long id) {
     Appointment appointment = appointmentRepository.findById(id)
         .orElseThrow(
@@ -103,7 +101,6 @@ public class AppointmentServiceImpl implements AppointmentService {
    * @return A list of appointments sorted by date.
    */
   @Override
-  // TODO: Add any necessary business logic before retrieving appointments by client.
   public List<Appointment> findByClient(Client client) {
     return appointmentRepository.findByClient(client)
         .stream()
@@ -119,7 +116,6 @@ public class AppointmentServiceImpl implements AppointmentService {
    * @return A list of appointments sorted by date.
    */
   @Override
-  // TODO: Add any necessary business logic before retrieving appointments by hairdresser.
   public List<Appointment> findByHairdresser(Hairdresser hairdresser) {
     return appointmentRepository.findByHairdresser(hairdresser)
         .stream()
@@ -136,7 +132,6 @@ public class AppointmentServiceImpl implements AppointmentService {
    * @return A list of appointments sorted by date.
    */
   @Override
-  // TODO: Add any necessary business logic before retrieving appointments by beautyService.
   public List<Appointment> findByBeautyService(BeautyService beautyService) {
     if (beautyService == null) {
       throw new IllegalArgumentException("BeautyService cannot be null.");
@@ -160,7 +155,6 @@ public class AppointmentServiceImpl implements AppointmentService {
    * @return A list of appointments sorted by date.
    */
   @Override
-  // TODO: Add any necessary business logic before retrieving appointments within a specific time range.
   public List<Appointment> findByAppointmentTimeBetween(LocalDateTime start, LocalDateTime end) {
     return appointmentRepository.findByAppointmentTimeBetween(start, end)
         .stream()
@@ -177,7 +171,6 @@ public class AppointmentServiceImpl implements AppointmentService {
    * @return A list of appointments sorted by date.
    */
   @Override
-  // TODO: Add any necessary business logic before retrieving appointments by client and hairdresser.
   public List<Appointment> findByClientAndHairdresser(Client client, Hairdresser hairdresser) {
     return appointmentRepository.findByClientAndHairdresser(client, hairdresser)
         .stream()
@@ -193,12 +186,25 @@ public class AppointmentServiceImpl implements AppointmentService {
   @Override
   public Appointment updateAppointment(Long id, Appointment appointmentDetails) {
     Appointment existingAppointment = appointmentRepository.findById(id)
-        .orElseThrow(() -> new IllegalStateException("Appointment with id " + id + " does not exist."));
+        .orElseThrow(
+            () -> new IllegalStateException("Appointment with id " + id + " does not exist."));
 
     existingAppointment.setClient(appointmentDetails.getClient());
     existingAppointment.setHairdresser(appointmentDetails.getHairdresser());
     existingAppointment.setBeautyService(appointmentDetails.getBeautyService());
     existingAppointment.setAppointmentTime(appointmentDetails.getAppointmentTime());
     return appointmentRepository.save(existingAppointment);
+  }
+
+  @Override
+  public boolean isHairdresserAvailable(Long hairdresserId, Long serviceId,
+      LocalDateTime appointmentDateTime) {
+    List<Appointment> existingAppointments = appointmentRepository.findByHairdresserIdAndAppointmentTimeBetween(
+        hairdresserId,
+        appointmentDateTime.minusMinutes(1),
+        appointmentDateTime.plusMinutes(1)
+    );
+
+    return existingAppointments.isEmpty();
   }
 }

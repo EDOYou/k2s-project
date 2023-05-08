@@ -1,6 +1,7 @@
 package com.edoyou.k2sbeauty.repositories;
 
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -44,4 +45,11 @@ public interface BeautyServiceRepository extends JpaRepository<BeautyService, Lo
    */
   @Query("SELECT DISTINCT s FROM BeautyService s JOIN FETCH s.hairdresser where s.name IS NOT NULL")
   List<BeautyService> findAllWithHairdressers();
+
+  @Query("SELECT DISTINCT b.name FROM BeautyService b")
+  List<String> findDistinctServiceNames();
+
+  Optional<BeautyService> findByName(String name);
+
+  Optional<BeautyService> findFirstByName(String name);
 }

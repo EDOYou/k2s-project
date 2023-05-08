@@ -27,8 +27,8 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
 
   @Autowired
   public HairdresserServiceImpl(UserRepository userRepository,
-                                HairdresserRepository hairdresserRepository,
-                                PasswordEncoder passwordEncoder) {
+      HairdresserRepository hairdresserRepository,
+      PasswordEncoder passwordEncoder) {
     super(userRepository, passwordEncoder);
     this.hairdresserRepository = hairdresserRepository;
   }
@@ -89,7 +89,8 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
   @Override
   public Hairdresser findById(Long id) {
     return hairdresserRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("Hairdresser with id " + id + " not found"));
+        .orElseThrow(
+            () -> new ResourceNotFoundException("Hairdresser with id " + id + " not found"));
   }
 
   private Sort createSortByServiceNameAndPrice(String sortBy) {

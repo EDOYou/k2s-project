@@ -5,11 +5,11 @@ import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Client;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.entities.model.User;
+import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import com.edoyou.k2sbeauty.services.interfaces.ClientService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
-import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,7 +32,6 @@ public class ClientController {
   private final HairdresserService hairdresserService;
   private final BeautyServiceService beautyServiceService;
   private final AppointmentService appointmentService;
-  //private static final Logger logger = Logger.getLogger(ClientController.class.getName());
 
   @Autowired
   public ClientController(ClientService clientService,
@@ -48,7 +47,7 @@ public class ClientController {
   @GetMapping("/book")
   public String showBookingPage(Model model) {
     List<Hairdresser> hairdressers = hairdresserService.findAllWithBeautyServices();
-    List<BeautyService> services = beautyServiceService.findAll();
+    List<String> services = beautyServiceService.findDistinctServiceNames();
     model.addAttribute("hairdressers", hairdressers);
     model.addAttribute("services", services);
     return "client/book";
@@ -57,10 +56,8 @@ public class ClientController {
   @PostMapping("/book")
   public String bookAppointment(Authentication authentication,
       @RequestParam("hairdresserId") Long hairdresserId,
-      @RequestParam("serviceId") Long serviceId,
+      @RequestParam("serviceName") String serviceName,
       @RequestParam("dateTime") String dateTime) {
-
-    //logger.info("Attempting to book an appointment for user: {"+authentication.getName()+"}");
 
     if (dateTime.isEmpty()) {
       return "redirect:/client/book";
@@ -70,14 +67,15 @@ public class ClientController {
     LocalDateTime appointmentDateTime = LocalDateTime.parse(dateTime, formatter);
 
     Hairdresser hairdresser = hairdresserService.findById(hairdresserId);
-    BeautyService beautyService = beautyServiceService.findById(serviceId)
+    BeautyService beautyService = beautyServiceService.findFirstByName(serviceName)
         .orElseThrow(
-            () -> new IllegalArgumentException("Service with id " + serviceId + " not found"));
+            () -> new ResourceNotFoundException("Service with name " + serviceName + " not found"));
     User user = clientService.findUserByEmail(authentication.getName())
-        .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + authentication.getName()));
+        .orElseThrow(() -> new UsernameNotFoundException(
+            "User not found with email: " + authentication.getName()));
     Client client = (Client) clientService.findUserById(user.getId())
-        .orElseThrow(() -> new UsernameNotFoundException("Client not found with id: " + user.getId()));
-
+        .orElseThrow(
+            () -> new UsernameNotFoundException("Client not found with id: " + user.getId()));
 
     Appointment appointment = new Appointment();
     appointment.setClient(client);

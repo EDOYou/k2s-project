@@ -1,6 +1,7 @@
 package com.edoyou.k2sbeauty.services.implementations;
 
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
+import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.repositories.BeautyServiceRepository;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +86,7 @@ public class BeautyServiceServiceImpl implements BeautyServiceService {
   @Override
   public void deleteBeautyService(Long id) {
     if (!beautyServiceRepository.existsById(id)) {
-      throw new IllegalStateException("Beauty service with id " + id + " does not exist.");
+      throw new ResourceNotFoundException("Beauty service with id " + id + " does not exist.");
     }
 
     beautyServiceRepository.deleteById(id);
@@ -133,5 +134,20 @@ public class BeautyServiceServiceImpl implements BeautyServiceService {
     }
 
     return beautyServiceRepository.findByPriceBetween(minPrice, maxPrice);
+  }
+
+  @Override
+  public List<String> findDistinctServiceNames() {
+    return beautyServiceRepository.findDistinctServiceNames();
+  }
+
+  @Override
+  public Optional<BeautyService> findByName(String serviceName) {
+    return beautyServiceRepository.findByName(serviceName);
+  }
+
+  @Override
+  public Optional<BeautyService> findFirstByName(String name) {
+    return beautyServiceRepository.findFirstByName(name);
   }
 }

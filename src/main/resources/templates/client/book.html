@@ -5,14 +5,31 @@
   <title>Book Appointment</title>
   <script>
     function updateHairdressers() {
-      const serviceId = document.getElementById("serviceId").value;
+      const serviceName = document.getElementById("serviceId").value;
+      console.log("Selected service:", serviceName);
+
       const hairdressers = document.querySelectorAll("#hairdresserId option");
 
       hairdressers.forEach((hairdresser) => {
         const services = hairdresser.getAttribute("data-services").split(",");
-        hairdresser.style.display = services.includes(serviceId) ? "" : "none";
+        console.log("Hairdresser:", hairdresser.textContent, "Services:", services);
+
+        // Additional debugging information
+        services.forEach(service => {
+          console.log("Comparing:", service, "with", serviceName, "Result:",
+              service === serviceName);
+        });
+
+        const shouldDisplay = services.includes(serviceName);
+        console.log("Should display hairdresser:", shouldDisplay);
+
+        hairdresser.style.display = shouldDisplay ? "" : "none";
       });
     }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      updateHairdressers();
+    });
   </script>
 </head>
 <body>
@@ -23,17 +40,17 @@
     <option th:each="hairdresser : ${hairdressers}"
             th:value="${hairdresser.id}"
             th:text="${hairdresser.firstName + ' ' + hairdresser.lastName}"
-            th:attr="data-services=${hairdresser.getServices()}">
+            th:attr="data-services=${#strings.replace(#strings.replace(hairdresser.getBeautyServicesNames(), '[', ''), ']', '')}">
     </option>
   </select>
 
   <br>
 
   <label for="serviceId">Service:</label>
-  <select id="serviceId" name="serviceId" onchange="updateHairdressers()">
-    <option th:each="service : ${services}"
-            th:value="${service.id}"
-            th:text="${service.name + ' - ' + service.price}">
+  <select id="serviceId" name="serviceName" onchange="updateHairdressers()">
+    <option th:each="serviceName : ${services}"
+            th:value="${serviceName}"
+            th:text="${serviceName}">
     </option>
   </select>
 

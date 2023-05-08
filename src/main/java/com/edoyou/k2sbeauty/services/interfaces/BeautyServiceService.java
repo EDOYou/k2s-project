@@ -56,4 +56,10 @@ public interface BeautyServiceService {
    * @return A list of beauty services within the given price range.
    */
   List<BeautyService> findByPriceRange(Double minPrice, Double maxPrice);
+
+  List<String> findDistinctServiceNames();
+
+  Optional<BeautyService> findByName(String serviceName);
+
+  Optional<BeautyService> findFirstByName(String name);
 }

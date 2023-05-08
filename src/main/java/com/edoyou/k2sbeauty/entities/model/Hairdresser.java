@@ -3,6 +3,7 @@ package com.edoyou.k2sbeauty.entities.model;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,10 +23,14 @@ public class Hairdresser extends User {
   @OneToMany(mappedBy = "hairdresser")
   private Set<Appointment> appointments = new HashSet<>();
 
-  public String getServices() {
+  public String getBeautyServicesNamesString() {
     return beautyServices.stream()
-        .map(service -> String.valueOf(service.getId()))
-        .collect(Collectors.joining(","));
+        .map(BeautyService::getName)
+        .collect(Collectors.joining(",")).replaceAll("\\s+", "");
+  }
+
+  public List<String> getBeautyServicesNames() {
+    return beautyServices.stream().map(BeautyService::getName).collect(Collectors.toList());
   }
 
   public void setSpecialization(String specialization) {
