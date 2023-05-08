@@ -5,8 +5,9 @@ import com.edoyou.k2sbeauty.entities.model.Client;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 
 import java.util.List;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface ClientService extends UserService {
+public interface ClientService extends UserService, UserDetailsService {
 
   /**
    * Find a client by their appointment.

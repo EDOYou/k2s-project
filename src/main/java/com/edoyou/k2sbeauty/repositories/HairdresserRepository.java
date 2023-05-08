@@ -36,4 +36,7 @@ public interface HairdresserRepository extends JpaRepository<Hairdresser, Long> 
    */
   @Query("SELECT h FROM Hairdresser h JOIN h.beautyServices s WHERE s.id = :serviceId")
   List<Hairdresser> findAllByService(@Param("serviceId") Long serviceId, Sort sort);
+
+  @Query("SELECT h FROM Hairdresser h JOIN FETCH h.beautyServices")
+  List<Hairdresser> findAllWithBeautyServices();
 }

@@ -7,6 +7,7 @@ import com.edoyou.k2sbeauty.repositories.UserRepository;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,8 +27,9 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
 
   @Autowired
   public HairdresserServiceImpl(UserRepository userRepository,
-      HairdresserRepository hairdresserRepository) {
-    super(userRepository);
+                                HairdresserRepository hairdresserRepository,
+                                PasswordEncoder passwordEncoder) {
+    super(userRepository, passwordEncoder);
     this.hairdresserRepository = hairdresserRepository;
   }
 
@@ -77,6 +79,17 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
     }
 
     return hairdresserRepository.findAllByService(serviceId, sort);
+  }
+
+  @Override
+  public List<Hairdresser> findAllWithBeautyServices() {
+    return hairdresserRepository.findAllWithBeautyServices();
+  }
+
+  @Override
+  public Hairdresser findById(Long id) {
+    return hairdresserRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("Hairdresser with id " + id + " not found"));
   }
 
   private Sort createSortByServiceNameAndPrice(String sortBy) {

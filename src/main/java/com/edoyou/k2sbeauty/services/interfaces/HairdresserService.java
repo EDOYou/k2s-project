@@ -3,6 +3,7 @@ package com.edoyou.k2sbeauty.services.interfaces;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 
 import java.util.List;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  * HairdresserService interface represents the service layer for Hairdresser related operations.
@@ -36,6 +37,11 @@ public interface HairdresserService extends UserService {
    * ID.
    */
   List<Hairdresser> findAllHairdressersByServiceId(String sortBy, Long serviceId);
+
+  Hairdresser findById(Long id);
+
+  @Query("SELECT h FROM Hairdresser h JOIN FETCH h.beautyServices")
+  List<Hairdresser> findAllWithBeautyServices();
 
   /**
    * @param hairdresserDetails The hairdresser with updated information.

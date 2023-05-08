@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book Appointment</title>
+  <script>
+    function updateHairdressers() {
+      const serviceId = document.getElementById("serviceId").value;
+      const hairdressers = document.querySelectorAll("#hairdresserId option");
+
+      hairdressers.forEach((hairdresser) => {
+        const services = hairdresser.getAttribute("data-services").split(",");
+        hairdresser.style.display = services.includes(serviceId) ? "" : "none";
+      });
+    }
+  </script>
+</head>
+<body>
+<h1>Book an Appointment</h1>
+<form th:action="@{/client/book}" method="post">
+  <label for="hairdresserId">Hairdresser:</label>
+  <select id="hairdresserId" name="hairdresserId">
+    <option th:each="hairdresser : ${hairdressers}"
+            th:value="${hairdresser.id}"
+            th:text="${hairdresser.firstName + ' ' + hairdresser.lastName}"
+            th:attr="data-services=${hairdresser.getServices()}">
+    </option>
+  </select>
+
+  <br>
+
+  <label for="serviceId">Service:</label>
+  <select id="serviceId" name="serviceId" onchange="updateHairdressers()">
+    <option th:each="service : ${services}"
+            th:value="${service.id}"
+            th:text="${service.name + ' - ' + service.price}">
+    </option>
+  </select>
+
+  <br>
+
+  <label for="dateTime">Date and Time:</label>
+  <input type="datetime-local" id="dateTime" name="dateTime">
+
+  <br>
+
+  <button type="submit">Book Appointment</button>
+</form>
+</body>
+</html>
