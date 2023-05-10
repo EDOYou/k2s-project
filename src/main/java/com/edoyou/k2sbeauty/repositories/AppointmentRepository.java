@@ -1,10 +1,12 @@
 package com.edoyou.k2sbeauty.repositories;
 
+import com.edoyou.k2sbeauty.dto.AppointmentWithoutPaymentDTO;
 import com.edoyou.k2sbeauty.entities.model.Appointment;
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Client;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -25,4 +27,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
   List<Appointment> findByHairdresserIdAndAppointmentTimeBetween(Long hairdresserId,
       LocalDateTime start, LocalDateTime end);
+
+  @Query("SELECT a FROM Appointment a WHERE a.paymentStatus IS NULL OR a.paymentStatus = com.edoyou.k2sbeauty.entities.payment.PaymentStatus.PENDING")
+  List<AppointmentWithoutPaymentDTO> findAllWithoutPaymentDetails();
 }

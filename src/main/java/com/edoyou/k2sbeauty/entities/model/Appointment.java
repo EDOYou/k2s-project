@@ -1,5 +1,6 @@
 package com.edoyou.k2sbeauty.entities.model;
 
+import com.edoyou.k2sbeauty.entities.payment.PaymentStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,10 @@ public class Appointment {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Enumerated(EnumType.STRING)
+  @Column
+  private PaymentStatus paymentStatus;
 
   @ManyToOne(cascade = CascadeType.MERGE)
   @JoinColumn(nullable = false)
@@ -47,6 +52,10 @@ public class Appointment {
     this.beautyService = beautyService;
   }
 
+  public void setPaymentStatus(PaymentStatus paymentStatus) {
+    this.paymentStatus = paymentStatus;
+  }
+
   public Long getId() {
     return id;
   }
@@ -65,5 +74,9 @@ public class Appointment {
 
   public BeautyService getBeautyService() {
     return beautyService;
+  }
+
+  public PaymentStatus getPaymentStatus() {
+    return paymentStatus;
   }
 }

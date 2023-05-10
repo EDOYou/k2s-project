@@ -4,6 +4,7 @@ import com.edoyou.k2sbeauty.entities.model.Appointment;
 import com.edoyou.k2sbeauty.entities.model.Client;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.repositories.ClientRepository;
+import com.edoyou.k2sbeauty.repositories.RoleRepository;
 import com.edoyou.k2sbeauty.repositories.UserRepository;
 import com.edoyou.k2sbeauty.services.interfaces.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,9 @@ import java.util.List;
 
 /**
  * <strong>ClientServiceImpl</strong> is a class that implements
- * the {@link com.edoyou.k2sbeauty.services.interfaces.ClientService} interface.
- * It provides methods to interact with Client entity in the application,
- * such as finding clients by their appointments or by the hairdresser
- * they have appointments with.
+ * the {@link com.edoyou.k2sbeauty.services.interfaces.ClientService} interface. It provides methods
+ * to interact with Client entity in the application, such as finding clients by their appointments
+ * or by the hairdresser they have appointments with.
  *
  * @see Client
  */
@@ -30,10 +30,15 @@ public class ClientServiceImpl extends UserServiceImpl implements ClientService 
 
   @Autowired
   public ClientServiceImpl(UserRepository userRepository,
-                           ClientRepository clientRepository,
-                           PasswordEncoder passwordEncoder) {
-    super(userRepository, passwordEncoder);
+      ClientRepository clientRepository,
+      RoleRepository roleRepository,
+      PasswordEncoder passwordEncoder) {
+    super(userRepository, roleRepository, passwordEncoder);
     this.clientRepository = clientRepository;
+  }
+
+  public void saveClient(Client client) {
+    clientRepository.save(client);
   }
 
   @Override

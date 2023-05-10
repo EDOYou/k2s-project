@@ -26,6 +26,8 @@ public interface UserService {
    */
   User updateUser(User user);
 
+  void updateRole(User user, String roleName);
+
   /**
    * Delete a user from the database by ID.
    *

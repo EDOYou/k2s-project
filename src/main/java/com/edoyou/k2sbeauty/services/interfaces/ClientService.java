@@ -24,5 +24,7 @@ public interface ClientService extends UserService, UserDetailsService {
    * @return A list of clients who have appointments with the given hairdresser.
    */
   List<Client> findByAppointmentsHairdresser(Hairdresser hairdresser);
+  
+  void saveClient(Client client);
 }
 

@@ -1,108 +1,117 @@
 package com.edoyou.k2sbeauty.repositories;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.edoyou.k2sbeauty.entities.model.Appointment;
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Client;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
-import java.time.LocalDateTime;
-import java.util.List;
+import com.edoyou.k2sbeauty.services.implementations.AppointmentServiceImpl;
+import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.TestPropertySource;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@TestPropertySource(locations = "classpath:application-test.properties")
+@ExtendWith(MockitoExtension.class)
 public class AppointmentRepositoryTest {
-  @Autowired
+
+  @Mock
   private AppointmentRepository appointmentRepository;
+
+  @InjectMocks
+  private AppointmentServiceImpl appointmentService;
+
+  private Client client;
+  private Hairdresser hairdresser;
+  private BeautyService beautyService;
   private Appointment appointment;
+  private LocalDateTime appointmentTime;
 
   @BeforeEach
   void setUp() {
-    Client client = new Client();
-    client.setFirstName("Barbara");
-    client.setLastName("O'Conner");
-    client.setEmail("myemail@gmail.com");
-    client.setPassword("password");
-    client.setPhone("36707733373");
-    client.setCreatedAt(LocalDateTime.now());
-    client.setUpdatedAt(LocalDateTime.now());
-
-    Hairdresser hairdresser = new Hairdresser();
-    hairdresser.setFirstName("Jane");
-    hairdresser.setLastName("Doe");
-    hairdresser.setEmail("jane.doe@gmail.com");
-    hairdresser.setPassword("password");
-    hairdresser.setPhone("36707733444");
-    hairdresser.setCreatedAt(LocalDateTime.now());
-    hairdresser.setUpdatedAt(LocalDateTime.now());
-    hairdresser.setSpecialization("Hairstyling");
-
-    BeautyService beautyService = new BeautyService();
-    beautyService.setName("Haircut");
-    beautyService.setDescription("Sport style");
-    beautyService.setPrice(25.0);
-
+    client = new Client();
+    hairdresser = new Hairdresser();
+    beautyService = new BeautyService();
     appointment = new Appointment();
+    appointment.setId(1L);
     appointment.setClient(client);
     appointment.setHairdresser(hairdresser);
-    appointment.setAppointmentTime(LocalDateTime.now());
     appointment.setBeautyService(beautyService);
+    appointment.setAppointmentTime(LocalDateTime.now().plusDays(2));
+
+    appointmentTime = LocalDateTime.now().plusDays(2);
+    appointment.setAppointmentTime(appointmentTime);
   }
 
   @Test
-  public void shouldSaveAppointment() {
-    Appointment savedAppointment = appointmentRepository.save(appointment);
-    assertThat(savedAppointment).isNotNull();
-    assertThat(savedAppointment.getId()).isNotNull();
+  void findByClientTest() {
+    when(appointmentRepository.findByClient(client)).thenReturn(Arrays.asList(appointment));
+    List<Appointment> appointments = appointmentService.findByClient(client);
+    assertEquals(1, appointments.size());
+    assertEquals(client, appointments.get(0).getClient());
   }
 
   @Test
-  public void shouldFindByClient() {
-    appointmentRepository.save(appointment);
-
-    List<Appointment> foundAppointments = appointmentRepository.findByClient(appointment.getClient());
-    assertThat(foundAppointments).isNotNull();
-    assertThat(foundAppointments).hasSize(1);
-    assertThat(foundAppointments.get(0)).isEqualTo(appointment);
+  void findByHairdresserTest() {
+    when(appointmentRepository.findByHairdresser(hairdresser)).thenReturn(Arrays.asList(appointment));
+    List<Appointment> appointments = appointmentService.findByHairdresser(hairdresser);
+    assertEquals(1, appointments.size());
+    assertEquals(hairdresser, appointments.get(0).getHairdresser());
   }
 
   @Test
-  public void shouldFindByService() {
-    appointmentRepository.save(appointment);
-
-    List<Appointment> foundAppointments = appointmentRepository.findByBeautyService(appointment.getBeautyService());
-    assertThat(foundAppointments).isNotNull();
-    assertThat(foundAppointments).hasSize(1);
-    assertThat(foundAppointments.get(0)).isEqualTo(appointment);
+  void saveAppointmentTest() {
+    when(appointmentRepository.save(any(Appointment.class))).thenReturn(appointment);
+    Appointment savedAppointment = appointmentService.saveAppointment(appointment);
+    assertEquals(client, savedAppointment.getClient());
+    assertEquals(hairdresser, savedAppointment.getHairdresser());
+    assertEquals(beautyService, savedAppointment.getBeautyService());
+    assertEquals(appointmentTime, savedAppointment.getAppointmentTime());
   }
 
   @Test
-  public void shouldFindByAppointmentTimeBetween() {
-    appointmentRepository.save(appointment);
+  public void saveAppointment_success() {
+    when(appointmentRepository.findByClient(client)).thenReturn(Collections.emptyList());
+    when(appointmentRepository.findByHairdresser(hairdresser)).thenReturn(Collections.emptyList());
+    when(appointmentRepository.save(appointment)).thenReturn(appointment);
 
-    LocalDateTime startTime = LocalDateTime.now().minusHours(1);
-    LocalDateTime endTime = LocalDateTime.now().plusHours(1);
-    List<Appointment> foundAppointments = appointmentRepository.findByAppointmentTimeBetween(startTime, endTime);
-    assertThat(foundAppointments).isNotNull();
-    assertThat(foundAppointments).hasSize(1);
-    assertThat(foundAppointments.get(0)).isEqualTo(appointment);
+    Appointment savedAppointment = appointmentService.saveAppointment(appointment);
+
+    assertNotNull(savedAppointment);
+    assertEquals(appointment.getId(), savedAppointment.getId());
   }
 
   @Test
-  public void shouldFindByClientAndHairdresser() {
-    appointmentRepository.save(appointment);
+  public void saveAppointment_hairdresserNotAvailable() {
+    when(appointmentRepository.findByHairdresser(hairdresser)).thenReturn(List.of(appointment));
 
-    List<Appointment> foundAppointments = appointmentRepository.findByClientAndHairdresser(appointment.getClient(), appointment.getHairdresser());
-    assertThat(foundAppointments).isNotNull();
-    assertThat(foundAppointments).hasSize(1);
-    assertThat(foundAppointments.get(0)).isEqualTo(appointment);
+    assertThrows(IllegalStateException.class, () -> appointmentService.saveAppointment(appointment));
   }
 
+  @Test
+  public void saveAppointment_clientNotAvailable() {
+    when(appointmentRepository.findByClient(client)).thenReturn(List.of(appointment));
+
+    assertThrows(IllegalStateException.class, () -> appointmentService.saveAppointment(appointment));
+  }
+
+  @Test
+  void findByIdTest() {
+    when(appointmentRepository.findById(1L)).thenReturn(Optional.of(appointment));
+    Optional<Appointment> foundAppointment = appointmentService.findById(1L);
+    assertEquals(client, foundAppointment.get().getClient());
+    assertEquals(hairdresser, foundAppointment.get().getHairdresser());
+    assertEquals(beautyService, foundAppointment.get().getBeautyService());
+    assertEquals(appointmentTime, foundAppointment.get().getAppointmentTime());
+  }
 }

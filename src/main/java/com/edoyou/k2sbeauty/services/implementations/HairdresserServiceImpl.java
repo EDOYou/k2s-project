@@ -3,6 +3,7 @@ package com.edoyou.k2sbeauty.services.implementations;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.repositories.HairdresserRepository;
+import com.edoyou.k2sbeauty.repositories.RoleRepository;
 import com.edoyou.k2sbeauty.repositories.UserRepository;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,13 @@ import java.util.List;
 public class HairdresserServiceImpl extends UserServiceImpl implements HairdresserService {
 
   private final HairdresserRepository hairdresserRepository;
+  //private final RoleRepository roleRepository;
 
   @Autowired
-  public HairdresserServiceImpl(UserRepository userRepository,
+  public HairdresserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
       HairdresserRepository hairdresserRepository,
       PasswordEncoder passwordEncoder) {
-    super(userRepository, passwordEncoder);
+    super(userRepository, roleRepository, passwordEncoder);
     this.hairdresserRepository = hairdresserRepository;
   }
 

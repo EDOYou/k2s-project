@@ -1,6 +1,7 @@
 package com.edoyou.k2sbeauty.services;
 
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
+import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.repositories.BeautyServiceRepository;
 import com.edoyou.k2sbeauty.services.implementations.BeautyServiceServiceImpl;
 import java.util.Collections;
@@ -78,7 +79,7 @@ public class BeautyServiceServiceImplTest {
 
   @Test
   public void findAll() {
-    when(beautyServiceRepository.findAll()).thenReturn(Collections.singletonList(beautyService));
+    when(beautyServiceRepository.findAllWithHairdressers()).thenReturn(Collections.singletonList(beautyService));
 
     List<BeautyService> beautyServices = beautyServiceServiceImpl.findAll();
     assertNotNull(beautyServices);
@@ -151,7 +152,7 @@ public class BeautyServiceServiceImplTest {
     when(beautyServiceRepository.existsById(any(Long.class))).thenReturn(false);
 
     assertThrows(
-        IllegalStateException.class,
+        ResourceNotFoundException.class,
         () -> beautyServiceServiceImpl.deleteBeautyService(1L)
     );
   }
