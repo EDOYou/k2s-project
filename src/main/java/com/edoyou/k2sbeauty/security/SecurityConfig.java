@@ -28,7 +28,7 @@ public class SecurityConfig {
     logger.info("Using PasswordEncoder in Constructor: " + passwordEncoder);
   }
 
-//  @Bean
+  //  @Bean
 //  public CustomAuthenticationFilter customAuthenticationFilter() throws Exception {
 //    CustomAuthenticationFilter filter = new CustomAuthenticationFilter();
 //    filter.setAuthenticationManager(authenticationManager());
@@ -55,26 +55,26 @@ public class SecurityConfig {
     http
         //.addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
         .authorizeHttpRequests(requests -> requests
-            .requestMatchers("/", "/guest", "/guest/**").permitAll()
+            .requestMatchers("/", "/home", "/register", "/guest", "/guest/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/", "/client/book", "/client/appointments").permitAll()
             .requestMatchers(HttpMethod.POST, "/client/book").authenticated()
             .anyRequest().authenticated()
         )
         .formLogin(loginConfigurer -> loginConfigurer
-            .loginPage("/client/login") // Specify the login page URL
+            .loginPage("/login") // Specify the login page URL
             .permitAll()
             .loginProcessingUrl("/perform_login") // Specify the URL to submit the login form
             .usernameParameter("email")
             .defaultSuccessUrl("/client/appointments",
                 true) // Specify the URL to redirect to after successful login
-            .failureUrl("/client/login?error=true")
+            .failureUrl("/login?error=true")
             .successHandler((request, response, authentication) -> {
               logger.info("User '{" + authentication.getName() + "}' logged in successfully");
               response.sendRedirect("/client/appointments");
             })
             .failureHandler((request, response, exception) -> {
               logger.warning("Login failure: {" + exception.getMessage() + "}");
-              response.sendRedirect("/client/login");
+              response.sendRedirect("/login");
             })
         )
 
