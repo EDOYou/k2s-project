@@ -14,7 +14,7 @@ public class Appointment {
   private Long id;
 
   @Enumerated(EnumType.STRING)
-  @Column
+  @Column(nullable = false)
   private PaymentStatus paymentStatus;
 
   @ManyToOne(cascade = CascadeType.MERGE)

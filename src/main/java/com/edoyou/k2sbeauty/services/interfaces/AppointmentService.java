@@ -5,8 +5,10 @@ import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Client;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 
+import com.edoyou.k2sbeauty.entities.payment.PaymentStatus;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * AppointmentService interface represents the service layer for Appointment related operations.
@@ -90,4 +92,8 @@ public interface AppointmentService {
 
   boolean isHairdresserAvailable(Long hairdresserId, Long serviceId,
       LocalDateTime appointmentDateTime);
+
+  Optional<Appointment> findById(Long id);
+
+  void updatePaymentStatus(Long appointmentId, PaymentStatus status);
 }

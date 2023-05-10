@@ -5,6 +5,7 @@ import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Client;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.entities.model.User;
+import com.edoyou.k2sbeauty.entities.payment.PaymentStatus;
 import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.repositories.RoleRepository;
 import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
@@ -101,6 +102,7 @@ public class ClientController {
     appointment.setHairdresser(hairdresser);
     appointment.setBeautyService(beautyService);
     appointment.setAppointmentTime(appointmentDateTime);
+    appointment.setPaymentStatus(PaymentStatus.PENDING);
 
     appointmentService.saveAppointment(appointment);
 

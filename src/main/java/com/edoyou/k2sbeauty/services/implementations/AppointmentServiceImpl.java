@@ -4,9 +4,12 @@ import com.edoyou.k2sbeauty.entities.model.Appointment;
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Client;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
+import com.edoyou.k2sbeauty.entities.payment.PaymentStatus;
+import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.repositories.AppointmentRepository;
 import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -184,6 +187,11 @@ public class AppointmentServiceImpl implements AppointmentService {
   }
 
   @Override
+  public Optional<Appointment> findById(Long id) {
+    return appointmentRepository.findById(id);
+  }
+
+  @Override
   public Appointment updateAppointment(Long id, Appointment appointmentDetails) {
     Appointment existingAppointment = appointmentRepository.findById(id)
         .orElseThrow(
@@ -194,6 +202,14 @@ public class AppointmentServiceImpl implements AppointmentService {
     existingAppointment.setBeautyService(appointmentDetails.getBeautyService());
     existingAppointment.setAppointmentTime(appointmentDetails.getAppointmentTime());
     return appointmentRepository.save(existingAppointment);
+  }
+
+  @Override
+  public void updatePaymentStatus(Long appointmentId, PaymentStatus status) {
+    Appointment appointment = appointmentRepository.findById(appointmentId)
+        .orElseThrow(() -> new ResourceNotFoundException("Appointment not found for this id :: " + appointmentId));
+    appointment.setPaymentStatus(status);
+    appointmentRepository.save(appointment);
   }
 
   @Override
