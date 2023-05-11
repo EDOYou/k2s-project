@@ -2,11 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Registration</title>
+  <title>Hairdresser Registration</title>
 </head>
 <body>
-<h1>Registration</h1>
-<form th:action="@{/register}" th:object="${client}" method="post">
+<h1>Hairdresser Registration</h1>
+<form th:action="@{/hairdresser/register_hairdresser}" th:object="${hairdresser}" method="post">
   <label for="firstName">First name:</label>
   <input type="text" id="firstName" th:field="*{firstName}" required>
   <br>
@@ -22,9 +22,11 @@
   <label for="password">Password:</label>
   <input type="password" id="password" th:field="*{password}" required>
   <br>
+  <!-- Additional fields for Hairdresser -->
+  <label for="specialization">Specialization:</label>
+  <input type="text" id="specialization" th:field="*{specialization}" required>
+
   <input type="submit" value="Register">
-  <br>
-  <a th:href="@{/hairdresser/register_hairdresser}">Register as a Hairdresser</a>
 </form>
 </body>
 </html>

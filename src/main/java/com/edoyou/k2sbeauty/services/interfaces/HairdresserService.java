@@ -12,6 +12,8 @@ import org.springframework.data.jpa.repository.Query;
  */
 public interface HairdresserService extends UserService {
 
+  Hairdresser saveHairdresser(Hairdresser hairdresser);
+
   /**
    * Find hairdressers by their specialization.
    *
@@ -61,4 +63,10 @@ public interface HairdresserService extends UserService {
    *                                                                   found in the repository.
    */
   void deleteHairdresser(Long id);
+
+  void approveHairdresser(Long userId);
+
+  void saveTemporaryRegistration(Hairdresser hairdresser);
+
+  Hairdresser getTemporaryRegistration();
 }

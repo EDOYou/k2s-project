@@ -29,20 +29,6 @@ public class SecurityConfig {
     logger.info("Using PasswordEncoder in Constructor: " + passwordEncoder);
   }
 
-  //  @Bean
-//  public CustomAuthenticationFilter customAuthenticationFilter() throws Exception {
-//    CustomAuthenticationFilter filter = new CustomAuthenticationFilter();
-//    filter.setAuthenticationManager(authenticationManager());
-//    return filter;
-//  }
-//
-//  @Bean
-//  public AuthenticationManager authenticationManager() {
-//    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-//    provider.setUserDetailsService(customUserDetailsService);
-//    provider.setPasswordEncoder(passwordEncoder);
-//    return new ProviderManager(Collections.singletonList(provider));
-//  }
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
     System.out.println("configureGlobal called");
@@ -54,32 +40,40 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-        //.addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
         .authorizeHttpRequests(requests -> requests
-            .requestMatchers("/", "/home", "/register", "/guest", "/guest/**").permitAll()
+            .requestMatchers("/", "/home", "/register", "/guest", "/guest/**",
+                "/hairdresser/register_hairdresser").permitAll()
             .requestMatchers(HttpMethod.GET, "/", "/client/book", "/client/appointments")
             .permitAll()
             .requestMatchers(HttpMethod.POST, "/client/book").authenticated()
             .requestMatchers("/admin/**").hasRole("ADMIN")
+            .requestMatchers("/hairdresser/**").hasRole("HAIRDRESSER")
             .anyRequest().authenticated()
         )
         .formLogin(loginConfigurer -> loginConfigurer
-            .loginPage("/login") // Specify the login page URL
+            .loginPage("/login")
             .permitAll()
             .loginProcessingUrl("/perform_login") // Specify the URL to submit the login form
             .usernameParameter("email")
             .defaultSuccessUrl("/client/appointments",
-                true) // Specify the URL to redirect to after successful login
+                true)
             .failureUrl("/login?error=true")
             .successHandler((request, response, authentication) -> {
               logger.info("User '{" + authentication.getName() + "}' logged in successfully");
+              String redirectURL;
+
               if (authentication.getAuthorities().stream()
                   .anyMatch(
                       grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
-                response.sendRedirect("/admin/dashboard");
+                redirectURL = "/admin/dashboard";
+              } else if (authentication.getAuthorities().stream().anyMatch(
+                  grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_HAIRDRESSER"))) {
+                redirectURL = "/hairdresser/appointments";
               } else {
-                response.sendRedirect("/client/appointments");
+                redirectURL = "/client/appointments";
               }
+              response.sendRedirect(redirectURL);
+
             })
             .failureHandler((request, response, exception) -> {
               logger.warning("Login failure: {" + exception.getMessage() + "}");

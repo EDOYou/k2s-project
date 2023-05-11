@@ -4,16 +4,15 @@ import com.edoyou.k2sbeauty.entities.model.Appointment;
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Client;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
-import com.edoyou.k2sbeauty.entities.model.User;
 import com.edoyou.k2sbeauty.entities.payment.PaymentStatus;
 import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.repositories.RoleRepository;
-import com.edoyou.k2sbeauty.security.CustomUserDetailsService;
 import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import com.edoyou.k2sbeauty.services.interfaces.ClientService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
 import java.util.Set;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,44 +32,40 @@ import java.util.List;
 @Controller
 public class ClientController {
 
+  private static final Logger LOGGER = Logger.getLogger(ClientController.class.getName());
+
   private final ClientService clientService;
   private final HairdresserService hairdresserService;
   private final BeautyServiceService beautyServiceService;
   private final AppointmentService appointmentService;
   private final PasswordEncoder passwordEncoder;
   private final RoleRepository roleRepository;
-  private CustomUserDetailsService customUserDetailsService;
 
   @Autowired
-  public ClientController(ClientService clientService,
-      HairdresserService hairdresserService,
-      BeautyServiceService beautyServiceService,
-      AppointmentService appointmentService,
-      PasswordEncoder passwordEncoder,
-      RoleRepository roleRepository,
-      CustomUserDetailsService customUserDetailsService) {
+  public ClientController(ClientService clientService, HairdresserService hairdresserService,
+      BeautyServiceService beautyServiceService, AppointmentService appointmentService,
+      PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
     this.clientService = clientService;
     this.hairdresserService = hairdresserService;
     this.beautyServiceService = beautyServiceService;
     this.appointmentService = appointmentService;
     this.passwordEncoder = passwordEncoder;
     this.roleRepository = roleRepository;
-    this.customUserDetailsService = customUserDetailsService;
   }
 
   @PostMapping("/register")
   public String processRegistrationForm(@ModelAttribute("client") Client client) {
+    LOGGER.info("Registration form processing for a client.");
     client.setPassword(passwordEncoder.encode(client.getPassword()));
     client.setRoles(Set.of(roleRepository.findByName("ROLE_CLIENT").orElseThrow()));
     clientService.saveClient(client);
-
-    System.out.println("VNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN" + client);
 
     return "redirect:/client/appointments";
   }
 
   @GetMapping("/client/book")
   public String showBookingPage(Model model) {
+    LOGGER.info("Booking page is open.");
     List<Hairdresser> hairdressers = hairdresserService.findAllWithBeautyServices();
     List<String> services = beautyServiceService.findDistinctServiceNames();
     model.addAttribute("hairdressers", hairdressers);
@@ -81,8 +76,8 @@ public class ClientController {
   @PostMapping("/client/book")
   public String bookAppointment(Authentication authentication,
       @RequestParam("hairdresserId") Long hairdresserId,
-      @RequestParam("serviceName") String serviceName,
-      @RequestParam("dateTime") String dateTime) {
+      @RequestParam("serviceName") String serviceName, @RequestParam("dateTime") String dateTime) {
+    LOGGER.info("Booking an appointment.");
 
     if (dateTime.isEmpty()) {
       return "redirect:/client/book";
@@ -92,14 +87,12 @@ public class ClientController {
     LocalDateTime appointmentDateTime = LocalDateTime.parse(dateTime, formatter);
 
     Hairdresser hairdresser = hairdresserService.findById(hairdresserId);
-    BeautyService beautyService = beautyServiceService.findFirstByName(serviceName)
-        .orElseThrow(
-            () -> new ResourceNotFoundException("Service with name " + serviceName + " not found"));
+    BeautyService beautyService = beautyServiceService.findFirstByName(serviceName).orElseThrow(
+        () -> new ResourceNotFoundException("Service with name " + serviceName + " not found"));
     String userEmail = authentication.getName();
 
-    Client client = clientService.findClientByEmail(userEmail)
-        .orElseThrow(
-            () -> new UsernameNotFoundException("Client not found with email: " + userEmail));
+    Client client = clientService.findClientByEmail(userEmail).orElseThrow(
+        () -> new UsernameNotFoundException("Client not found with email: " + userEmail));
 
     Appointment appointment = new Appointment();
     appointment.setClient(client);
@@ -115,19 +108,15 @@ public class ClientController {
 
   @GetMapping("/client/appointments")
   public String viewAppointments(Authentication authentication, Model model) {
-    System.out.println("Inside /client/appointments controller");
+    LOGGER.info("Client viewing appointments.");
     if (authentication == null || authentication.getName() == null) {
       return "redirect:/login";
     }
 
     UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    System.out.println("BEFORE " + userDetails.getUsername());
     Client client = clientService.findClientByEmail(userDetails.getUsername()).orElseThrow(
         () -> new UsernameNotFoundException(
             "Client not found with email: " + userDetails.getUsername()));
-
-    System.out.println(authentication.getName());
-    System.out.println("MMMMMMMMMMMMMMMMMEEEEEEEEEEEEEEEEEEEEEEEE");
 
     List<Appointment> appointments = appointmentService.findByClient(client);
     model.addAttribute("appointments", appointments);
@@ -136,6 +125,7 @@ public class ClientController {
 
   @GetMapping("/register")
   public String showRegistrationForm(Model model) {
+    LOGGER.info("Registration form processing for a client.");
     model.addAttribute("client", new Client());
     return "register";
   }
