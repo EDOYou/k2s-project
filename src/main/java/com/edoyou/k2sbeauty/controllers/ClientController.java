@@ -8,6 +8,7 @@ import com.edoyou.k2sbeauty.entities.model.User;
 import com.edoyou.k2sbeauty.entities.payment.PaymentStatus;
 import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.repositories.RoleRepository;
+import com.edoyou.k2sbeauty.security.CustomUserDetailsService;
 import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import com.edoyou.k2sbeauty.services.interfaces.ClientService;
@@ -15,6 +16,7 @@ import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -37,6 +39,7 @@ public class ClientController {
   private final AppointmentService appointmentService;
   private final PasswordEncoder passwordEncoder;
   private final RoleRepository roleRepository;
+  private CustomUserDetailsService customUserDetailsService;
 
   @Autowired
   public ClientController(ClientService clientService,
@@ -44,13 +47,15 @@ public class ClientController {
       BeautyServiceService beautyServiceService,
       AppointmentService appointmentService,
       PasswordEncoder passwordEncoder,
-      RoleRepository roleRepository) {
+      RoleRepository roleRepository,
+      CustomUserDetailsService customUserDetailsService) {
     this.clientService = clientService;
     this.hairdresserService = hairdresserService;
     this.beautyServiceService = beautyServiceService;
     this.appointmentService = appointmentService;
     this.passwordEncoder = passwordEncoder;
     this.roleRepository = roleRepository;
+    this.customUserDetailsService = customUserDetailsService;
   }
 
   @PostMapping("/register")
@@ -90,12 +95,11 @@ public class ClientController {
     BeautyService beautyService = beautyServiceService.findFirstByName(serviceName)
         .orElseThrow(
             () -> new ResourceNotFoundException("Service with name " + serviceName + " not found"));
-    User user = clientService.findUserByEmail(authentication.getName())
-        .orElseThrow(() -> new UsernameNotFoundException(
-            "User not found with email: " + authentication.getName()));
-    Client client = (Client) clientService.findUserById(user.getId())
+    String userEmail = authentication.getName();
+
+    Client client = clientService.findClientByEmail(userEmail)
         .orElseThrow(
-            () -> new UsernameNotFoundException("Client not found with id: " + user.getId()));
+            () -> new UsernameNotFoundException("Client not found with email: " + userEmail));
 
     Appointment appointment = new Appointment();
     appointment.setClient(client);
@@ -115,7 +119,16 @@ public class ClientController {
     if (authentication == null || authentication.getName() == null) {
       return "redirect:/login";
     }
-    Client client = (Client) clientService.loadUserByUsername(authentication.getName());
+
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    System.out.println("BEFORE " + userDetails.getUsername());
+    Client client = clientService.findClientByEmail(userDetails.getUsername()).orElseThrow(
+        () -> new UsernameNotFoundException(
+            "Client not found with email: " + userDetails.getUsername()));
+
+    System.out.println(authentication.getName());
+    System.out.println("MMMMMMMMMMMMMMMMMEEEEEEEEEEEEEEEEEEEEEEEE");
+
     List<Appointment> appointments = appointmentService.findByClient(client);
     model.addAttribute("appointments", appointments);
     return "client/appointments";

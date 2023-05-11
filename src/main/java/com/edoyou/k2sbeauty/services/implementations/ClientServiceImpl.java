@@ -6,7 +6,9 @@ import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.repositories.ClientRepository;
 import com.edoyou.k2sbeauty.repositories.RoleRepository;
 import com.edoyou.k2sbeauty.repositories.UserRepository;
+import com.edoyou.k2sbeauty.security.CustomUserDetailsService;
 import com.edoyou.k2sbeauty.services.interfaces.ClientService;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,17 +26,15 @@ import java.util.List;
  * @see Client
  */
 @Service
-public class ClientServiceImpl extends UserServiceImpl implements ClientService {
+public class ClientServiceImpl implements ClientService {
 
+  private final CustomUserDetailsService customUserDetailsService;
   private final ClientRepository clientRepository;
 
   @Autowired
-  public ClientServiceImpl(UserRepository userRepository,
-      ClientRepository clientRepository,
-      RoleRepository roleRepository,
-      PasswordEncoder passwordEncoder) {
-    super(userRepository, roleRepository, passwordEncoder);
+  public ClientServiceImpl(ClientRepository clientRepository, CustomUserDetailsService customUserDetailsService) {
     this.clientRepository = clientRepository;
+    this.customUserDetailsService = customUserDetailsService;
   }
 
   public void saveClient(Client client) {
@@ -52,11 +52,24 @@ public class ClientServiceImpl extends UserServiceImpl implements ClientService 
   }
 
   @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    Client client = clientRepository.findByEmail(username);
-    if (client == null) {
-      throw new UsernameNotFoundException("Client with email " + username + " not found");
-    }
-    return client;
+  public Optional<Client> findClientById(Long id) {
+    return clientRepository.findById(id);
   }
+
+  @Override
+  public Optional<Client> findClientByEmail(String email) {
+    System.out.println("Inside findClientByEmail with email: " + email);
+    Client client = clientRepository.findByEmail(email);
+    System.out.println("Client found: " + client);
+    return Optional.ofNullable(clientRepository.findByEmail(email));
+  }
+
+//  @Override
+//  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//    Client client = clientRepository.findByEmail(username);
+//    if (client == null) {
+//      throw new UsernameNotFoundException("Client with email " + username + " not found");
+//    }
+//    return client;
+//  }
 }

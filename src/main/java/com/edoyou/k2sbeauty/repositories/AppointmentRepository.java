@@ -28,6 +28,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
   List<Appointment> findByHairdresserIdAndAppointmentTimeBetween(Long hairdresserId,
       LocalDateTime start, LocalDateTime end);
 
-  @Query("SELECT a FROM Appointment a WHERE a.paymentStatus IS NULL OR a.paymentStatus = com.edoyou.k2sbeauty.entities.payment.PaymentStatus.PENDING")
+  @Query("SELECT a FROM Appointment a WHERE a.paymentStatus = com.edoyou.k2sbeauty.entities.payment.PaymentStatus.PENDING")
   List<AppointmentWithoutPaymentDTO> findAllWithoutPaymentDetails();
 }

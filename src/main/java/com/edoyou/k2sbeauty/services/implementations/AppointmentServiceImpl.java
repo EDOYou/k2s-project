@@ -8,8 +8,10 @@ import com.edoyou.k2sbeauty.entities.payment.PaymentStatus;
 import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.repositories.AppointmentRepository;
 import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,6 +31,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
 
+  private static final Logger LOGGER = Logger.getLogger(AppointmentServiceImpl.class.getName());
+
   private final AppointmentRepository appointmentRepository;
 
   @Autowired
@@ -47,6 +51,7 @@ public class AppointmentServiceImpl implements AppointmentService {
    */
   @Override
   public Appointment saveAppointment(Appointment appointment) {
+    LOGGER.info("Saving appointment: " + appointment);
     LocalDateTime now = LocalDateTime.now();
 
     if (appointment.getAppointmentTime().isBefore(now)) {
@@ -68,7 +73,6 @@ public class AppointmentServiceImpl implements AppointmentService {
             "You already have an appointment scheduled at the same time.");
       }
     }
-
     return appointmentRepository.save(appointment);
   }
 
@@ -183,7 +187,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 
   @Override
   public List<Appointment> findAllAppointments() {
-    return appointmentRepository.findAll();
+    try {
+      System.out.println("JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ" + appointmentRepository.findAll().size());
+      List<Appointment> appointments = appointmentRepository.findAll();
+      LOGGER.info("Fetched appointments: " + appointments);
+      return appointments;
+    } catch (Exception e) {
+      LOGGER.severe("Error fetching appointments: " + e.getMessage());
+      return Collections.emptyList();
+    }
   }
 
   @Override
@@ -197,10 +209,13 @@ public class AppointmentServiceImpl implements AppointmentService {
         .orElseThrow(
             () -> new IllegalStateException("Appointment with id " + id + " does not exist."));
 
+    LOGGER.info("Updating appointment: " + existingAppointment + " with new details: " + appointmentDetails);
+
     existingAppointment.setClient(appointmentDetails.getClient());
     existingAppointment.setHairdresser(appointmentDetails.getHairdresser());
     existingAppointment.setBeautyService(appointmentDetails.getBeautyService());
     existingAppointment.setAppointmentTime(appointmentDetails.getAppointmentTime());
+
     return appointmentRepository.save(existingAppointment);
   }
 
@@ -209,6 +224,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     Appointment appointment = appointmentRepository.findById(appointmentId)
         .orElseThrow(() -> new ResourceNotFoundException("Appointment not found for this id :: " + appointmentId));
     appointment.setPaymentStatus(status);
+
+    LOGGER.info("Updating payment status for appointment: " + appointment + " to: " + status);
+
     appointmentRepository.save(appointment);
   }
 

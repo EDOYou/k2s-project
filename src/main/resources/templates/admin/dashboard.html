@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+</head>
+<body>
+<h1>Admin Dashboard</h1>
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Client Name</th>
+    <th>Appointment Time</th>
+    <th>Payment Status</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="appointment : ${appointments}">
+    <td th:text="${appointment.id}"></td>
+    <td th:text="${appointment.client.lastName}"></td>
+    <td th:text="${appointment.appointmentTime}"></td>
+    <td th:text="${appointment.paymentStatus}"></td>
+    <td>
+      <form th:action="@{/admin/changeTimeSlot/{appointmentId}(appointmentId=${appointment.id})}"
+            method="post">
+        <label>
+          <input type="text" name="newTimeSlot" placeholder="New time slot">
+        </label>
+        <button type="submit">Change Time Slot</button>
+      </form>
+      <form th:action="@{/admin/acceptPayment/{appointmentId}(appointmentId=${appointment.id})}"
+            method="post">
+        <button type="submit">Accept Payment</button>
+      </form>
+      <form th:action="@{/admin/cancelAppointment/{appointmentId}(appointmentId=${appointment.id})}"
+            method="post">
+        <button type="submit">Cancel Appointment</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>

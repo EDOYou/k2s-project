@@ -5,9 +5,10 @@ import com.edoyou.k2sbeauty.entities.model.Client;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface ClientService extends UserService, UserDetailsService {
+public interface ClientService {
 
   /**
    * Find a client by their appointment.
@@ -24,7 +25,11 @@ public interface ClientService extends UserService, UserDetailsService {
    * @return A list of clients who have appointments with the given hairdresser.
    */
   List<Client> findByAppointmentsHairdresser(Hairdresser hairdresser);
-  
+
+  Optional<Client> findClientById(Long id);
+
+  Optional<Client> findClientByEmail(String email);
+
   void saveClient(Client client);
 }
 

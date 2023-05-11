@@ -21,7 +21,8 @@ public class SecurityConfig {
   private static final Logger logger = Logger.getLogger(SecurityConfig.class.getName());
 
   @Autowired
-  public SecurityConfig(CustomUserDetailsService customUserDetailsService, PasswordEncoder passwordEncoder) {
+  public SecurityConfig(CustomUserDetailsService customUserDetailsService,
+      PasswordEncoder passwordEncoder) {
     this.customUserDetailsService = customUserDetailsService;
     this.passwordEncoder = passwordEncoder;
     logger.info("SecurityConfig constructor called");
@@ -56,8 +57,10 @@ public class SecurityConfig {
         //.addFilterBefore(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
         .authorizeHttpRequests(requests -> requests
             .requestMatchers("/", "/home", "/register", "/guest", "/guest/**").permitAll()
-            .requestMatchers(HttpMethod.GET, "/", "/client/book", "/client/appointments").permitAll()
+            .requestMatchers(HttpMethod.GET, "/", "/client/book", "/client/appointments")
+            .permitAll()
             .requestMatchers(HttpMethod.POST, "/client/book").authenticated()
+            .requestMatchers("/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated()
         )
         .formLogin(loginConfigurer -> loginConfigurer
@@ -70,7 +73,13 @@ public class SecurityConfig {
             .failureUrl("/login?error=true")
             .successHandler((request, response, authentication) -> {
               logger.info("User '{" + authentication.getName() + "}' logged in successfully");
-              response.sendRedirect("/client/appointments");
+              if (authentication.getAuthorities().stream()
+                  .anyMatch(
+                      grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
+                response.sendRedirect("/admin/dashboard");
+              } else {
+                response.sendRedirect("/client/appointments");
+              }
             })
             .failureHandler((request, response, exception) -> {
               logger.warning("Login failure: {" + exception.getMessage() + "}");
