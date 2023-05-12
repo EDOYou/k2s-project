@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Hairdresser Appointments</title>
+</head>
+<body>
+<h1>Hairdresser Appointments</h1>
+
+<table>
+  <thead>
+  <tr>
+    <th>Date</th>
+    <th>Client</th>
+    <th>Service</th>
+  </tr>
+  </thead>
+  <tbody>
+  <!-- Loop through each appointment in the list -->
+  <tr th:each="appointment : ${appointments}">
+    <td th:text="${appointment.appointmentTime}"></td>
+    <td th:text="${appointment.client.lastName + ' ' + appointment.client.firstName}"></td>
+    <td th:text="${appointment.beautyService.name}"></td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>

@@ -18,15 +18,15 @@ public class SecurityConfig {
 
   private final CustomUserDetailsService customUserDetailsService;
   private final PasswordEncoder passwordEncoder;
-  private static final Logger logger = Logger.getLogger(SecurityConfig.class.getName());
+  private static final Logger LOGGER = Logger.getLogger(SecurityConfig.class.getName());
 
   @Autowired
   public SecurityConfig(CustomUserDetailsService customUserDetailsService,
       PasswordEncoder passwordEncoder) {
     this.customUserDetailsService = customUserDetailsService;
     this.passwordEncoder = passwordEncoder;
-    logger.info("SecurityConfig constructor called");
-    logger.info("Using PasswordEncoder in Constructor: " + passwordEncoder);
+    LOGGER.info("SecurityConfig constructor called");
+    LOGGER.info("Using PasswordEncoder in Constructor: " + passwordEncoder);
   }
 
   @Autowired
@@ -59,7 +59,7 @@ public class SecurityConfig {
                 true)
             .failureUrl("/login?error=true")
             .successHandler((request, response, authentication) -> {
-              logger.info("User '{" + authentication.getName() + "}' logged in successfully");
+              LOGGER.info("User '{" + authentication.getName() + "}' logged in successfully");
               String redirectURL;
 
               if (authentication.getAuthorities().stream()
@@ -72,11 +72,12 @@ public class SecurityConfig {
               } else {
                 redirectURL = "/client/appointments";
               }
+              LOGGER.info("URL in success: " + redirectURL);
               response.sendRedirect(redirectURL);
 
             })
             .failureHandler((request, response, exception) -> {
-              logger.warning("Login failure: {" + exception.getMessage() + "}");
+              LOGGER.warning("Login failure: {" + exception.getMessage() + "}");
               response.sendRedirect("/login");
             })
         )
