@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hairdressers</title>
+</head>
+<body>
+<table>
+  <tr>
+    <th>Hairdresser Name</th>
+    <th>Services</th>
+  </tr>
+  <tr th:each="hairdresser : ${hairdressers}">
+    <td th:text="${hairdresser.name}"></td>
+    <td th:each="service : ${hairdresser.services}" th:text="${service.serviceName}"></td>
+  </tr>
+</table>
+
+</body>
+</html>

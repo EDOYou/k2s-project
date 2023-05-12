@@ -20,7 +20,15 @@ public class Hairdresser extends User {
   @Column(name = "is_approved", nullable = false)
   private boolean isApproved = false;
 
-  @OneToMany(mappedBy = "hairdresser")
+  // Using this to carry data from the form to the controller
+  @Transient
+  private List<Long> selectedServiceIds;
+
+  @ManyToMany
+  @JoinTable(
+      name = "hairdresser_service",
+      joinColumns = @JoinColumn(name = "hairdresser_id"),
+      inverseJoinColumns = @JoinColumn(name = "service_id"))
   private Set<BeautyService> beautyServices = new HashSet<>();
 
   @OneToMany(mappedBy = "hairdresser")
@@ -52,12 +60,16 @@ public class Hairdresser extends User {
     this.beautyServices = beautyServices;
   }
 
-  public void setRating(Double rating) {
+  public void setRating(double rating) {
     this.rating = rating;
   }
 
   public void setApproved(boolean approved) {
     isApproved = approved;
+  }
+
+  public void setSelectedServiceIds(List<Long> selectedServiceIds) {
+    this.selectedServiceIds = selectedServiceIds;
   }
 
   public String getSpecialization() {
@@ -74,5 +86,9 @@ public class Hairdresser extends User {
 
   public double getRating() {
     return rating;
+  }
+
+  public List<Long> getSelectedServiceIds() {
+    return selectedServiceIds;
   }
 }

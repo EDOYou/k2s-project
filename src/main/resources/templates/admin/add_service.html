@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Services</title>
+</head>
+<body>
+<form action="#" th:action="@{/admin/add_service}" th:object="${service}" method="post">
+  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+  <label for="name">Service Name:</label><br>
+  <input type="text" id="name" th:field="*{name}"><br>
+  <label for="description">Description:</label><br>
+  <input type="text" id="description" th:field="*{description}"><br>
+  <label for="price">Price:</label><br>
+  <input type="number" id="price" th:field="*{price}"><br>
+  <input type="submit" value="Submit">
+</form>
+</body>
+</html>

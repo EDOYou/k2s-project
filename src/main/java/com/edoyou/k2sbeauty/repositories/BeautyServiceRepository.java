@@ -18,13 +18,13 @@ import java.util.List;
 @Repository
 public interface BeautyServiceRepository extends JpaRepository<BeautyService, Long> {
 
-  /**
-   * Finds beauty services whose name contains the specified string (case-insensitive).
-   *
-   * @param name the name to search for in beauty service names
-   * @return a list of {@link BeautyService} instances whose names contain the specified string
-   */
-  List<BeautyService> findByNameContainingIgnoreCase(String name);
+//  /**
+//   * Finds beauty services whose name contains the specified string (case-insensitive).
+//   *
+//   * @param name the name to search for in beauty service names
+//   * @return a list of {@link BeautyService} instances whose names contain the specified string
+//   */
+//  List<BeautyService> findByNameContainingIgnoreCase(String name);
 
 
   /**
@@ -43,7 +43,7 @@ public interface BeautyServiceRepository extends JpaRepository<BeautyService, Lo
    *
    * @return a list of {@link BeautyService} instances with their associated hairdressers
    */
-  @Query("SELECT DISTINCT s FROM BeautyService s JOIN FETCH s.hairdresser where s.name IS NOT NULL")
+  @Query("SELECT DISTINCT s FROM BeautyService s JOIN FETCH s.hairdressers where s.name IS NOT NULL")
   List<BeautyService> findAllWithHairdressers();
 
   @Query("SELECT DISTINCT b.name FROM BeautyService b")
@@ -52,4 +52,6 @@ public interface BeautyServiceRepository extends JpaRepository<BeautyService, Lo
   Optional<BeautyService> findByName(String name);
 
   Optional<BeautyService> findFirstByName(String name);
+
+  List<BeautyService> findAllByIdIn(List<Long> ids);
 }

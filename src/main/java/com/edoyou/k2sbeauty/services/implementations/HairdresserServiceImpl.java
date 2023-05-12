@@ -80,6 +80,11 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
     return hairdresserRepository.findAll(sort);
   }
 
+  @Override
+  public List<Hairdresser> findAllHairdressers() {
+    return hairdresserRepository.findAll();
+  }
+
   /**
    * Finds all hairdressers filtered by service ID and sorted by the given criteria.
    *

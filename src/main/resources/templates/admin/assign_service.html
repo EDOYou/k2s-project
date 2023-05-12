@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Assign Service</title>
+</head>
+<body>
+<form action="/admin/assign_service" method="post">
+  <label for="service">Service:</label><br>
+  <select id="service" name="service">
+    <option th:each="service : ${services}" th:value="${service.id}" th:text="${service.serviceName}"></option>
+  </select><br>
+  <label for="hairdresser">Hairdresser:</label><br>
+  <select id="hairdresser" name="hairdresser">
+    <option th:each="hairdresser : ${hairdressers}" th:value="${hairdresser.id}" th:text="${hairdresser.name}"></option>
+  </select><br>
+  <input type="submit" value="Assign">
+</form>
+
+</body>
+</html>

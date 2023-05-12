@@ -4,6 +4,8 @@ import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.repositories.BeautyServiceRepository;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
+import java.util.ArrayList;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +23,18 @@ import java.util.Optional;
 @Service
 public class BeautyServiceServiceImpl implements BeautyServiceService {
 
+  private static final Logger LOGGER = Logger.getLogger(BeautyServiceServiceImpl.class.getName());
+
   private final BeautyServiceRepository beautyServiceRepository;
 
   @Autowired
   public BeautyServiceServiceImpl(BeautyServiceRepository beautyServiceRepository) {
     this.beautyServiceRepository = beautyServiceRepository;
+  }
+
+  @Override
+  public void saveService(BeautyService service) {
+    beautyServiceRepository.save(service);
   }
 
   /**
@@ -110,7 +119,7 @@ public class BeautyServiceServiceImpl implements BeautyServiceService {
    */
   @Override
   public List<BeautyService> findAll() {
-    return beautyServiceRepository.findAllWithHairdressers();
+    return beautyServiceRepository.findAll();
   }
 
   /**
@@ -149,5 +158,21 @@ public class BeautyServiceServiceImpl implements BeautyServiceService {
   @Override
   public Optional<BeautyService> findFirstByName(String name) {
     return beautyServiceRepository.findFirstByName(name);
+  }
+
+  @Override
+  public List<BeautyService> findAllByIdIn(List<Long> ids) {
+    if (ids == null) {
+      LOGGER.info("No IDs provided. Returning an empty list.");
+      return new ArrayList<>();
+    }
+
+    try {
+      LOGGER.info("Fetching beauty services by their IDs.");
+      return beautyServiceRepository.findAllById(ids);
+    } catch (Exception e) {
+      LOGGER.severe("An error occurred while fetching beauty services by their IDs." + e);
+      throw new RuntimeException(e);
+    }
   }
 }

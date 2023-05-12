@@ -1,6 +1,7 @@
 package com.edoyou.k2sbeauty.controllers;
 
 import com.edoyou.k2sbeauty.entities.model.Appointment;
+import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.entities.model.Role;
 import com.edoyou.k2sbeauty.entities.payment.PaymentStatus;
@@ -8,10 +9,12 @@ import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.exceptions.RoleNotFoundException;
 import com.edoyou.k2sbeauty.services.implementations.NotificationService;
 import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
+import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
 import com.edoyou.k2sbeauty.services.interfaces.RoleService;
 import jakarta.transaction.Transactional;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,14 +31,17 @@ public class AdminController {
   private static final Logger LOGGER = Logger.getLogger(AdminController.class.getName());
   private final AppointmentService appointmentService;
   private final HairdresserService hairdresserService;
+  private final BeautyServiceService beautyServiceService;
   private final RoleService roleService;
   private final NotificationService notificationService;
 
   @Autowired
   public AdminController(AppointmentService appointmentService,
-      HairdresserService hairdresserService, RoleService roleService, NotificationService notificationService) {
+      HairdresserService hairdresserService, BeautyServiceService beautyServiceService,
+      RoleService roleService, NotificationService notificationService) {
     this.appointmentService = appointmentService;
     this.hairdresserService = hairdresserService;
+    this.beautyServiceService = beautyServiceService;
     this.roleService = roleService;
     this.notificationService = notificationService;
   }
@@ -102,7 +108,8 @@ public class AdminController {
     hairdresser.setApproved(true);
 
     hairdresserService.saveHairdresser(hairdresser);
-    String message = "Dear " + hairdresser.getFirstName() + ", your application has been approved. Welcome to our team!";
+    String message = "Dear " + hairdresser.getFirstName()
+        + ", your application has been approved. Welcome to our team!";
     notificationService.sendNotification(hairdresser.getEmail(), "Application Approved", message);
 
     return "redirect:/admin/dashboard";
@@ -116,13 +123,11 @@ public class AdminController {
     if (hairdresser == null) {
       throw new ResourceNotFoundException("Hairdresser not found for this id :: " + hairdresserId);
     }
-    // Send notification to the hairdresser about the rejection
-    String message = "Dear " + hairdresser.getFirstName() + ", your application has been reviewed and unfortunately, you were not accepted at this time. Please consider applying again in the future.";
+
+    String message = "Dear " + hairdresser.getFirstName()
+        + ", your application has been reviewed and unfortunately, you were not accepted at this time. Please consider applying again in the future.";
     notificationService.sendNotification(hairdresser.getEmail(), "Application Rejected", message);
-
-    // Delete the hairdresser's application
     hairdresserService.deleteHairdresser(hairdresserId);
-
     return "redirect:/admin/dashboard";
   }
 
@@ -135,4 +140,44 @@ public class AdminController {
 
     return "admin/hairdresserRegistrationReview";
   }
+
+  @GetMapping("/add_service")
+  public String showAddServiceForm(Model model) {
+    model.addAttribute("service", new BeautyService());
+    return "admin/add_service";
+  }
+
+  @PostMapping("/add_service")
+  public String handleAddService(@ModelAttribute("service") BeautyService service) {
+    beautyServiceService.saveService(service);
+    return "redirect:/admin/services";
+  }
+
+  @GetMapping("/services")
+  public String showServices(Model model) {
+    List<BeautyService> services = beautyServiceService.findAll();
+    LOGGER.info("Number of services in the database: " + services.size());
+    model.addAttribute("services", services);
+    return "admin/services";
+  }
+
+  @GetMapping("/assign_service")
+  public String showAssignServiceForm(Model model) {
+    List<BeautyService> services = beautyServiceService.findAll();
+    List<Hairdresser> hairdressers = hairdresserService.findAllHairdressers();
+    model.addAttribute("services", services);
+    model.addAttribute("hairdressers", hairdressers);
+    model.addAttribute("hairdresser", new Hairdresser());
+    return "/admin/assign_service";
+  }
+
+  @PostMapping("/assign_service")
+  public String handleAssignService(@ModelAttribute("hairdresser") Hairdresser hairdresser,
+      @RequestParam("serviceIds") List<Long> serviceIds) {
+    List<BeautyService> services = beautyServiceService.findAllByIdIn(serviceIds);
+    hairdresser.setBeautyServices(new HashSet<>(services));
+    hairdresserService.saveHairdresser(hairdresser);
+    return "redirect:/admin/hairdressers";
+  }
+
 }

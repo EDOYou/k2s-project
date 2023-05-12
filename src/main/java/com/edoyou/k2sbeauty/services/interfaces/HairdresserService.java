@@ -30,6 +30,9 @@ public interface HairdresserService extends UserService {
    */
   List<Hairdresser> findAllHairdressers(String sortBy);
 
+  List<Hairdresser> findAllHairdressers();
+
+
   /**
    * Finds all hairdressers based on the given sorting criteria and service ID.
    *

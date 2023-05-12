@@ -6,6 +6,8 @@ import java.util.Optional;
 
 public interface BeautyServiceService {
 
+  void saveService(BeautyService service);
+
   /**
    * Creates a new beauty service.
    *
@@ -62,4 +64,6 @@ public interface BeautyServiceService {
   Optional<BeautyService> findByName(String serviceName);
 
   Optional<BeautyService> findFirstByName(String name);
+
+  List<BeautyService> findAllByIdIn(List<Long> ids);
 }

@@ -1,6 +1,8 @@
 package com.edoyou.k2sbeauty.entities.model;
 
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "service")
@@ -19,9 +21,8 @@ public class BeautyService {
   @Column(nullable = false)
   private double price;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "hairdresser_id")
-  private Hairdresser hairdresser;
+  @ManyToMany(mappedBy = "beautyServices")
+  private Set<Hairdresser> hairdressers = new HashSet<>();
 
   public void setId(Long id) {
     this.id = id;
@@ -39,8 +40,8 @@ public class BeautyService {
     this.price = price;
   }
 
-  public void setHairdresser(Hairdresser hairdresser) {
-    this.hairdresser = hairdresser;
+  public void setHairdressers(Set<Hairdresser> hairdressers) {
+    this.hairdressers = hairdressers;
   }
 
   public Long getId() {
@@ -59,7 +60,7 @@ public class BeautyService {
     return price;
   }
 
-  public Hairdresser getHairdresser() {
-    return hairdresser;
+  public Set<Hairdresser> getHairdressers() {
+    return hairdressers;
   }
 }

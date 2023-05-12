@@ -22,9 +22,16 @@
   <label for="password">Password:</label>
   <input type="password" id="password" th:field="*{password}" required>
   <br>
-  <!-- Additional fields for Hairdresser -->
   <label for="specialization">Specialization:</label>
   <input type="text" id="specialization" th:field="*{specialization}" required>
+
+  <h3>Select Services</h3>
+  <div th:each="service : ${services}">
+    <label>
+      <input type="checkbox" th:value="${service.id}" th:field="*{selectedServiceIds}" />
+    </label>
+    <label th:for="${#ids.next('service')}" th:text="${service.name}">Service Name</label>
+  </div>
 
   <input type="submit" value="Register">
 </form>
