@@ -71,7 +71,7 @@ public class GuestController {
     List<Hairdresser> hairdressers = hairdresserService.findAllHairdressers(sortBy);
 
     List<BeautyService> filteredServices = services.stream()
-        .filter(service -> service.getHairdresser() != null)
+        .filter(service -> service.getHairdresser() != null && service.getHairdresser().isApproved())
         .filter(service -> hairdresserId == null || service.getHairdresser().getId()
             .equals(hairdresserId))
         .filter(service -> serviceId == null || service.getId().equals(serviceId))
@@ -120,9 +120,8 @@ public class GuestController {
     LOGGER.info("Processing registration form for hairdresser.");
     hairdresser.setPassword(passwordEncoder.encode(hairdresser.getPassword()));
     hairdresser.setRoles(Set.of(roleService.getRoleByName("ROLE_HAIRDRESSER").orElseThrow()));
-
-    // Save the hairdresser registration details in a temporary storage or send it to the admin for review
-    hairdresserService.saveTemporaryRegistration(hairdresser);
+    LOGGER.info("Hairdresser " + hairdresser);
+    hairdresserService.saveHairdresser(hairdresser);
 
     return "redirect:home";
   }

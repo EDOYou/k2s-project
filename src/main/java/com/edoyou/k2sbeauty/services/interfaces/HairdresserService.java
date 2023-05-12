@@ -69,4 +69,6 @@ public interface HairdresserService extends UserService {
   void saveTemporaryRegistration(Hairdresser hairdresser);
 
   Hairdresser getTemporaryRegistration();
+
+  List<Hairdresser> findAllHairdressersByApprovalStatus(boolean isApproved);
 }

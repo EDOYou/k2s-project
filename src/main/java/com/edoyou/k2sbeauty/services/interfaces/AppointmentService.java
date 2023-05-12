@@ -26,11 +26,11 @@ public interface AppointmentService {
   Appointment saveAppointment(Appointment appointment);
 
   /**
-   * Delete an appointment from the database by ID.
+   * Delete an appointment from the database by ID. 24-hour check is skipped for ROLE-ADMIN.
    *
    * @param id ID of the appointment to be deleted.
    */
-  void deleteAppointment(Long id);
+  void deleteAppointment(Long id, String userRole);
 
   /**
    * Find all appointments for a specific client.

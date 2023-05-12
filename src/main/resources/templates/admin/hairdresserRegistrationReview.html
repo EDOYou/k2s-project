@@ -6,26 +6,43 @@
 </head>
 <body>
 <h1>Hairdresser Registration Review</h1>
-<table>
-  <thead>
-  <h2>Personal Information</h2>
-  <tr>
-    <th>ID</th>
-    <th>First Name:</th>
-    <th>Last Name:</th>
-    <th>Email:</th>
-    <th>Phone:</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td th:text="${hairdresser.id}"></td>
-    <td th:text="${hairdresser.firstName}"></td>
-    <td th:text="${hairdresser.lastName}"></td>
-    <td th:text="${hairdresser.email}"></td>
-    <td th:text="${hairdresser.phone}"></td>
-  </tr>
-  </tbody>
-</table>
+
+<div th:if="${!#lists.isEmpty(hairdressers)}">
+  <table>
+    <thead>
+    <h2>Personal Information</h2>
+    <tr>
+      <th>ID</th>
+      <th>First Name:</th>
+      <th>Last Name:</th>
+      <th>Email:</th>
+      <th>Phone:</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="hairdresser : ${hairdressers}">
+      <td th:text="${hairdresser.id}"></td>
+      <td th:text="${hairdresser.firstName}"></td>
+      <td th:text="${hairdresser.lastName}"></td>
+      <td th:text="${hairdresser.email}"></td>
+      <td th:text="${hairdresser.phone}"></td>
+      <td>
+        <form action="#"
+              th:action="@{/admin/approveHairdresser/{userId}(userId=${hairdresser.id})}"
+              method="post">
+          <button type="submit">Approve</button>
+        </form>
+        <form th:action="@{/admin/rejectHairdresser/{userId}(userId=${hairdresser.id})}"
+              method="post">
+          <button type="submit">Reject</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<div th:if="${#lists.isEmpty(hairdressers)}">
+  <h2>No pending applications at the moment.</h2>
+</div>
 </body>
 </html>

@@ -17,6 +17,9 @@ public class Hairdresser extends User {
   @Column(nullable = false)
   private double rating;
 
+  @Column(name = "is_approved", nullable = false)
+  private boolean isApproved = false;
+
   @OneToMany(mappedBy = "hairdresser")
   private Set<BeautyService> beautyServices = new HashSet<>();
 
@@ -33,6 +36,10 @@ public class Hairdresser extends User {
     return beautyServices.stream().map(BeautyService::getName).collect(Collectors.toList());
   }
 
+  public boolean isApproved() {
+    return isApproved;
+  }
+
   public void setSpecialization(String specialization) {
     this.specialization = specialization;
   }
@@ -47,6 +54,10 @@ public class Hairdresser extends User {
 
   public void setRating(Double rating) {
     this.rating = rating;
+  }
+
+  public void setApproved(boolean approved) {
+    isApproved = approved;
   }
 
   public String getSpecialization() {

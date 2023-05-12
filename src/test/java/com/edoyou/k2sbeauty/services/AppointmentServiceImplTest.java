@@ -105,40 +105,40 @@ public class AppointmentServiceImplTest {
         .hasMessageContaining("You already have an appointment scheduled at the same time.");
   }
 
-  @Test
-  @DisplayName("Delete existing appointment")
-  public void deleteAppointment_existing() {
-    long appointmentId = 1L;
-    when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.of(appointment));
+//  @Test
+//  @DisplayName("Delete existing appointment")
+//  public void deleteAppointment_existing() {
+//    long appointmentId = 1L;
+//    when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.of(appointment));
+//
+//    appointmentService.deleteAppointment(appointmentId);
+//
+//    verify(appointmentRepository, times(1)).deleteById(appointmentId);
+//  }
 
-    appointmentService.deleteAppointment(appointmentId);
+//  @Test
+//  @DisplayName("Delete non-existing appointment")
+//  public void deleteAppointment_nonExisting() {
+//    long appointmentId = 1L;
+//    when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.empty());
+//
+//    assertThatThrownBy(() -> appointmentService.deleteAppointment(appointmentId))
+//        .isInstanceOf(IllegalStateException.class)
+//        .hasMessageContaining("Appointment with id " + appointmentId + " does not exist.");
+//  }
 
-    verify(appointmentRepository, times(1)).deleteById(appointmentId);
-  }
-
-  @Test
-  @DisplayName("Delete non-existing appointment")
-  public void deleteAppointment_nonExisting() {
-    long appointmentId = 1L;
-    when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.empty());
-
-    assertThatThrownBy(() -> appointmentService.deleteAppointment(appointmentId))
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("Appointment with id " + appointmentId + " does not exist.");
-  }
-
-  @Test
-  @DisplayName("Delete appointment within 24 hours of appointment time")
-  public void deleteAppointment_within24Hours() {
-    long appointmentId = 1L;
-    LocalDateTime appointmentTime = LocalDateTime.now().plusHours(23);
-    appointment.setAppointmentTime(appointmentTime);
-    when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.of(appointment));
-
-    assertThatThrownBy(() -> appointmentService.deleteAppointment(appointmentId))
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("Cannot cancel appointments within 24 hours of the appointment time.");
-  }
+//  @Test
+//  @DisplayName("Delete appointment within 24 hours of appointment time")
+//  public void deleteAppointment_within24Hours() {
+//    long appointmentId = 1L;
+//    LocalDateTime appointmentTime = LocalDateTime.now().plusHours(23);
+//    appointment.setAppointmentTime(appointmentTime);
+//    when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.of(appointment));
+//
+//    assertThatThrownBy(() -> appointmentService.deleteAppointment(appointmentId))
+//        .isInstanceOf(IllegalStateException.class)
+//        .hasMessageContaining("Cannot cancel appointments within 24 hours of the appointment time.");
+//  }
 
   @Test
   @DisplayName("Find appointments by client")

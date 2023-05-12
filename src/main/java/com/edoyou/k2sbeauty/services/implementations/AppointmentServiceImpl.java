@@ -85,16 +85,18 @@ public class AppointmentServiceImpl implements AppointmentService {
    *                               within 24 hours of the appointment time.
    */
   @Override
-  public void deleteAppointment(Long id) {
+  public void deleteAppointment(Long id, String userRole) {
     Appointment appointment = appointmentRepository.findById(id)
         .orElseThrow(
             () -> new IllegalStateException("Appointment with id " + id + " does not exist."));
 
-    LocalDateTime now = LocalDateTime.now();
-    LocalDateTime appointmentTime = appointment.getAppointmentTime();
-    if (now.plusHours(24).isAfter(appointmentTime)) {
-      throw new IllegalStateException(
-          "Cannot cancel appointments within 24 hours of the appointment time.");
+    if (!"ROLE_ADMIN".equals(userRole)) {
+      LocalDateTime now = LocalDateTime.now();
+      LocalDateTime appointmentTime = appointment.getAppointmentTime();
+      if (now.plusHours(24).isAfter(appointmentTime)) {
+        throw new IllegalStateException(
+            "Cannot cancel appointments within 24 hours of the appointment time.");
+      }
     }
 
     appointmentRepository.deleteById(id);
@@ -188,7 +190,7 @@ public class AppointmentServiceImpl implements AppointmentService {
   @Override
   public List<Appointment> findAllAppointments() {
     try {
-      System.out.println("JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ" + appointmentRepository.findAll().size());
+      LOGGER.info("Appointments' size is " + appointmentRepository.findAll().size());
       List<Appointment> appointments = appointmentRepository.findAll();
       LOGGER.info("Fetched appointments: " + appointments);
       return appointments;
@@ -209,7 +211,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         .orElseThrow(
             () -> new IllegalStateException("Appointment with id " + id + " does not exist."));
 
-    LOGGER.info("Updating appointment: " + existingAppointment + " with new details: " + appointmentDetails);
+    LOGGER.info("Updating appointment: " + existingAppointment + " with new details: "
+        + appointmentDetails);
 
     existingAppointment.setClient(appointmentDetails.getClient());
     existingAppointment.setHairdresser(appointmentDetails.getHairdresser());
@@ -222,7 +225,8 @@ public class AppointmentServiceImpl implements AppointmentService {
   @Override
   public void updatePaymentStatus(Long appointmentId, PaymentStatus status) {
     Appointment appointment = appointmentRepository.findById(appointmentId)
-        .orElseThrow(() -> new ResourceNotFoundException("Appointment not found for this id :: " + appointmentId));
+        .orElseThrow(() -> new ResourceNotFoundException(
+            "Appointment not found for this id :: " + appointmentId));
     appointment.setPaymentStatus(status);
 
     LOGGER.info("Updating payment status for appointment: " + appointment + " to: " + status);

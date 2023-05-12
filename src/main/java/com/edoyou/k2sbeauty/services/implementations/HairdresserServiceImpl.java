@@ -183,7 +183,12 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
 
   @Override
   public Hairdresser getTemporaryRegistration() {
-    LOGGER.info("Getting temporary registration of the hairdresser.");
+    LOGGER.info("Getting temporary registration of the hairdresser " + temporaryRegistration);
     return temporaryRegistration;
+  }
+
+  @Override
+  public List<Hairdresser> findAllHairdressersByApprovalStatus(boolean isApproved) {
+    return hairdresserRepository.findByIsApproved(isApproved);
   }
 }
