@@ -4,6 +4,7 @@ import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.entities.model.Role;
 import com.edoyou.k2sbeauty.entities.model.User;
+import com.edoyou.k2sbeauty.exceptions.BeautyServiceNotFoundException;
 import com.edoyou.k2sbeauty.exceptions.RoleNotFoundException;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
@@ -17,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -65,40 +68,48 @@ public class GuestController {
   }
 
   @GetMapping("/guest/services")
+  @Transactional
   public String viewServices(Model model,
       @RequestParam(name = "hairdresser", required = false) Long hairdresserId,
       @RequestParam(name = "service", required = false) Long serviceId,
       @RequestParam(name = "sort", defaultValue = "lastName") String sortBy) {
-    LOGGER.info("Guest viewing his appointments.");
+    LOGGER.info("Guest viewing the services.");
 
-    List<BeautyService> services = beautyServiceService.findAll();
-    List<Hairdresser> hairdressers = hairdresserService.findAllHairdressers(sortBy);
-
-//    List<BeautyService> filteredServices = services.stream()
-//        .filter(service -> service.getHairdresser() != null && service.getHairdresser().isApproved())
-//        .filter(service -> hairdresserId == null || service.getHairdresser().getId()
-//            .equals(hairdresserId))
-//        .filter(service -> serviceId == null || service.getId().equals(serviceId))
-//        .sorted(getServiceComparator(sortBy))
-//        .toList();
+    List<BeautyService> services;
+    List<Hairdresser> hairdressers;
 
     if (hairdresserId != null) {
       Hairdresser hairdresser = hairdresserService.findById(hairdresserId);
       services = new ArrayList<>(hairdresser.getBeautyServices());
+      hairdressers = Collections.singletonList(hairdresser);
     } else if (serviceId != null) {
-      BeautyService service = beautyServiceService.findById(serviceId).orElseThrow();
+      BeautyService service = beautyServiceService.findById(serviceId)
+          .orElseThrow(() -> new BeautyServiceNotFoundException("Service not found."));
       hairdressers = new ArrayList<>(service.getHairdressers());
       services = Collections.singletonList(service);
     } else {
       services = beautyServiceService.findAll();
+      services.forEach(service -> {
+        Hibernate.initialize(service.getHairdressers());
+        service.setHairdressers(
+            service.getHairdressers().stream()
+                .filter(Hairdresser::isApproved)
+                .collect(Collectors.toSet())
+        );
+      });
+
+      hairdressers = hairdresserService.findAllHairdressers(sortBy);
+      services.sort(getServiceComparator(sortBy));
     }
+
+    LOGGER.info("Hairdressers: " + hairdressers);
+    LOGGER.info("Services: " + services);
 
     model.addAttribute("services", services);
     model.addAttribute("hairdressers", hairdressers);
-    //model.addAttribute("filteredServices", filteredServices);
-    //model.addAttribute("selectedHairdresser", hairdresserId);
-    //model.addAttribute("selectedService", serviceId);
     model.addAttribute("sort", sortBy);
+    model.addAttribute("selectedHairdresser", hairdresserId);
+    model.addAttribute("selectedService", serviceId);
 
     return "/guest/services";
   }
@@ -171,11 +182,13 @@ public class GuestController {
       return Comparator.comparing(BeautyService::getName);
     } else if ("lastName".equalsIgnoreCase(sortBy)) {
       return Comparator.comparing(service -> service.getHairdressers().stream()
+          .filter(Hairdresser::isApproved)
           .findFirst()
           .map(Hairdresser::getLastName)
           .orElse(""));
     } else if ("rating".equalsIgnoreCase(sortBy)) {
       return Comparator.comparing((BeautyService service) -> service.getHairdressers().stream()
+              .filter(Hairdresser::isApproved)
               .findFirst()
               .map(Hairdresser::getRating)
               .orElse(0.0))

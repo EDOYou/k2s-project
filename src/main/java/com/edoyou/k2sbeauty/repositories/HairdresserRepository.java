@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * HairdresserRepository is a JPA repository for handling data access and
- * manipulation of the Hairdresser entity.
+ * HairdresserRepository is a JPA repository for handling data access and manipulation of the
+ * Hairdresser entity.
  *
  * @see JpaRepository
  * @see Hairdresser
@@ -28,17 +28,22 @@ public interface HairdresserRepository extends JpaRepository<Hairdresser, Long> 
   List<Hairdresser> findBySpecialization(String specialization);
 
   /**
-   * Finds all hairdressers providing a specific beauty service, sorted according to the given Sort parameter.
+   * Finds all hairdressers providing a specific beauty service, sorted according to the given Sort
+   * parameter.
    *
    * @param serviceId the ID of the beauty service to filter hairdressers by.
    * @param sort      the sort criteria to apply to the result set.
    * @return a sorted list of hairdressers providing the specified beauty service.
    */
-  @Query("SELECT h FROM Hairdresser h JOIN h.beautyServices s WHERE s.id = :serviceId")
+  @Query("SELECT h FROM Hairdresser h JOIN h.beautyServices s WHERE s.id = :serviceId AND h.isApproved = true ORDER BY h.lastName")
   List<Hairdresser> findAllByService(@Param("serviceId") Long serviceId, Sort sort);
 
   @Query("SELECT h FROM Hairdresser h JOIN FETCH h.beautyServices")
   List<Hairdresser> findAllWithBeautyServices();
 
   List<Hairdresser> findByIsApproved(boolean isApproved);
+
+  List<Hairdresser> findByIsApprovedTrue();
+
+  List<Hairdresser> findByIsApprovedTrue(Sort sort);
 }

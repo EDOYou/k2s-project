@@ -63,4 +63,14 @@ public class BeautyService {
   public Set<Hairdresser> getHairdressers() {
     return hairdressers;
   }
+
+  @Override
+  public String toString() {
+    return "BeautyService{" +
+        "id=" + id +
+        ", name='" + name + '\'' +
+        ", description='" + description + '\'' +
+        ", price=" + price +
+        '}';
+  }
 }

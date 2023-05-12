@@ -53,5 +53,8 @@ public interface BeautyServiceRepository extends JpaRepository<BeautyService, Lo
 
   Optional<BeautyService> findFirstByName(String name);
 
+  @Query("SELECT b FROM BeautyService b JOIN FETCH b.hairdressers h WHERE h.isApproved = true")
+  List<BeautyService> findAllWithApprovedHairdressers();
+
   List<BeautyService> findAllByIdIn(List<Long> ids);
 }

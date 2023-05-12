@@ -75,7 +75,6 @@
         <th>Description</th>
         <th>Price</th>
         <th>Hairdresser</th>
-        <!--        <th>Rating</th>-->
       </tr>
       </thead>
       <tbody>
@@ -85,10 +84,11 @@
         <td th:text="${service.price}"></td>
         <td>
           <div th:each="hairdresser : ${service.hairdressers}">
-            <p th:text="${hairdresser.lastName + ' ' + hairdresser.firstName + ' (Rating: ' + hairdresser.rating + ')'}"></p>
+            <p th:if="${hairdresser != null}"
+               th:text="${hairdresser.lastName + ' ' + hairdresser.firstName + ' (Rating: ' + hairdresser.rating + ')'}">
+            </p>
           </div>
         </td>
-        <!--        <td th:text="${service.hairdresser.rating}"></td>-->
       </tr>
       </tbody>
     </table>

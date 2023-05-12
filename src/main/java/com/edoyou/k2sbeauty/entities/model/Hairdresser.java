@@ -91,4 +91,13 @@ public class Hairdresser extends User {
   public List<Long> getSelectedServiceIds() {
     return selectedServiceIds;
   }
+
+  @Override
+  public String toString() {
+    return super.toString() + ", Hairdresser{" +
+        "specialization='" + specialization + '\'' +
+        ", rating=" + rating +
+        ", isApproved=" + isApproved +
+        '}';
+  }
 }

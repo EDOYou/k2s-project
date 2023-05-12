@@ -67,11 +67,7 @@ public interface HairdresserService extends UserService {
    */
   void deleteHairdresser(Long id);
 
-  void approveHairdresser(Long userId);
-
-  void saveTemporaryRegistration(Hairdresser hairdresser);
-
-  Hairdresser getTemporaryRegistration();
+  //void approveHairdresser(Long userId);
 
   List<Hairdresser> findAllHairdressersByApprovalStatus(boolean isApproved);
 }

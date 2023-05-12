@@ -27,12 +27,12 @@ import java.util.List;
  */
 @Service
 public class HairdresserServiceImpl extends UserServiceImpl implements HairdresserService {
+
   private static final Logger LOGGER = Logger.getLogger(HairdresserServiceImpl.class.getName());
 
   private final HairdresserRepository hairdresserRepository;
   private final RoleRepository roleRepository;
   private final UserRepository userRepository;
-  private Hairdresser temporaryRegistration;
 
   @Autowired
   public HairdresserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
@@ -60,7 +60,7 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
   @Override
   public List<Hairdresser> findAllHairdressers(String sortBy) {
     if (sortBy == null) {
-      return hairdresserRepository.findAll();
+      return hairdresserRepository.findByIsApprovedTrue();
     }
 
     if ("serviceName".equalsIgnoreCase(sortBy) || "price".equalsIgnoreCase(sortBy)) {
@@ -77,7 +77,7 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
       throw new IllegalArgumentException("Invalid sortBy value: " + sortBy);
     }
 
-    return hairdresserRepository.findAll(sort);
+    return hairdresserRepository.findByIsApprovedTrue(sort);
   }
 
   @Override
@@ -136,16 +136,16 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
     }
   }
 
-  @Override
-  public void approveHairdresser(Long userId) {
-    LOGGER.info("Admin approves hairdresser.");
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
-    Role hairdresserRole = roleRepository.findByName("ROLE_HAIRDRESSER")
-        .orElseThrow(() -> new ResourceNotFoundException("Role not found: ROLE_HAIRDRESSER"));
-    user.setRoles(Collections.singleton(hairdresserRole));
-    userRepository.save(user);
-  }
+//  @Override
+//  public void approveHairdresser(Long userId) {
+//    LOGGER.info("Admin approves hairdresser.");
+//    User user = userRepository.findById(userId)
+//        .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+//    Role hairdresserRole = roleRepository.findByName("ROLE_HAIRDRESSER")
+//        .orElseThrow(() -> new ResourceNotFoundException("Role not found: ROLE_HAIRDRESSER"));
+//    user.setRoles(Collections.singleton(hairdresserRole));
+//    userRepository.save(user);
+//  }
 
 
   @Override
@@ -178,18 +178,6 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
         .orElseThrow(() -> new ResourceNotFoundException("Hairdresser not found with ID: " + id));
 
     hairdresserRepository.delete(hairdresserToDelete);
-  }
-
-  @Override
-  public void saveTemporaryRegistration(Hairdresser hairdresser) {
-    LOGGER.info("Saving temporary registration of the hairdresser.");
-    temporaryRegistration = hairdresser;
-  }
-
-  @Override
-  public Hairdresser getTemporaryRegistration() {
-    LOGGER.info("Getting temporary registration of the hairdresser " + temporaryRegistration);
-    return temporaryRegistration;
   }
 
   @Override
