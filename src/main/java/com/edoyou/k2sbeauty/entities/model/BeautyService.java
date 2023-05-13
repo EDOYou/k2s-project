@@ -21,7 +21,7 @@ public class BeautyService {
   @Column(nullable = false)
   private double price;
 
-  @ManyToMany(mappedBy = "beautyServices")
+  @ManyToMany(mappedBy = "beautyServices", fetch = FetchType.EAGER)
   private Set<Hairdresser> hairdressers = new HashSet<>();
 
   public void setId(Long id) {

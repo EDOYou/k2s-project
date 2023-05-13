@@ -3,7 +3,9 @@ package com.edoyou.k2sbeauty.services.interfaces;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * HairdresserService interface represents the service layer for Hairdresser related operations.
@@ -31,7 +33,6 @@ public interface HairdresserService extends UserService {
   List<Hairdresser> findAllHairdressers(String sortBy);
 
   List<Hairdresser> findAllHairdressers();
-
 
   /**
    * Finds all hairdressers based on the given sorting criteria and service ID.

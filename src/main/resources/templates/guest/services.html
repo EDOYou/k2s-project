@@ -40,6 +40,7 @@
         </div>
         <div class="col-md-3">
           <label for="hairdresser">Hairdresser:</label>
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
           <select id="hairdresser" name="hairdresser" class="form-control">
             <option value="">All Hairdressers</option>
             <option th:each="hairdresser : ${hairdressers}"
@@ -78,17 +79,11 @@
       </tr>
       </thead>
       <tbody>
-      <tr th:each="service : ${services}">
-        <td th:text="${service.name}"></td>
-        <td th:text="${service.description}"></td>
-        <td th:text="${service.price}"></td>
-        <td>
-          <div th:each="hairdresser : ${service.hairdressers}">
-            <p th:if="${hairdresser != null}"
-               th:text="${hairdresser.lastName + ' ' + hairdresser.firstName + ' (Rating: ' + hairdresser.rating + ')'}">
-            </p>
-          </div>
-        </td>
+      <tr th:each="pair : ${serviceHairdresserPairs}">
+        <td th:text="${pair.first.name}"></td>
+        <td th:text="${pair.first.description}"></td>
+        <td th:text="${pair.first.price}"></td>
+        <td th:text="${pair.second.lastName + ' ' + pair.second.firstName + ' (Rating: ' + pair.second.rating + ')'}"></td>
       </tr>
       </tbody>
     </table>

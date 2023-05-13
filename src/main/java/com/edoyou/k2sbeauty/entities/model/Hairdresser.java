@@ -24,7 +24,7 @@ public class Hairdresser extends User {
   @Transient
   private List<Long> selectedServiceIds;
 
-  @ManyToMany
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
       name = "hairdresser_service",
       joinColumns = @JoinColumn(name = "hairdresser_id"),
@@ -97,7 +97,7 @@ public class Hairdresser extends User {
     return super.toString() + ", Hairdresser{" +
         "specialization='" + specialization + '\'' +
         ", rating=" + rating +
-        ", number of services=" + beautyServices.size() +
+        //", number of services=" + beautyServices.size() +
         ", isApproved=" + isApproved +
         '}';
   }
