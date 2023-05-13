@@ -6,13 +6,16 @@
 </head>
 <body>
 <form action="/admin/assign_service" method="post">
-  <label for="service">Service:</label><br>
-  <select id="service" name="service">
-    <option th:each="service : ${services}" th:value="${service.id}" th:text="${service.serviceName}"></option>
+  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+  <label for="serviceId">Service:</label><br>
+  <select id="serviceId" name="serviceId">
+    <option th:each="service : ${services}" th:value="${service.id}"
+            th:text="${service.name}"></option>
   </select><br>
-  <label for="hairdresser">Hairdresser:</label><br>
-  <select id="hairdresser" name="hairdresser">
-    <option th:each="hairdresser : ${hairdressers}" th:value="${hairdresser.id}" th:text="${hairdresser.name}"></option>
+  <label for="hairdresserId">Hairdresser:</label><br>
+  <select id="hairdresserId" name="hairdresserId">
+    <option th:each="hairdresser : ${hairdressers}" th:value="${hairdresser.id}"
+            th:text="${hairdresser.lastName + ' ' + hairdresser.firstName}"></option>
   </select><br>
   <input type="submit" value="Assign">
 </form>

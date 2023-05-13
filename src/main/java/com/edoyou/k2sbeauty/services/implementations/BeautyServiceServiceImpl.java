@@ -7,7 +7,6 @@ import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -121,6 +120,11 @@ public class BeautyServiceServiceImpl implements BeautyServiceService {
   @Override
   public List<BeautyService> findAll() {
     return beautyServiceRepository.findAllWithApprovedHairdressers();
+  }
+
+  @Override
+  public List<BeautyService> findAllServices() {
+    return beautyServiceRepository.findAll();
   }
 
   /**

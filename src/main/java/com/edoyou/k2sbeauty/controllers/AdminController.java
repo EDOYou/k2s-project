@@ -5,6 +5,7 @@ import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.entities.model.Role;
 import com.edoyou.k2sbeauty.entities.payment.PaymentStatus;
+import com.edoyou.k2sbeauty.exceptions.BeautyServiceNotFoundException;
 import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.exceptions.RoleNotFoundException;
 import com.edoyou.k2sbeauty.services.implementations.NotificationService;
@@ -14,7 +15,6 @@ import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
 import com.edoyou.k2sbeauty.services.interfaces.RoleService;
 import jakarta.transaction.Transactional;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -163,21 +163,24 @@ public class AdminController {
 
   @GetMapping("/assign_service")
   public String showAssignServiceForm(Model model) {
-    List<BeautyService> services = beautyServiceService.findAll();
+    List<BeautyService> services = beautyServiceService.findAllServices();
     List<Hairdresser> hairdressers = hairdresserService.findAllHairdressers();
     model.addAttribute("services", services);
     model.addAttribute("hairdressers", hairdressers);
-    model.addAttribute("hairdresser", new Hairdresser());
     return "/admin/assign_service";
   }
 
   @PostMapping("/assign_service")
-  public String handleAssignService(@ModelAttribute("hairdresser") Hairdresser hairdresser,
-      @RequestParam("serviceIds") List<Long> serviceIds) {
-    List<BeautyService> services = beautyServiceService.findAllByIdIn(serviceIds);
-    hairdresser.setBeautyServices(new HashSet<>(services));
+  @Transactional
+  public String handleAssignService(@ModelAttribute("hairdresserId") Long hairdresserId,
+      @RequestParam("serviceId") Long serviceId) {
+    Hairdresser hairdresser = hairdresserService.findById(hairdresserId);
+    if (hairdresser == null) {
+      throw new ResourceNotFoundException("Hairdresser not found for this id :: " + hairdresserId);
+    }
+    BeautyService beautyService = beautyServiceService.findById(serviceId).orElseThrow();
+    hairdresser.getBeautyServices().add(beautyService);
     hairdresserService.saveHairdresser(hairdresser);
-    return "redirect:/admin/hairdressers";
+    return "redirect:/admin/assign_service";
   }
-
 }

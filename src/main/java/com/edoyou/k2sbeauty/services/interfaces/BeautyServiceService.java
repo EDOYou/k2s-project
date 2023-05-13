@@ -51,6 +51,8 @@ public interface BeautyServiceService {
    */
   List<BeautyService> findAll();
 
+  List<BeautyService> findAllServices();
+
   /**
    * Finds beauty services by a given price range.
    *

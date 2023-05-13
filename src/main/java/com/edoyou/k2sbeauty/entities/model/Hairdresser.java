@@ -97,6 +97,7 @@ public class Hairdresser extends User {
     return super.toString() + ", Hairdresser{" +
         "specialization='" + specialization + '\'' +
         ", rating=" + rating +
+        ", number of services=" + beautyServices.size() +
         ", isApproved=" + isApproved +
         '}';
   }
