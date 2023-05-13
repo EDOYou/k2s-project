@@ -155,7 +155,7 @@ public class AdminController {
 
   @GetMapping("/services")
   public String showServices(Model model) {
-    List<BeautyService> services = beautyServiceService.findAll();
+    List<BeautyService> services = beautyServiceService.findAllServices();
     LOGGER.info("Number of services in the database: " + services.size());
     model.addAttribute("services", services);
     return "admin/services";
