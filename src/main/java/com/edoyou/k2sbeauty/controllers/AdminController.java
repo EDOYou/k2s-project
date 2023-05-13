@@ -183,4 +183,12 @@ public class AdminController {
     hairdresserService.saveHairdresser(hairdresser);
     return "redirect:/admin/assign_service";
   }
+
+  @GetMapping("/hairdressers")
+  public String showHairdressers(Model model) {
+    List<Hairdresser> hairdressers = hairdresserService.findAllWithBeautyServices();
+    model.addAttribute("hairdressers", hairdressers);
+    return "admin/hairdressers";
+  }
+
 }

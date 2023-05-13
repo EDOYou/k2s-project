@@ -11,8 +11,8 @@
     <th>Services</th>
   </tr>
   <tr th:each="hairdresser : ${hairdressers}">
-    <td th:text="${hairdresser.name}"></td>
-    <td th:each="service : ${hairdresser.services}" th:text="${service.serviceName}"></td>
+    <td th:text="${hairdresser.lastName + ' ' + hairdresser.firstName}"></td>
+    <td th:each="service : ${hairdresser.beautyServices}" th:text="${service.name}"></td>
   </tr>
 </table>
 
