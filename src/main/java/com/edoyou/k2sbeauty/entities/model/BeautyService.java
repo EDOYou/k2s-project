@@ -19,6 +19,9 @@ public class BeautyService {
   private String description;
 
   @Column(nullable = false)
+  private int duration;
+
+  @Column(nullable = false)
   private double price;
 
   @ManyToMany(mappedBy = "beautyServices", fetch = FetchType.EAGER)
@@ -44,6 +47,10 @@ public class BeautyService {
     this.hairdressers = hairdressers;
   }
 
+  public void setDuration(int duration) {
+    this.duration = duration;
+  }
+
   public Long getId() {
     return id;
   }
@@ -62,6 +69,10 @@ public class BeautyService {
 
   public Set<Hairdresser> getHairdressers() {
     return hairdressers;
+  }
+
+  public int getDuration() {
+    return duration;
   }
 
   @Override

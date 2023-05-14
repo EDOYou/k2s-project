@@ -6,33 +6,48 @@
 </head>
 <body>
 <h1>Hairdresser Registration</h1>
-<form th:action="@{/hairdresser/register_hairdresser}" th:object="${hairdresser}" method="post">
-  <label for="firstName">First name:</label>
-  <input type="text" id="firstName" th:field="*{firstName}" required>
-  <br>
-  <label for="lastName">Last name:</label>
-  <input type="text" id="lastName" th:field="*{lastName}" required>
-  <br>
-  <label for="email">Email:</label>
-  <input type="email" id="email" th:field="*{email}" required>
-  <br>
-  <label for="phone">Phone number:</label>
-  <input type="number" id="phone" th:field="*{phone}" required>
-  <br>
-  <label for="password">Password:</label>
-  <input type="password" id="password" th:field="*{password}" required>
-  <br>
-  <label for="specialization">Specialization:</label>
-  <input type="text" id="specialization" th:field="*{specialization}" required>
+<form th:action="@{/hairdresser/register_hairdresser}" method="post">
+  <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+  <div th:object="${hairdresser}">
+    <label for="firstName">First name:</label>
+    <input type="text" id="firstName" th:field="*{firstName}" required>
+    <br>
+    <label for="lastName">Last name:</label>
+    <input type="text" id="lastName" th:field="*{lastName}" required>
+    <br>
+    <label for="email">Email:</label>
+    <input type="email" id="email" th:field="*{email}" required>
+    <br>
+    <label for="phone">Phone number:</label>
+    <input type="number" id="phone" th:field="*{phone}" required>
+    <br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" th:field="*{password}" required>
+    <br>
+    <label for="specialization">Specialization:</label>
+    <input type="text" id="specialization" th:field="*{specialization}" required>
 
-  <h3>Select Services</h3>
-  <div th:each="service : ${services}">
-    <label>
-      <input type="checkbox" th:value="${service.id}" th:field="*{selectedServiceIds}" />
-    </label>
-    <label th:for="${#ids.next('service')}" th:text="${service.name}">Service Name</label>
+    <h3>Select Services</h3>
+    <div th:each="service : ${services}">
+      <label>
+        <input type="checkbox" th:value="${service.id}" th:field="*{selectedServiceIds}"/>
+      </label>
+      <label th:for="${#ids.next('service')}" th:text="${service.name}">Service Name</label>
+    </div>
   </div>
 
+  <div th:object="${workingHours}">
+    <h3>Working Hours</h3>
+    <div th:each="dayOfWeek : ${T(java.time.DayOfWeek).values()}">
+      <h4 th:text="${dayOfWeek}">DayOfWeek</h4>
+      <label for="start">Start:</label>
+      <input type="time" id="start" th:name="|workingHoursMap[${dayOfWeek.ordinal()}].start|">
+      <br>
+      <label for="end">End:</label>
+      <input type="time" id="end" th:name="|workingHoursMap[${dayOfWeek.ordinal()}].end|">
+      <br>
+    </div>
+  </div>
   <input type="submit" value="Register">
 </form>
 </body>

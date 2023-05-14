@@ -17,6 +17,9 @@ public class Appointment {
   @Column(nullable = false)
   private PaymentStatus paymentStatus;
 
+  @Column(nullable = false, columnDefinition = "boolean default false")
+  private boolean isCompleted;
+
   @ManyToOne(cascade = CascadeType.MERGE)
   @JoinColumn(nullable = false)
   private Client client;
@@ -56,6 +59,10 @@ public class Appointment {
     this.paymentStatus = paymentStatus;
   }
 
+  public void setCompleted(boolean completed) {
+    isCompleted = completed;
+  }
+
   public Long getId() {
     return id;
   }
@@ -78,5 +85,9 @@ public class Appointment {
 
   public PaymentStatus getPaymentStatus() {
     return paymentStatus;
+  }
+
+  public boolean isCompleted() {
+    return isCompleted;
   }
 }

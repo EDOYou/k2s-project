@@ -4,6 +4,7 @@ import com.edoyou.k2sbeauty.entities.model.Appointment;
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.entities.model.Role;
+import com.edoyou.k2sbeauty.entities.model.WorkingHours;
 import com.edoyou.k2sbeauty.entities.payment.PaymentStatus;
 import com.edoyou.k2sbeauty.exceptions.BeautyServiceNotFoundException;
 import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
@@ -13,8 +14,11 @@ import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
 import com.edoyou.k2sbeauty.services.interfaces.RoleService;
+import com.edoyou.k2sbeauty.services.interfaces.WorkingHoursService;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.time.format.DateTimeFormatter;
+import java.util.Set;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,16 +38,20 @@ public class AdminController {
   private final BeautyServiceService beautyServiceService;
   private final RoleService roleService;
   private final NotificationService notificationService;
+  private final WorkingHoursService workingHoursService;
+  private final EntityManager entityManager;
 
   @Autowired
   public AdminController(AppointmentService appointmentService,
       HairdresserService hairdresserService, BeautyServiceService beautyServiceService,
-      RoleService roleService, NotificationService notificationService) {
+      RoleService roleService, NotificationService notificationService, WorkingHoursService workingHoursService, EntityManager entityManager) {
     this.appointmentService = appointmentService;
     this.hairdresserService = hairdresserService;
     this.beautyServiceService = beautyServiceService;
     this.roleService = roleService;
     this.notificationService = notificationService;
+    this.workingHoursService = workingHoursService;
+    this.entityManager = entityManager;
   }
 
   @GetMapping("/dashboard")
@@ -123,11 +131,23 @@ public class AdminController {
     if (hairdresser == null) {
       throw new ResourceNotFoundException("Hairdresser not found for this id :: " + hairdresserId);
     }
+    Set<WorkingHours> workingHoursSet = hairdresser.getWorkingHours();
 
     String message = "Dear " + hairdresser.getFirstName()
         + ", your application has been reviewed and unfortunately, you were not accepted at this time. Please consider applying again in the future.";
     notificationService.sendNotification(hairdresser.getEmail(), "Application Rejected", message);
     hairdresserService.deleteHairdresser(hairdresserId);
+
+    entityManager.flush();
+
+    for (WorkingHours workingHours : workingHoursSet) {
+      entityManager.refresh(workingHours);
+      LOGGER.info("WORKING HOURS IN ADMIN: " + workingHours.toString());
+      if (workingHours.getHairdressers().isEmpty()) {
+        workingHoursService.deleteWorkingHours(workingHours.getId());
+        LOGGER.info("WORKING HOURS IN IF: " + workingHours);
+      }
+    }
     return "redirect:/admin/dashboard";
   }
 

@@ -60,7 +60,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     List<Appointment> hairdresserAppointments = findByHairdresser(appointment.getHairdresser());
     for (Appointment existingAppointment : hairdresserAppointments) {
-      if (existingAppointment.getAppointmentTime().isEqual(appointment.getAppointmentTime())) {
+      if (existingAppointment.getAppointmentTime().isEqual(appointment.getAppointmentTime())
+          && !existingAppointment.getId().equals(appointment.getId())) {
         throw new IllegalStateException(
             "Hairdresser is not available during the appointment time.");
       }
@@ -68,7 +69,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     List<Appointment> clientAppointments = findByClient(appointment.getClient());
     for (Appointment existingAppointment : clientAppointments) {
-      if (existingAppointment.getAppointmentTime().isEqual(appointment.getAppointmentTime())) {
+      if (existingAppointment.getAppointmentTime().isEqual(appointment.getAppointmentTime())
+          && !existingAppointment.getId().equals(appointment.getId())) {
         throw new IllegalStateException(
             "You already have an appointment scheduled at the same time.");
       }

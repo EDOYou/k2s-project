@@ -1,15 +1,21 @@
 package com.edoyou.k2sbeauty.services.implementations;
 
+import com.edoyou.k2sbeauty.entities.model.Appointment;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
-import com.edoyou.k2sbeauty.entities.model.Role;
-import com.edoyou.k2sbeauty.entities.model.User;
+import com.edoyou.k2sbeauty.entities.model.appointment_details.TimeSlot;
+import com.edoyou.k2sbeauty.entities.model.WorkingHours;
 import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.repositories.HairdresserRepository;
 import com.edoyou.k2sbeauty.repositories.RoleRepository;
 import com.edoyou.k2sbeauty.repositories.UserRepository;
+import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
-import java.util.Collections;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Optional;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,17 +37,16 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
   private static final Logger LOGGER = Logger.getLogger(HairdresserServiceImpl.class.getName());
 
   private final HairdresserRepository hairdresserRepository;
-  private final RoleRepository roleRepository;
-  private final UserRepository userRepository;
+  private final AppointmentService appointmentService;
 
   @Autowired
   public HairdresserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
       HairdresserRepository hairdresserRepository,
+      AppointmentService appointmentService,
       PasswordEncoder passwordEncoder) {
     super(userRepository, roleRepository, passwordEncoder);
     this.hairdresserRepository = hairdresserRepository;
-    this.roleRepository = roleRepository;
-    this.userRepository = userRepository;
+    this.appointmentService = appointmentService;
   }
 
 
@@ -136,18 +141,6 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
     }
   }
 
-//  @Override
-//  public void approveHairdresser(Long userId) {
-//    LOGGER.info("Admin approves hairdresser.");
-//    User user = userRepository.findById(userId)
-//        .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
-//    Role hairdresserRole = roleRepository.findByName("ROLE_HAIRDRESSER")
-//        .orElseThrow(() -> new ResourceNotFoundException("Role not found: ROLE_HAIRDRESSER"));
-//    user.setRoles(Collections.singleton(hairdresserRole));
-//    userRepository.save(user);
-//  }
-
-
   @Override
   public Hairdresser updateHairdresser(Hairdresser hairdresserDetails) {
     LOGGER.info("Updating hairdresser.");
@@ -184,4 +177,50 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
   public List<Hairdresser> findAllHairdressersByApprovalStatus(boolean isApproved) {
     return hairdresserRepository.findByIsApproved(isApproved);
   }
+
+  @Override
+  public List<TimeSlot> getSchedule(Hairdresser hairdresser) {
+    List<TimeSlot> timeSlots = new ArrayList<>();
+    List<Appointment> appointments = appointmentService.findByHairdresser(hairdresser);
+
+    // Assume we are creating a schedule for the next 7 days
+    for (int i = 0; i < 7; i++) {
+      LocalDateTime day = LocalDateTime.now().plusDays(i);
+      Optional<WorkingHours> optionalWorkingHours = hairdresser.getWorkingHoursForDay(
+          day.getDayOfWeek());
+
+      optionalWorkingHours.ifPresent(workingHours -> {
+        LocalDateTime start = day.with(workingHours.getStart());
+        LocalDateTime end = day.with(workingHours.getEnd());
+
+        List<Appointment> dayAppointments = appointments.stream()
+            .filter(appointment -> isSameDay(appointment.getAppointmentTime(), day))
+            .sorted(Comparator.comparing(Appointment::getAppointmentTime))
+            .collect(Collectors.toList());
+
+        LocalDateTime current = start;
+        for (Appointment appointment : dayAppointments) {
+          if (current.isBefore(appointment.getAppointmentTime())) {
+            timeSlots.add(new TimeSlot(current, appointment.getAppointmentTime(), null));
+            current = appointment.getAppointmentTime()
+                .plusMinutes(appointment.getBeautyService().getDuration());
+          }
+        }
+
+        if (current.isBefore(end)) {
+          timeSlots.add(new TimeSlot(current, end, null));
+        }
+      });
+    }
+
+    return timeSlots;
+  }
+
+
+  private boolean isSameDay(LocalDateTime dateTime1, LocalDateTime dateTime2) {
+    return dateTime1.getYear() == dateTime2.getYear()
+        && dateTime1.getMonth() == dateTime2.getMonth()
+        && dateTime1.getDayOfMonth() == dateTime2.getDayOfMonth();
+  }
+
 }

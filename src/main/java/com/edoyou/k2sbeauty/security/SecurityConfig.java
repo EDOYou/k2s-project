@@ -25,8 +25,6 @@ public class SecurityConfig {
       PasswordEncoder passwordEncoder) {
     this.customUserDetailsService = customUserDetailsService;
     this.passwordEncoder = passwordEncoder;
-    LOGGER.info("SecurityConfig constructor called");
-    LOGGER.info("Using PasswordEncoder in Constructor: " + passwordEncoder);
   }
 
   @Autowired

@@ -2,8 +2,10 @@ package com.edoyou.k2sbeauty.entities.model;
 
 import jakarta.persistence.*;
 
+import java.time.DayOfWeek;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,6 +26,14 @@ public class Hairdresser extends User {
   @Transient
   private List<Long> selectedServiceIds;
 
+  @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+  @JoinTable(
+      name = "hairdresser_working_hours",
+      joinColumns = @JoinColumn(name = "hairdresser_id"),
+      inverseJoinColumns = @JoinColumn(name = "working_hours_id")
+  )
+  private Set<WorkingHours> workingHours = new HashSet<>();
+
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
       name = "hairdresser_service",
@@ -33,6 +43,17 @@ public class Hairdresser extends User {
 
   @OneToMany(mappedBy = "hairdresser")
   private Set<Appointment> appointments = new HashSet<>();
+
+  public Optional<WorkingHours> getWorkingHoursForDay(DayOfWeek dayOfWeek) {
+    return this.workingHours.stream()
+        .filter(wh -> wh.getDayOfWeek().equals(dayOfWeek))
+        .findFirst();
+  }
+
+
+  public Set<WorkingHours> getWorkingHours() {
+    return workingHours;
+  }
 
   public String getBeautyServicesNamesString() {
     return beautyServices.stream()
@@ -72,6 +93,10 @@ public class Hairdresser extends User {
     this.selectedServiceIds = selectedServiceIds;
   }
 
+  public void setWorkingHours(Set<WorkingHours> workingHours) {
+    this.workingHours = workingHours;
+  }
+
   public String getSpecialization() {
     return specialization;
   }
@@ -91,6 +116,7 @@ public class Hairdresser extends User {
   public List<Long> getSelectedServiceIds() {
     return selectedServiceIds;
   }
+
 
   @Override
   public String toString() {
