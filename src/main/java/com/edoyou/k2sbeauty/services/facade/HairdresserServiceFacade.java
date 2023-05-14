@@ -1,26 +1,33 @@
 package com.edoyou.k2sbeauty.services.facade;
 
+import com.edoyou.k2sbeauty.dto.AppointmentDTO;
 import com.edoyou.k2sbeauty.dto.WorkingHoursDTO;
 import com.edoyou.k2sbeauty.entities.model.Appointment;
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
+import com.edoyou.k2sbeauty.entities.model.User;
 import com.edoyou.k2sbeauty.entities.model.WorkingHours;
+import com.edoyou.k2sbeauty.entities.model.appointment_details.TimeSlot;
+import com.edoyou.k2sbeauty.exceptions.AppointmentNotFoundException;
+import com.edoyou.k2sbeauty.exceptions.UnauthorizedActionException;
+import com.edoyou.k2sbeauty.exceptions.UserNotFoundException;
 import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
 import com.edoyou.k2sbeauty.services.interfaces.RoleService;
 import com.edoyou.k2sbeauty.services.interfaces.WorkingHoursService;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class HairdresserServiceFacade {
@@ -46,7 +53,57 @@ public class HairdresserServiceFacade {
     this.workingHoursService = workingHoursService;
   }
 
-  //@Transactional
+
+  public AppointmentDTO getAppointments(String email) {
+    Optional<User> userOptional = hairdresserService.findUserByEmail(email);
+    if (userOptional.isEmpty() || !(userOptional.get() instanceof Hairdresser hairdresser)) {
+      throw new UserNotFoundException("The authenticated user is not a hairdresser.");
+    }
+    if (!hairdresser.isApproved()) {
+      throw new UnauthorizedActionException("User does not exist or is not approved yet.");
+    }
+
+    List<Appointment> appointments = appointmentService.findByHairdresser(hairdresser);
+    List<Appointment> completedAppointments = appointments.stream().filter(Appointment::isCompleted)
+        .collect(Collectors.toList());
+    List<Appointment> pendingAppointments = appointments.stream()
+        .filter(appointment -> !appointment.isCompleted()).collect(
+            Collectors.toList());
+
+    return new AppointmentDTO(completedAppointments, pendingAppointments);
+  }
+
+  public Map<LocalDate, List<TimeSlot>> getSchedule(String email) {
+    Hairdresser hairdresser = getAuthenticatedHairdresser(email);
+    return hairdresserService.generateSchedule(hairdresser);
+  }
+
+  public void completeAppointment(Long id, String email) {
+    Hairdresser hairdresser = getAuthenticatedHairdresser(email);
+
+    Optional<Appointment> appointmentOptional = appointmentService.findById(id);
+    if (appointmentOptional.isEmpty()) {
+      throw new AppointmentNotFoundException("No appointment found with the provided ID.");
+    }
+
+    Appointment appointment = appointmentOptional.get();
+    if (!appointment.getHairdresser().equals(hairdresser)) {
+      throw new UnauthorizedActionException(
+          "The authenticated hairdresser is not related to the appointment.");
+    }
+
+    appointment.setCompleted(true);
+    appointmentService.saveAppointment(appointment);
+  }
+
+  private Hairdresser getAuthenticatedHairdresser(String email) {
+    Optional<User> userOptional = hairdresserService.findUserByEmail(email);
+    if (userOptional.isEmpty() || !(userOptional.get() instanceof Hairdresser hairdresser)) {
+      throw new UserNotFoundException("The authenticated user is not a hairdresser.");
+    }
+    return hairdresser;
+  }
+
   public void registerHairdresser(Hairdresser hairdresser,
       Map<Integer, WorkingHoursDTO> workingHoursDtoMap) {
 
@@ -86,19 +143,6 @@ public class HairdresserServiceFacade {
       workingHours.setEnd(workingHoursDto.getEnd());
       return workingHours;
     }
-  }
-
-  public void completeAppointment(Long id) {
-    Optional<Appointment> appointmentOptional = appointmentService.findById(id);
-    if (appointmentOptional.isEmpty()) {
-      LOGGER.info("No appointment found with ID: " + id);
-      return;
-    }
-
-    Appointment appointment = appointmentOptional.get();
-    appointment.setCompleted(true);
-    // Update function is used of the save() method here
-    appointmentService.saveAppointment(appointment);
   }
 
 }
