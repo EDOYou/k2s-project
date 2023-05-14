@@ -4,6 +4,8 @@ import com.edoyou.k2sbeauty.entities.model.Appointment;
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Client;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
+import com.edoyou.k2sbeauty.entities.model.WorkingHours;
+import com.edoyou.k2sbeauty.entities.model.appointment_details.TimeSlot;
 import com.edoyou.k2sbeauty.entities.payment.PaymentStatus;
 import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.repositories.RoleRepository;
@@ -11,9 +13,14 @@ import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import com.edoyou.k2sbeauty.services.interfaces.ClientService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
+import java.time.DayOfWeek;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -76,15 +83,19 @@ public class ClientController {
   @PostMapping("/client/book")
   public String bookAppointment(Authentication authentication,
       @RequestParam("hairdresserId") Long hairdresserId,
-      @RequestParam("serviceName") String serviceName, @RequestParam("dateTime") String dateTime) {
+      @RequestParam("serviceName") String serviceName,
+      @RequestParam("dateTime") String dateTime) {
     LOGGER.info("Booking an appointment.");
 
     if (dateTime.isEmpty()) {
       return "redirect:/client/book";
     }
 
+    String[] dateTimeParts = dateTime.split(" - ");
+
+
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-    LocalDateTime appointmentDateTime = LocalDateTime.parse(dateTime, formatter);
+    LocalDateTime appointmentDateTime = LocalDateTime.parse(dateTimeParts[0], formatter);
 
     Hairdresser hairdresser = hairdresserService.findById(hairdresserId);
     BeautyService beautyService = beautyServiceService.findFirstByName(serviceName).orElseThrow(
@@ -105,6 +116,51 @@ public class ClientController {
 
     return "redirect:/client/appointments";
   }
+
+  @GetMapping("/client/timeslots")
+  public ResponseEntity<List<String>> getTimeSlots(
+      @RequestParam("hairdresserId") Long hairdresserId,
+      @RequestParam("serviceName") String serviceName) {
+
+    Hairdresser hairdresser = hairdresserService.findById(hairdresserId);
+
+    List<TimeSlot> timeSlots = generateTimeSlots(hairdresser);
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+    List<String> timeSlotStrings = timeSlots.stream()
+        .map(slot -> formatter.format(slot.getStart()) + " - " + formatter.format(slot.getEnd()))
+        .collect(Collectors.toList());
+
+    return ResponseEntity.ok(timeSlotStrings);
+  }
+
+  private List<TimeSlot> generateTimeSlots(Hairdresser hairdresser) {
+    List<TimeSlot> timeSlots = new ArrayList<>();
+
+    LocalDateTime now = LocalDateTime.now();
+
+    for (int i = 0; i < 7; i++) {
+      LocalDateTime dateTime = now.plusDays(i);
+      DayOfWeek dayOfWeek = dateTime.getDayOfWeek();
+
+      Optional<WorkingHours> workingHoursOptional = hairdresser.getWorkingHoursForDay(dayOfWeek);
+
+      if (workingHoursOptional.isPresent()) {
+        WorkingHours workingHours = workingHoursOptional.get();
+
+        LocalDateTime start = LocalDateTime.of(dateTime.toLocalDate(), workingHours.getStart());
+        LocalDateTime end = LocalDateTime.of(dateTime.toLocalDate(), workingHours.getEnd());
+
+        while (start.plusMinutes(90).isBefore(end)) {
+          timeSlots.add(new TimeSlot(start, start.plusMinutes(90), null));
+          start = start.plusMinutes(90);
+        }
+      }
+    }
+
+    return timeSlots;
+  }
+
 
   @GetMapping("/client/appointments")
   public String viewAppointments(Authentication authentication, Model model) {

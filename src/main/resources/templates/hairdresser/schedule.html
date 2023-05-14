@@ -2,6 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
   <title>Hairdresser Schedule</title>
+  <style>
+    .busy {
+      background-color: #ff0000; /* red */
+      color: #ffffff; /* white */
+    }
+
+    .free {
+      background-color: #00ff00; /* green */
+      color: #000000; /* black */
+    }
+  </style>
 </head>
 <body>
 <h1>Hairdresser Schedule</h1>
@@ -15,12 +26,14 @@
   </tr>
   </thead>
   <tbody>
-  <tr th:each="timeSlot : ${timeSlots}">
+  <tr th:each="timeSlot : ${timeSlots}" th:class="${timeSlot.appointment != null ? 'busy' : 'free'}">
     <td th:text="${timeSlot.start.format(dateTimeFormatter)}"></td>
     <td th:text="${timeSlot.end.format(dateTimeFormatter)}"></td>
+    <td th:text="${timeSlot.appointment != null ? 'Busy' : 'Free'}"></td>
     <td th:if="${timeSlot.appointment != null}">
       Appointment with
-      <span th:text="${timeSlot.appointment.client.firstName + ' ' + timeSlot.appointment.client.lastName}"></span>
+      <span
+          th:text="${timeSlot.appointment.client.firstName + ' ' + timeSlot.appointment.client.lastName}"></span>
       for
       <span th:text="${timeSlot.appointment.beautyService.name}"></span>
     </td>

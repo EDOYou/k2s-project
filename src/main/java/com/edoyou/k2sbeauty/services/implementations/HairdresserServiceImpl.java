@@ -11,6 +11,7 @@ import com.edoyou.k2sbeauty.repositories.UserRepository;
 import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Optional;
@@ -201,14 +202,16 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
         LocalDateTime current = start;
         for (Appointment appointment : dayAppointments) {
           if (current.isBefore(appointment.getAppointmentTime())) {
-            timeSlots.add(new TimeSlot(current, appointment.getAppointmentTime(), null));
-            current = appointment.getAppointmentTime()
-                .plusMinutes(appointment.getBeautyService().getDuration());
+            // Creating a free slot only if the gap between current and the next appointment is bigger than a certain threshold (e.g., 15 minutes)
+            if (ChronoUnit.MINUTES.between(current, appointment.getAppointmentTime()) > 15) {
+              timeSlots.add(new TimeSlot(current, appointment.getAppointmentTime(), null));
+            }
+            // Adding the busy slot (appointment)
+            current = appointment.getAppointmentTime();
+            LocalDateTime appointmentEnd = current.plusMinutes(appointment.getBeautyService().getDuration());
+            timeSlots.add(new TimeSlot(current, appointmentEnd, appointment));
+            current = appointmentEnd;
           }
-        }
-
-        if (current.isBefore(end)) {
-          timeSlots.add(new TimeSlot(current, end, null));
         }
       });
     }

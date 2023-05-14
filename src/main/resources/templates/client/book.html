@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Book Appointment</title>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script>
     function updateHairdressers() {
       const serviceName = document.getElementById("serviceId").value;
@@ -25,6 +26,39 @@
 
         hairdresser.style.display = shouldDisplay ? "" : "none";
       });
+
+      // Fetch time slots for the first visible hairdresser
+      const firstVisibleHairdresser = Array.from(hairdressers).find(
+          h => h.style.display !== 'none');
+      if (firstVisibleHairdresser) {
+        updateTimeSlots(firstVisibleHairdresser.value, serviceName);
+      }
+    }
+
+    function updateTimeSlots(hairdresserId, serviceName) {
+      axios.get('/client/timeslots', {
+        params: {
+          hairdresserId: hairdresserId,
+          serviceName: serviceName
+        }
+      })
+      .then(function (response) {
+        console.log(response);
+        const timeSlotDropdown = document.getElementById('timeSlotId');
+        timeSlotDropdown.innerHTML = ''; // clear the dropdown
+
+        console.log(response.data);
+        // add each time slot to the dropdown
+        response.data.forEach(slot => {
+          const option = document.createElement('option');
+          option.value = slot;
+          option.textContent = slot;
+          timeSlotDropdown.appendChild(option);
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     }
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -36,7 +70,8 @@
 <h1>Book an Appointment</h1>
 <form th:action="@{/client/book}" method="post">
   <label for="hairdresserId">Hairdresser:</label>
-  <select id="hairdresserId" name="hairdresserId">
+  <select id="hairdresserId" name="hairdresserId"
+          onchange="updateTimeSlots(this.value, document.getElementById('serviceId').value)">
     <option th:each="hairdresser : ${hairdressers}"
             th:value="${hairdresser.id}"
             th:text="${hairdresser.firstName + ' ' + hairdresser.lastName}"
@@ -55,9 +90,10 @@
   </select>
 
   <br>
-
-  <label for="dateTime">Date and Time:</label>
-  <input type="datetime-local" id="dateTime" name="dateTime">
+  <label for="timeSlotId">Time Slot:</label>
+  <select id="timeSlotId" name="dateTime">
+    <!-- Time slot options will be populated by JavaScript -->
+  </select>
 
   <br>
 

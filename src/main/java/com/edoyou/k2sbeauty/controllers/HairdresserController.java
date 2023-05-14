@@ -98,6 +98,8 @@ public class HairdresserController {
 
     Appointment appointment = appointmentOptional.get();
 
+    LOGGER.info("Hairdresser of the appointment : " + appointment.getHairdresser().toString() + " " + appointment.getHairdresser().hashCode());
+    LOGGER.info("Hairdresser in EQUAL : " + hairdresser + " " + hairdresser.hashCode());
     if (!appointment.getHairdresser().equals(hairdresser)) {
       throw new UnauthorizedActionException(
           "The authenticated hairdresser is not related to the appointment.");

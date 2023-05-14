@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.time.DayOfWeek;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -123,8 +124,29 @@ public class Hairdresser extends User {
     return super.toString() + ", Hairdresser{" +
         "specialization='" + specialization + '\'' +
         ", rating=" + rating +
-        //", number of services=" + beautyServices.size() +
+        ", number of services=" + beautyServices.size() +
         ", isApproved=" + isApproved +
         '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    Hairdresser that = (Hairdresser) o;
+    return Double.compare(that.rating, rating) == 0 && isApproved == that.isApproved
+        && Objects.equals(specialization, that.specialization);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), specialization, rating, isApproved);
   }
 }
