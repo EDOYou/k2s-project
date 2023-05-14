@@ -1,7 +1,5 @@
 package com.edoyou.k2sbeauty.controllers;
 
-import com.edoyou.k2sbeauty.annotation.AtLeastOneDay;
-import com.edoyou.k2sbeauty.dto.WorkingHoursDTO;
 import com.edoyou.k2sbeauty.entities.model.Appointment;
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
@@ -16,8 +14,8 @@ import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
 import jakarta.validation.Valid;
-import java.time.DayOfWeek;
-import java.util.HashMap;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -118,9 +116,10 @@ public class HairdresserController {
       throw new UserNotFoundException("The authenticated user is not a hairdresser.");
     }
 
-    List<TimeSlot> timeSlots = hairdresserService.getSchedule(hairdresser);
+    Map<LocalDate, List<TimeSlot>> schedule = hairdresserService.generateSchedule(hairdresser);
 
-    model.addAttribute("timeSlots", timeSlots);
+    model.addAttribute("schedule", schedule);
+    model.addAttribute("timeFormatter", DateTimeFormatter.ofPattern("HH:mm")); // Add this lineL
     return "hairdresser/schedule";
   }
 

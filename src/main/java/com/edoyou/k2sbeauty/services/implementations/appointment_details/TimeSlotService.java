@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TimeSlotService {
+
   public List<TimeSlot> generateTimeSlots(Hairdresser hairdresser) {
     List<TimeSlot> timeSlots = new ArrayList<>();
 

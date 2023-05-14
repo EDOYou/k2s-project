@@ -3,7 +3,9 @@ package com.edoyou.k2sbeauty.services.interfaces;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 
 import com.edoyou.k2sbeauty.entities.model.appointment_details.TimeSlot;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import org.springframework.data.jpa.repository.Query;
 
 /**
@@ -69,5 +71,5 @@ public interface HairdresserService extends UserService {
 
   List<Hairdresser> findAllHairdressersByApprovalStatus(boolean isApproved);
 
-  List<TimeSlot> getSchedule(Hairdresser hairdresser);
+  Map<LocalDate, List<TimeSlot>> generateSchedule(Hairdresser hairdresser);
 }

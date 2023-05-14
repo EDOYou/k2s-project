@@ -11,11 +11,14 @@ import com.edoyou.k2sbeauty.repositories.UserRepository;
 import com.edoyou.k2sbeauty.services.implementations.appointment_details.TimeSlotService;
 import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -184,33 +187,31 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
   }
 
   @Override
-  public List<TimeSlot> getSchedule(Hairdresser hairdresser) {
+  public Map<LocalDate, List<TimeSlot>> generateSchedule(Hairdresser hairdresser) {
     List<TimeSlot> timeSlots = timeSlotService.generateTimeSlots(hairdresser);
     List<Appointment> appointments = appointmentService.findByHairdresser(hairdresser);
+    Map<LocalDate, List<TimeSlot>> schedule = new TreeMap<>();  // Sorted map
 
     for (Appointment appointment : appointments) {
-      // Only considering appointments that are not completed
       if (!appointment.isCompleted()) {
         for (TimeSlot timeSlot : timeSlots) {
-          // Checking if the appointment is within the time slot
           if (!timeSlot.getStart().isAfter(appointment.getAppointmentTime()) &&
               !timeSlot.getEnd().isBefore(appointment.getAppointmentTime()
-                  .plusMinutes(appointment.getBeautyService().getDuration()))) {
+                  .plusMinutes(appointment.getBeautyService().getDuration()).plusSeconds(1))) {
             // Marking the time slot as busy
             timeSlot.setAppointment(appointment);
           }
+
         }
       }
     }
 
-    return timeSlots;
-  }
+    for (TimeSlot timeSlot : timeSlots) {
+      LocalDate date = timeSlot.getStart().toLocalDate();
+      schedule.computeIfAbsent(date, k -> new ArrayList<>()).add(timeSlot);
+    }
 
-
-  private boolean isSameDay(LocalDateTime dateTime1, LocalDateTime dateTime2) {
-    return dateTime1.getYear() == dateTime2.getYear()
-        && dateTime1.getMonth() == dateTime2.getMonth()
-        && dateTime1.getDayOfMonth() == dateTime2.getDayOfMonth();
+    return schedule;
   }
 
 }

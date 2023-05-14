@@ -16,31 +16,34 @@
 </head>
 <body>
 <h1>Hairdresser Schedule</h1>
+<div th:each="entry : ${schedule}">
+  <h2 th:text="${entry.key}"></h2> <!-- Date -->
 
-<table>
-  <thead>
-  <tr>
-    <th>Start</th>
-    <th>End</th>
-    <th>Appointment</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr th:each="timeSlot : ${timeSlots}"
-      th:class="${timeSlot.appointment != null ? 'busy' : 'free'}">
-    <td th:text="${timeSlot.start.format(dateTimeFormatter)}"></td>
-    <td th:text="${timeSlot.end.format(dateTimeFormatter)}"></td>
-    <td th:text="${timeSlot.appointment != null ? 'Busy' : 'Free'}"></td>
-    <td th:if="${timeSlot.appointment != null}">
-      Appointment with
-      <span
-          th:text="${timeSlot.appointment.client.firstName + ' ' + timeSlot.appointment.client.lastName}"></span>
-      for
-      <span th:text="${timeSlot.appointment.beautyService.name}"></span>
-    </td>
-    <td th:if="${timeSlot.appointment == null}">Free</td>
-  </tr>
-  </tbody>
-</table>
+
+  <table>
+    <thead>
+    <tr>
+      <th>Start</th>
+      <th>End</th>
+      <th>Appointment</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="timeSlot : ${entry.value}"
+        th:class="${timeSlot.appointment != null ? 'busy' : 'free'}">
+      <td th:text="${timeSlot.start.toLocalTime().format(timeFormatter)}"></td>
+      <td th:text="${timeSlot.end.toLocalTime().format(timeFormatter)}"></td>
+      <td th:text="${timeSlot.appointment != null ? 'Busy' : 'Free'}"></td>
+      <td th:if="${timeSlot.appointment != null}">
+        Appointment with
+        <span th:text="${timeSlot.appointment.client.firstName + ' ' + timeSlot.appointment.client.lastName}"></span>
+        for
+        <span th:text="${timeSlot.appointment.beautyService.name}"></span>
+      </td>
+      <td th:if="${timeSlot.appointment == null}">Free</td>
+    </tr>
+    </tbody>
+  </table>
+  </div>
 </body>
 </html>
