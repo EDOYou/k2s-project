@@ -9,6 +9,7 @@ import com.edoyou.k2sbeauty.entities.model.appointment_details.TimeSlot;
 import com.edoyou.k2sbeauty.entities.payment.PaymentStatus;
 import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.repositories.RoleRepository;
+import com.edoyou.k2sbeauty.services.implementations.appointment_details.TimeSlotService;
 import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import com.edoyou.k2sbeauty.services.interfaces.ClientService;
@@ -47,17 +48,20 @@ public class ClientController {
   private final AppointmentService appointmentService;
   private final PasswordEncoder passwordEncoder;
   private final RoleRepository roleRepository;
+  private final TimeSlotService timeSlotService;
 
   @Autowired
   public ClientController(ClientService clientService, HairdresserService hairdresserService,
       BeautyServiceService beautyServiceService, AppointmentService appointmentService,
-      PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+      PasswordEncoder passwordEncoder, RoleRepository roleRepository,
+      TimeSlotService timeSlotService) {
     this.clientService = clientService;
     this.hairdresserService = hairdresserService;
     this.beautyServiceService = beautyServiceService;
     this.appointmentService = appointmentService;
     this.passwordEncoder = passwordEncoder;
     this.roleRepository = roleRepository;
+    this.timeSlotService = timeSlotService;
   }
 
   @PostMapping("/register")
@@ -93,7 +97,6 @@ public class ClientController {
 
     String[] dateTimeParts = dateTime.split(" - ");
 
-
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
     LocalDateTime appointmentDateTime = LocalDateTime.parse(dateTimeParts[0], formatter);
 
@@ -124,7 +127,7 @@ public class ClientController {
 
     Hairdresser hairdresser = hairdresserService.findById(hairdresserId);
 
-    List<TimeSlot> timeSlots = generateTimeSlots(hairdresser);
+    List<TimeSlot> timeSlots = timeSlotService.generateTimeSlots(hairdresser);
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
     List<String> timeSlotStrings = timeSlots.stream()
@@ -132,33 +135,6 @@ public class ClientController {
         .collect(Collectors.toList());
 
     return ResponseEntity.ok(timeSlotStrings);
-  }
-
-  private List<TimeSlot> generateTimeSlots(Hairdresser hairdresser) {
-    List<TimeSlot> timeSlots = new ArrayList<>();
-
-    LocalDateTime now = LocalDateTime.now();
-
-    for (int i = 0; i < 7; i++) {
-      LocalDateTime dateTime = now.plusDays(i);
-      DayOfWeek dayOfWeek = dateTime.getDayOfWeek();
-
-      Optional<WorkingHours> workingHoursOptional = hairdresser.getWorkingHoursForDay(dayOfWeek);
-
-      if (workingHoursOptional.isPresent()) {
-        WorkingHours workingHours = workingHoursOptional.get();
-
-        LocalDateTime start = LocalDateTime.of(dateTime.toLocalDate(), workingHours.getStart());
-        LocalDateTime end = LocalDateTime.of(dateTime.toLocalDate(), workingHours.getEnd());
-
-        while (start.plusMinutes(90).isBefore(end)) {
-          timeSlots.add(new TimeSlot(start, start.plusMinutes(90), null));
-          start = start.plusMinutes(90);
-        }
-      }
-    }
-
-    return timeSlots;
   }
 
 

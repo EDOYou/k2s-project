@@ -26,7 +26,8 @@
   </tr>
   </thead>
   <tbody>
-  <tr th:each="timeSlot : ${timeSlots}" th:class="${timeSlot.appointment != null ? 'busy' : 'free'}">
+  <tr th:each="timeSlot : ${timeSlots}"
+      th:class="${timeSlot.appointment != null ? 'busy' : 'free'}">
     <td th:text="${timeSlot.start.format(dateTimeFormatter)}"></td>
     <td th:text="${timeSlot.end.format(dateTimeFormatter)}"></td>
     <td th:text="${timeSlot.appointment != null ? 'Busy' : 'Free'}"></td>

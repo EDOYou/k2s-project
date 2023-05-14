@@ -98,7 +98,8 @@ public class HairdresserController {
 
     Appointment appointment = appointmentOptional.get();
 
-    LOGGER.info("Hairdresser of the appointment : " + appointment.getHairdresser().toString() + " " + appointment.getHairdresser().hashCode());
+    LOGGER.info("Hairdresser of the appointment : " + appointment.getHairdresser().toString() + " "
+        + appointment.getHairdresser().hashCode());
     LOGGER.info("Hairdresser in EQUAL : " + hairdresser + " " + hairdresser.hashCode());
     if (!appointment.getHairdresser().equals(hairdresser)) {
       throw new UnauthorizedActionException(
@@ -125,7 +126,8 @@ public class HairdresserController {
 
 
   @PostMapping("/register_hairdresser")
-  public String processRegistrationForm(@Valid @ModelAttribute("hairdresser") Hairdresser hairdresser,
+  public String processRegistrationForm(
+      @Valid @ModelAttribute("hairdresser") Hairdresser hairdresser,
       BindingResult bindingResult,
       @Valid @ModelAttribute("workingHours") WorkingHoursWrapper workingHoursWrapper) {
 
@@ -134,7 +136,8 @@ public class HairdresserController {
       // handle errors, e.g. return the registration form with error messages
       return "/hairdresser/register_hairdresser";
     }
-    hairdresserServiceFacade.registerHairdresser(hairdresser, workingHoursWrapper.getWorkingHoursMap());
+    hairdresserServiceFacade.registerHairdresser(hairdresser,
+        workingHoursWrapper.getWorkingHoursMap());
     return "redirect:home";
   }
 

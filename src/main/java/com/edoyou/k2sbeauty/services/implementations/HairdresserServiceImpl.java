@@ -8,6 +8,7 @@ import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.repositories.HairdresserRepository;
 import com.edoyou.k2sbeauty.repositories.RoleRepository;
 import com.edoyou.k2sbeauty.repositories.UserRepository;
+import com.edoyou.k2sbeauty.services.implementations.appointment_details.TimeSlotService;
 import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
 import java.time.LocalDateTime;
@@ -39,15 +40,18 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
 
   private final HairdresserRepository hairdresserRepository;
   private final AppointmentService appointmentService;
+  private final TimeSlotService timeSlotService;
 
   @Autowired
   public HairdresserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
       HairdresserRepository hairdresserRepository,
       AppointmentService appointmentService,
-      PasswordEncoder passwordEncoder) {
+      PasswordEncoder passwordEncoder,
+      TimeSlotService timeSlotService) {
     super(userRepository, roleRepository, passwordEncoder);
     this.hairdresserRepository = hairdresserRepository;
     this.appointmentService = appointmentService;
+    this.timeSlotService = timeSlotService;
   }
 
 
@@ -181,39 +185,22 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
 
   @Override
   public List<TimeSlot> getSchedule(Hairdresser hairdresser) {
-    List<TimeSlot> timeSlots = new ArrayList<>();
+    List<TimeSlot> timeSlots = timeSlotService.generateTimeSlots(hairdresser);
     List<Appointment> appointments = appointmentService.findByHairdresser(hairdresser);
 
-    // Assume we are creating a schedule for the next 7 days
-    for (int i = 0; i < 7; i++) {
-      LocalDateTime day = LocalDateTime.now().plusDays(i);
-      Optional<WorkingHours> optionalWorkingHours = hairdresser.getWorkingHoursForDay(
-          day.getDayOfWeek());
-
-      optionalWorkingHours.ifPresent(workingHours -> {
-        LocalDateTime start = day.with(workingHours.getStart());
-        LocalDateTime end = day.with(workingHours.getEnd());
-
-        List<Appointment> dayAppointments = appointments.stream()
-            .filter(appointment -> isSameDay(appointment.getAppointmentTime(), day))
-            .sorted(Comparator.comparing(Appointment::getAppointmentTime))
-            .collect(Collectors.toList());
-
-        LocalDateTime current = start;
-        for (Appointment appointment : dayAppointments) {
-          if (current.isBefore(appointment.getAppointmentTime())) {
-            // Creating a free slot only if the gap between current and the next appointment is bigger than a certain threshold (e.g., 15 minutes)
-            if (ChronoUnit.MINUTES.between(current, appointment.getAppointmentTime()) > 15) {
-              timeSlots.add(new TimeSlot(current, appointment.getAppointmentTime(), null));
-            }
-            // Adding the busy slot (appointment)
-            current = appointment.getAppointmentTime();
-            LocalDateTime appointmentEnd = current.plusMinutes(appointment.getBeautyService().getDuration());
-            timeSlots.add(new TimeSlot(current, appointmentEnd, appointment));
-            current = appointmentEnd;
+    for (Appointment appointment : appointments) {
+      // Only considering appointments that are not completed
+      if (!appointment.isCompleted()) {
+        for (TimeSlot timeSlot : timeSlots) {
+          // Checking if the appointment is within the time slot
+          if (!timeSlot.getStart().isAfter(appointment.getAppointmentTime()) &&
+              !timeSlot.getEnd().isBefore(appointment.getAppointmentTime()
+                  .plusMinutes(appointment.getBeautyService().getDuration()))) {
+            // Marking the time slot as busy
+            timeSlot.setAppointment(appointment);
           }
         }
-      });
+      }
     }
 
     return timeSlots;
