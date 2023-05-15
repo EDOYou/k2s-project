@@ -61,12 +61,27 @@
                 <ThresholdFilter level="info" onMatch="DENY" onMismatch="DENY"/>
             </Filters>
         </RollingFile>
+        <!-- Debug File Appender -->
+        <RollingFile name="DebugFile" fileName="${LOG_DIRECTORY}/debug.log"
+          filePattern="${LOG_DIRECTORY}/logs/debug-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${sys:FILE_LOG_PATTERN}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+            <Filters>
+                <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+                <ThresholdFilter level="info" onMatch="DENY" onMismatch="DENY"/>
+            </Filters>
+        </RollingFile>
+
     </Appenders>
 
     <Loggers>
         <!-- Root logger configuration -->
         <Root level="info"> <!-- Set the root logger level -->
             <AppenderRef ref="Console"/> <!-- Reference to the Console Appender -->
+            <AppenderRef ref="DebugFile"/>
             <AppenderRef ref="InfoFile"/> <!-- Reference to the Info File Appender -->
             <AppenderRef ref="WarnFile"/> <!-- Reference to the Warn File Appender -->
             <AppenderRef ref="ErrorFile"/> <!-- Reference to the Error File Appender -->

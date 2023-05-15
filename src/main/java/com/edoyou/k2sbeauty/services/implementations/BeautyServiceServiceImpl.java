@@ -1,11 +1,11 @@
 package com.edoyou.k2sbeauty.services.implementations;
 
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
-import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.repositories.BeautyServiceRepository;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import java.util.ArrayList;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +23,7 @@ import java.util.Optional;
 @Service
 public class BeautyServiceServiceImpl implements BeautyServiceService {
 
-  private static final Logger LOGGER = Logger.getLogger(BeautyServiceServiceImpl.class.getName());
+  private static final Logger LOGGER = LogManager.getLogger(BeautyServiceServiceImpl.class.getName());
 
   private final BeautyServiceRepository beautyServiceRepository;
 
@@ -34,71 +34,8 @@ public class BeautyServiceServiceImpl implements BeautyServiceService {
 
   @Override
   public void saveService(BeautyService service) {
+    LOGGER.info("Saving a beauty service...");
     beautyServiceRepository.save(service);
-  }
-
-  /**
-   * Creates a new beauty service.
-   *
-   * @param beautyService The beauty service to create.
-   * @return The created beauty service.
-   * @throws IllegalArgumentException If the provided beauty service is invalid.
-   */
-  @Override
-  public BeautyService createBeautyService(BeautyService beautyService) {
-
-    if (beautyService.getName() == null || beautyService.getName().isBlank()) {
-      throw new IllegalArgumentException("Name have to be filled.");
-    }
-
-    if (beautyService.getPrice() <= 0) {
-      throw new IllegalArgumentException("Price must be greater than 0.");
-    }
-
-    if (beautyService.getDescription() == null || beautyService.getDescription().isBlank()) {
-      throw new IllegalArgumentException("You need to add some description of the style.");
-    }
-
-    return beautyServiceRepository.save(beautyService);
-  }
-
-  /**
-   * Updates an existing beauty service.
-   *
-   * @param id            The ID of the beauty service to update.
-   * @param beautyService The updated beauty service.
-   * @return The updated beauty service.
-   * @throws IllegalArgumentException If the provided ID or beauty service is invalid.
-   */
-  @Override
-  public BeautyService updateBeautyService(Long id, BeautyService beautyService) {
-    BeautyService existingBeautyService = beautyServiceRepository.findById(id).orElseThrow(
-        () -> new IllegalStateException("Beauty service with id " + id + " does not exist."));
-
-    if (beautyService.getPrice() <= 0) {
-      throw new IllegalArgumentException("Price must be greater than 0.");
-    }
-
-    existingBeautyService.setName(beautyService.getName());
-    existingBeautyService.setDescription(beautyService.getDescription());
-    existingBeautyService.setPrice(beautyService.getPrice());
-
-    return beautyServiceRepository.save(existingBeautyService);
-  }
-
-  /**
-   * Deletes a beauty service by ID.
-   *
-   * @param id The ID of the beauty service to delete.
-   * @throws IllegalArgumentException If the provided ID is invalid.
-   */
-  @Override
-  public void deleteBeautyService(Long id) {
-    if (!beautyServiceRepository.existsById(id)) {
-      throw new ResourceNotFoundException("Beauty service with id " + id + " does not exist.");
-    }
-
-    beautyServiceRepository.deleteById(id);
   }
 
   /**
@@ -109,6 +46,7 @@ public class BeautyServiceServiceImpl implements BeautyServiceService {
    */
   @Override
   public Optional<BeautyService> findById(Long id) {
+    LOGGER.info("Find service by its ID...");
     return beautyServiceRepository.findById(id);
   }
 
@@ -119,49 +57,25 @@ public class BeautyServiceServiceImpl implements BeautyServiceService {
    */
   @Override
   public List<BeautyService> findAll() {
+    LOGGER.info("Find all services with approved hairdressers...");
     return beautyServiceRepository.findAllWithApprovedHairdressers();
   }
 
   @Override
   public List<BeautyService> findAllServices() {
+    LOGGER.info("Find all services...");
     return beautyServiceRepository.findAll();
-  }
-
-  /**
-   * Finds beauty services by a given price range.
-   *
-   * @param minPrice The minimum price of the beauty services.
-   * @param maxPrice The maximum price of the beauty services.
-   * @return A list of beauty services within the given price range.
-   */
-  @Override
-  public List<BeautyService> findByPriceRange(Double minPrice, Double maxPrice) {
-    if (minPrice == null || maxPrice == null) {
-      throw new IllegalArgumentException("Both minimum and maximum price must be provided.");
-    }
-    if (minPrice <= 0 || maxPrice <= 0) {
-      throw new IllegalArgumentException("Minimum and maximum price must be greater than 0.");
-    }
-
-    if (minPrice > maxPrice) {
-      throw new IllegalArgumentException("Minimum price cannot be greater than maximum price.");
-    }
-
-    return beautyServiceRepository.findByPriceBetween(minPrice, maxPrice);
   }
 
   @Override
   public List<String> findDistinctServiceNames() {
+    LOGGER.info("Find distinct service names...");
     return beautyServiceRepository.findDistinctServiceNames();
   }
 
   @Override
-  public Optional<BeautyService> findByName(String serviceName) {
-    return beautyServiceRepository.findByName(serviceName);
-  }
-
-  @Override
   public Optional<BeautyService> findFirstByName(String name) {
+    LOGGER.info("Find first service by name...");
     return beautyServiceRepository.findFirstByName(name);
   }
 
@@ -176,7 +90,7 @@ public class BeautyServiceServiceImpl implements BeautyServiceService {
       LOGGER.info("Fetching beauty services by their IDs.");
       return beautyServiceRepository.findAllById(ids);
     } catch (Exception e) {
-      LOGGER.severe("An error occurred while fetching beauty services by their IDs." + e);
+      LOGGER.error("An error occurred while fetching beauty services by their IDs." + e);
       throw new RuntimeException(e);
     }
   }

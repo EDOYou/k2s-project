@@ -6,16 +6,17 @@ import com.edoyou.k2sbeauty.exceptions.BeautyServiceNotFoundException;
 import com.edoyou.k2sbeauty.pojo.ServicesData;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 @Service
 public class GuestServiceFacade {
 
-  private static final Logger LOGGER = Logger.getLogger(GuestServiceFacade.class.getName());
+  private static final Logger LOGGER = LogManager.getLogger(GuestServiceFacade.class.getName());
 
   private final BeautyServiceService beautyServiceService;
   private final HairdresserService hairdresserService;
@@ -27,43 +28,58 @@ public class GuestServiceFacade {
   }
 
   public ServicesData getServicesData(Long hairdresserId, Long serviceId, String sortBy) {
-    LOGGER.info("Guest viewing the services.");
-
-    List<Pair<BeautyService, Hairdresser>> serviceHairdresserPairs = new ArrayList<>();
-    List<BeautyService> services;
-    List<Hairdresser> hairdressers;
+    LOGGER.info("Guest viewing the services ...");
 
     if (hairdresserId != null) {
-      Hairdresser hairdresser = hairdresserService.findById(hairdresserId);
-      hairdresser.getBeautyServices()
-          .forEach(service -> serviceHairdresserPairs.add(Pair.of(service, hairdresser)));
-      services = new ArrayList<>(hairdresser.getBeautyServices());
-      hairdressers = Collections.singletonList(hairdresser);
+      LOGGER.info("Getting services data for HAIRDRESSER ...");
+      return getServicesDataForHairdresser(hairdresserId);
     } else if (serviceId != null) {
-      BeautyService service = beautyServiceService.findById(serviceId)
-          .orElseThrow(() -> new BeautyServiceNotFoundException("Service not found."));
-      service.getHairdressers()
-          .forEach(hairdresser -> serviceHairdresserPairs.add(Pair.of(service, hairdresser)));
-      services = Collections.singletonList(service);
-      hairdressers = new ArrayList<>(service.getHairdressers());
+      LOGGER.info("Getting services data for SERVICE ...");
+      return getServicesDataForService(serviceId, sortBy);
     } else {
-      services = beautyServiceService.findAll();
-      hairdressers = hairdresserService.findAllHairdressers(sortBy);
-      for (BeautyService service : services) {
-        for (Hairdresser hairdresser : service.getHairdressers()) {
-          if (hairdresser.isApproved()) {
-            serviceHairdresserPairs.add(Pair.of(service, hairdresser));
-          }
+      LOGGER.info("Getting services data for ALL ...");
+      return getServicesDataForAll(sortBy);
+    }
+  }
+
+  private ServicesData getServicesDataForAll(String sortBy) {
+    var services = beautyServiceService.findAll();
+    var hairdressers = hairdresserService.findAllHairdressers(sortBy);
+
+    List<Pair<BeautyService, Hairdresser>> serviceHairdresserPairs = new ArrayList<>();
+    for (BeautyService service : services) {
+      for (Hairdresser hairdresser : service.getHairdressers()) {
+        if (hairdresser.isApproved()) {
+          serviceHairdresserPairs.add(Pair.of(service, hairdresser));
         }
       }
-      serviceHairdresserPairs.sort(getServiceComparator(sortBy));
     }
 
-    LOGGER.info("Hairdressers: " + hairdressers);
-    LOGGER.info("Services: " + services);
+    serviceHairdresserPairs.sort(getServiceComparator(sortBy));
+    return new ServicesData(serviceHairdresserPairs, services, hairdressers, sortBy, null, null);
+  }
 
-    return new ServicesData(serviceHairdresserPairs, services, hairdressers, sortBy, hairdresserId,
-        serviceId);
+  private ServicesData getServicesDataForHairdresser(Long hairdresserId) {
+    Hairdresser hairdresser = hairdresserService.findById(hairdresserId);
+    Set<BeautyService> beautyServices = hairdresser.getBeautyServices();
+
+    List<Pair<BeautyService, Hairdresser>> serviceHairdresserPairs = new ArrayList<>();
+    beautyServices.forEach(service -> serviceHairdresserPairs.add(Pair.of(service, hairdresser)));
+
+    return new ServicesData(serviceHairdresserPairs, new ArrayList<>(beautyServices),
+        Collections.singletonList(hairdresser), null, hairdresserId, null);
+  }
+
+  private ServicesData getServicesDataForService(Long serviceId, String sortBy) {
+    BeautyService service = beautyServiceService.findById(serviceId)
+        .orElseThrow(() -> new BeautyServiceNotFoundException("Service not found."));
+    Set<Hairdresser> hairdressers = service.getHairdressers();
+
+    List<Pair<BeautyService, Hairdresser>> serviceHairdresserPairs = new ArrayList<>();
+    hairdressers.forEach(hairdresser -> serviceHairdresserPairs.add(Pair.of(service, hairdresser)));
+
+    return new ServicesData(serviceHairdresserPairs, Collections.singletonList(service),
+        new ArrayList<>(hairdressers), sortBy, null, serviceId);
   }
 
   private Comparator<Pair<BeautyService, Hairdresser>> getServiceComparator(String sortBy) {

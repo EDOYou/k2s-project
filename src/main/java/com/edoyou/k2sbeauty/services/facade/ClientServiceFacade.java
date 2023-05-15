@@ -16,6 +16,8 @@ import com.edoyou.k2sbeauty.services.interfaces.ClientService;
 import com.edoyou.k2sbeauty.services.interfaces.FeedbackService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
 import com.edoyou.k2sbeauty.services.implementations.appointment_details.TimeSlotService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ClientServiceFacade {
 
+  private static final Logger LOGGER = LogManager.getLogger(ClientServiceFacade.class.getName());
   private final ClientService clientService;
   private final HairdresserService hairdresserService;
   private final BeautyServiceService beautyServiceService;
@@ -58,6 +61,7 @@ public class ClientServiceFacade {
   }
 
   public void processRegistrationForm(Client client) {
+    LOGGER.info("Precessing registration form ...");
     client.setPassword(passwordEncoder.encode(client.getPassword()));
     client.setRoles(Set.of(roleRepository.findByName("ROLE_CLIENT").orElseThrow()));
     clientService.saveClient(client);
@@ -73,6 +77,7 @@ public class ClientServiceFacade {
 
   public void bookAppointment(Authentication authentication, Long hairdresserId,
       String serviceName, String dateTime) {
+    LOGGER.info("Client is booking an appointment ...");
     String[] dateTimeParts = dateTime.split(" - ");
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
@@ -97,6 +102,7 @@ public class ClientServiceFacade {
   }
 
   public List<String> getTimeSlots(Long hairdresserId) {
+    LOGGER.info("Loading the timeslots of an hairdresser to the view for client ...");
     Hairdresser hairdresser = hairdresserService.findById(hairdresserId);
 
     List<TimeSlot> timeSlots = timeSlotService.generateTimeSlots(hairdresser);
@@ -108,6 +114,7 @@ public class ClientServiceFacade {
   }
 
   public List<Appointment> getClientAppointments(Authentication authentication) {
+    LOGGER.info("Client's appointments are displayed ...");
     if (authentication == null || authentication.getName() == null) {
       throw new IllegalArgumentException("Authentication is required.");
     }
@@ -122,6 +129,7 @@ public class ClientServiceFacade {
 
   @Transactional
   public void saveFeedback(Authentication authentication, Long appointmentId, Feedback feedback) {
+    LOGGER.info("Client is saving the feedback ...");
 
     Appointment appointment = appointmentService.findById(appointmentId)
         .orElseThrow(

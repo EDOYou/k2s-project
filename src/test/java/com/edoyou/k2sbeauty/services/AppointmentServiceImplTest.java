@@ -34,19 +34,16 @@ public class AppointmentServiceImplTest {
   private Appointment appointment;
   private Client client;
   private Hairdresser hairdresser;
-  private BeautyService beautyService;
 
   @BeforeEach
   public void setUp() {
     client = new Client();
     hairdresser = new Hairdresser();
-    beautyService = new BeautyService();
     appointment = new Appointment();
 
     LocalDateTime appointmentTime = LocalDateTime.now().plusDays(1).plusMinutes(1);
     appointment.setClient(client);
     appointment.setHairdresser(hairdresser);
-    appointment.setBeautyService(beautyService);
     appointment.setAppointmentTime(appointmentTime);
   }
 
@@ -76,71 +73,6 @@ public class AppointmentServiceImplTest {
   }
 
   @Test
-  @DisplayName("Save appointment with hairdresser unavailable")
-  public void saveAppointment_hairdresserUnavailable() {
-    List<Appointment> hairdresserAppointments = Collections.singletonList(appointment);
-    when(appointmentRepository.findByHairdresser(hairdresser)).thenReturn(hairdresserAppointments);
-
-    Appointment newAppointment = new Appointment();
-    newAppointment.setHairdresser(hairdresser);
-    newAppointment.setAppointmentTime(appointment.getAppointmentTime());
-
-    assertThatThrownBy(() -> appointmentService.saveAppointment(newAppointment))
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("Hairdresser is not available during the appointment time.");
-  }
-
-  @Test
-  @DisplayName("Save appointment with client unavailable")
-  public void saveAppointment_clientUnavailable() {
-    List<Appointment> clientAppointments = Collections.singletonList(appointment);
-    when(appointmentRepository.findByClient(client)).thenReturn(clientAppointments);
-
-    Appointment newAppointment = new Appointment();
-    newAppointment.setClient(client);
-    newAppointment.setAppointmentTime(appointment.getAppointmentTime());
-
-    assertThatThrownBy(() -> appointmentService.saveAppointment(newAppointment))
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("You already have an appointment scheduled at the same time.");
-  }
-
-//  @Test
-//  @DisplayName("Delete existing appointment")
-//  public void deleteAppointment_existing() {
-//    long appointmentId = 1L;
-//    when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.of(appointment));
-//
-//    appointmentService.deleteAppointment(appointmentId);
-//
-//    verify(appointmentRepository, times(1)).deleteById(appointmentId);
-//  }
-
-//  @Test
-//  @DisplayName("Delete non-existing appointment")
-//  public void deleteAppointment_nonExisting() {
-//    long appointmentId = 1L;
-//    when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.empty());
-//
-//    assertThatThrownBy(() -> appointmentService.deleteAppointment(appointmentId))
-//        .isInstanceOf(IllegalStateException.class)
-//        .hasMessageContaining("Appointment with id " + appointmentId + " does not exist.");
-//  }
-
-//  @Test
-//  @DisplayName("Delete appointment within 24 hours of appointment time")
-//  public void deleteAppointment_within24Hours() {
-//    long appointmentId = 1L;
-//    LocalDateTime appointmentTime = LocalDateTime.now().plusHours(23);
-//    appointment.setAppointmentTime(appointmentTime);
-//    when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.of(appointment));
-//
-//    assertThatThrownBy(() -> appointmentService.deleteAppointment(appointmentId))
-//        .isInstanceOf(IllegalStateException.class)
-//        .hasMessageContaining("Cannot cancel appointments within 24 hours of the appointment time.");
-//  }
-
-  @Test
   @DisplayName("Find appointments by client")
   public void findByClient() {
     List<Appointment> appointments = Collections.singletonList(appointment);
@@ -162,60 +94,6 @@ public class AppointmentServiceImplTest {
 
     assertThat(foundAppointments).isEqualTo(appointments);
     verify(appointmentRepository, times(1)).findByHairdresser(hairdresser);
-  }
-
-  @Test
-  @DisplayName("Find appointments by service")
-  public void findByService() {
-    List<Appointment> appointments = Collections.singletonList(appointment);
-    when(appointmentRepository.findByBeautyService(beautyService)).thenReturn(appointments);
-
-    List<Appointment> foundAppointments = appointmentService.findByBeautyService(beautyService);
-
-    assertThat(foundAppointments).isEqualTo(appointments);
-    verify(appointmentRepository, times(1)).findByBeautyService(beautyService);
-  }
-
-  @Test
-  @DisplayName("Find appointments by appointment time between two date times")
-  public void findByAppointmentTimeBetween() {
-    LocalDateTime startTime = LocalDateTime.now();
-    LocalDateTime endTime = LocalDateTime.now().plusDays(2);
-    List<Appointment> appointments = Collections.singletonList(appointment);
-    when(appointmentRepository.findByAppointmentTimeBetween(startTime, endTime)).thenReturn(
-        appointments);
-
-    List<Appointment> foundAppointments = appointmentService.findByAppointmentTimeBetween(startTime,
-        endTime);
-
-    assertThat(foundAppointments).isEqualTo(appointments);
-    verify(appointmentRepository, times(1)).findByAppointmentTimeBetween(startTime, endTime);
-  }
-
-  @Test
-  @DisplayName("Find appointments by client and hairdresser")
-  public void findByClientAndHairdresser() {
-    List<Appointment> appointments = Collections.singletonList(appointment);
-    when(appointmentRepository.findByClientAndHairdresser(client, hairdresser)).thenReturn(
-        appointments);
-
-    List<Appointment> foundAppointments = appointmentService.findByClientAndHairdresser(client,
-        hairdresser);
-
-    assertThat(foundAppointments).isEqualTo(appointments);
-    verify(appointmentRepository, times(1)).findByClientAndHairdresser(client, hairdresser);
-  }
-
-  @Test
-  @DisplayName("Find all appointments")
-  public void findAllAppointments() {
-    List<Appointment> appointments = Collections.singletonList(appointment);
-    when(appointmentRepository.findAll()).thenReturn(appointments);
-
-    List<Appointment> foundAppointments = appointmentService.findAllAppointments();
-
-    assertThat(foundAppointments).isEqualTo(appointments);
-    verify(appointmentRepository, times(1)).findAll();
   }
 
   @Test

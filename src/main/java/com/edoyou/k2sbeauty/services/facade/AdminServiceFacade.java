@@ -20,12 +20,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AdminServiceFacade {
 
+  private static final Logger LOGGER = LogManager.getLogger(AdminServiceFacade.class.getName());
   private final AppointmentService appointmentService;
   private final HairdresserService hairdresserService;
   private final BeautyServiceService beautyServiceService;
@@ -52,10 +55,12 @@ public class AdminServiceFacade {
   }
 
   public List<Appointment> findAllAppointments() {
+    LOGGER.info("Find all appointments in Admin Facade ...");
     return this.appointmentService.findAllAppointments();
   }
 
   public void changeTimeSlot(Long appointmentId, String newTimeSlot) {
+    LOGGER.info("Change the appointment's timeslot ...");
     DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     LocalDateTime newAppointmentTime = LocalDateTime.parse(newTimeSlot, formatter);
     Appointment appointment = appointmentService.findById(appointmentId)
@@ -67,16 +72,19 @@ public class AdminServiceFacade {
   }
 
   public void updatePaymentStatus(Long appointmentId) {
+    LOGGER.info("Updating the payment status of an appointment ...");
     PaymentStatus status = PaymentStatus.fromString("PAID", PaymentStatus.PENDING);
     appointmentService.updatePaymentStatus(appointmentId, status);
   }
 
   public void cancelAppointment(Long appointmentId) {
+    LOGGER.info("Admin cancels the appointment ...");
     appointmentService.deleteAppointment(appointmentId, "ROLE_ADMIN");
   }
 
   @Transactional
   public void approveHairdresser(Long hairdresserId) {
+    LOGGER.info("Admin employs the appointment ...");
     Hairdresser hairdresser = hairdresserService.findById(hairdresserId);
 
     if (hairdresser == null) {
@@ -95,6 +103,7 @@ public class AdminServiceFacade {
 
   @Transactional
   public void rejectHairdresser(Long hairdresserId) {
+    LOGGER.info("Admin rejects the application of an hairdresser ...");
     Hairdresser hairdresser = hairdresserService.findById(hairdresserId);
 
     if (hairdresser == null) {
@@ -109,6 +118,7 @@ public class AdminServiceFacade {
   }
 
   public List<Hairdresser> findAllYetNotApproved(Boolean isApproved) {
+    LOGGER.info("Display all the hairdressers whose is_approved column is false ...");
     return hairdresserService.findAllHairdressersByApprovalStatus(isApproved);
   }
 
@@ -117,6 +127,7 @@ public class AdminServiceFacade {
   }
 
   public void saveService(BeautyService beautyService) {
+    LOGGER.info("Adding the beauty service ...");
     beautyServiceService.saveService(beautyService);
   }
 
@@ -126,6 +137,7 @@ public class AdminServiceFacade {
 
   @Transactional
   public void assignServiceToHairdresser(Long hairdresserId, Long serviceId) {
+    LOGGER.info("Assigning the service to the hairdresser ...");
     Hairdresser hairdresser = hairdresserService.findById(hairdresserId);
     if (hairdresser == null) {
       throw new ResourceNotFoundException("Hairdresser not found for this id :: " + hairdresserId);
@@ -140,6 +152,7 @@ public class AdminServiceFacade {
   }
 
   private void deleteWorkingHours(Set<WorkingHours> workingHoursSet) {
+    LOGGER.info("Deleting the working hours when hairdresser is rejected ...");
     for (WorkingHours workingHours : workingHoursSet) {
       entityManager.refresh(workingHours);
       if (workingHours.getHairdressers().isEmpty()) {
@@ -149,6 +162,7 @@ public class AdminServiceFacade {
   }
 
   private void notifyHairdresser(Hairdresser hairdresser) {
+    LOGGER.info("Mail sent to the client !");
     if (hairdresser.isApproved()) {
       String message = "Dear " + hairdresser.getFirstName()
           + ", your application has been approved. Welcome to our team!";

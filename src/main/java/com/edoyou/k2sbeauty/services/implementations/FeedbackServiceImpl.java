@@ -5,6 +5,8 @@ import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.repositories.FeedbackRepository;
 import com.edoyou.k2sbeauty.services.interfaces.FeedbackService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -21,11 +23,13 @@ import java.util.Optional;
 @Service
 public class FeedbackServiceImpl implements FeedbackService {
 
+  private static final Logger LOGGER = LogManager.getLogger(FeedbackServiceImpl.class.getName());
   private final FeedbackRepository feedbackRepository;
   private final HairdresserService hairdresserService;
 
   @Autowired
-  public FeedbackServiceImpl(FeedbackRepository feedbackRepository, @Lazy HairdresserService hairdresserService) {
+  public FeedbackServiceImpl(FeedbackRepository feedbackRepository,
+      @Lazy HairdresserService hairdresserService) {
     this.feedbackRepository = feedbackRepository;
     this.hairdresserService = hairdresserService;
   }
@@ -34,14 +38,13 @@ public class FeedbackServiceImpl implements FeedbackService {
    * Creates a new feedback.
    *
    * @param feedback The feedback object to create.
-   * @return The created feedback object.
    */
   @Override
-  public Feedback createFeedback(Feedback feedback) {
+  public void createFeedback(Feedback feedback) {
+    LOGGER.info("Creating feedback ...");
     Feedback savedFeedback = feedbackRepository.save(feedback);
     Hairdresser hairdresser = savedFeedback.getAppointment().getHairdresser();
     hairdresserService.updateRating(hairdresser);
-    return savedFeedback;
   }
 
   /**
@@ -52,6 +55,7 @@ public class FeedbackServiceImpl implements FeedbackService {
    */
   @Override
   public Optional<Feedback> getFeedbackById(Long id) {
+    LOGGER.info("Getting feedback by ID ...");
     return feedbackRepository.findById(id);
   }
 }

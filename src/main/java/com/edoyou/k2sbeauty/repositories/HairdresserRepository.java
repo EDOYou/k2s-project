@@ -21,14 +21,6 @@ import java.util.List;
 public interface HairdresserRepository extends JpaRepository<Hairdresser, Long> {
 
   /**
-   * Finds hairdressers with a given specialization.
-   *
-   * @param specialization the specialization to search for.
-   * @return a list of hairdressers with the specified specialization.
-   */
-  List<Hairdresser> findBySpecialization(String specialization);
-
-  /**
    * Finds all hairdressers providing a specific beauty service, sorted according to the given Sort
    * parameter.
    *

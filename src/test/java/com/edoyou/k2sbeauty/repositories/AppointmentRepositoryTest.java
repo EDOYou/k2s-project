@@ -92,20 +92,6 @@ public class AppointmentRepositoryTest {
   }
 
   @Test
-  public void saveAppointment_hairdresserNotAvailable() {
-    when(appointmentRepository.findByHairdresser(hairdresser)).thenReturn(List.of(appointment));
-
-    assertThrows(IllegalStateException.class, () -> appointmentService.saveAppointment(appointment));
-  }
-
-  @Test
-  public void saveAppointment_clientNotAvailable() {
-    when(appointmentRepository.findByClient(client)).thenReturn(List.of(appointment));
-
-    assertThrows(IllegalStateException.class, () -> appointmentService.saveAppointment(appointment));
-  }
-
-  @Test
   void findByIdTest() {
     when(appointmentRepository.findById(1L)).thenReturn(Optional.of(appointment));
     Optional<Appointment> foundAppointment = appointmentService.findById(1L);

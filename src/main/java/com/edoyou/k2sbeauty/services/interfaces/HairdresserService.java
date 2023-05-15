@@ -15,7 +15,7 @@ import org.springframework.data.jpa.repository.Query;
  */
 public interface HairdresserService extends UserService {
 
-  Hairdresser saveHairdresser(Hairdresser hairdresser);
+  void saveHairdresser(Hairdresser hairdresser);
 
   /**
    * Retrieve all hairdressers from the database with optional sorting.
@@ -41,16 +41,6 @@ public interface HairdresserService extends UserService {
 
   @Query("SELECT h FROM Hairdresser h JOIN FETCH h.beautyServices")
   List<Hairdresser> findAllWithBeautyServices();
-
-  /**
-   * @param hairdresserDetails The hairdresser with updated information.
-   * @return The updated role.
-   * @throws IllegalArgumentException                                  If the given hairdresser's ID
-   *                                                                   is null.
-   * @throws com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException If the hairdresser is not
-   *                                                                   found in the repository.
-   */
-  Hairdresser updateHairdresser(Hairdresser hairdresserDetails);
 
   /**
    * Deleted the hairdresser from the repository.

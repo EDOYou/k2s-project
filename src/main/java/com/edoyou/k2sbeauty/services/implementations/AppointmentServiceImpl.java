@@ -1,7 +1,6 @@
 package com.edoyou.k2sbeauty.services.implementations;
 
 import com.edoyou.k2sbeauty.entities.model.Appointment;
-import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Client;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.entities.payment.PaymentStatus;
@@ -11,8 +10,9 @@ import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
 
-  private static final Logger LOGGER = Logger.getLogger(AppointmentServiceImpl.class.getName());
+  private static final Logger LOGGER = LogManager.getLogger(AppointmentServiceImpl.class.getName());
 
   private final AppointmentRepository appointmentRepository;
 
@@ -51,7 +51,7 @@ public class AppointmentServiceImpl implements AppointmentService {
    */
   @Override
   public Appointment saveAppointment(Appointment appointment) {
-    LOGGER.info("Saving appointment: " + appointment);
+    LOGGER.info("Saving Appointment: " + appointment);
     LocalDateTime now = LocalDateTime.now();
 
     if (appointment.getAppointmentTime().isBefore(now)) {
@@ -90,6 +90,7 @@ public class AppointmentServiceImpl implements AppointmentService {
    */
   @Override
   public void deleteAppointment(Long id, String userRole) {
+    LOGGER.info("Deleting the appointment...");
     Appointment appointment = appointmentRepository.findById(id)
         .orElseThrow(
             () -> new IllegalStateException("Appointment with id " + id + " does not exist."));
@@ -115,6 +116,7 @@ public class AppointmentServiceImpl implements AppointmentService {
    */
   @Override
   public List<Appointment> findByClient(Client client) {
+    LOGGER.info("Find Appointments by client...");
     return appointmentRepository.findByClient(client)
         .stream()
         .sorted(Comparator.comparing(Appointment::getAppointmentTime).reversed())
@@ -130,62 +132,8 @@ public class AppointmentServiceImpl implements AppointmentService {
    */
   @Override
   public List<Appointment> findByHairdresser(Hairdresser hairdresser) {
+    LOGGER.info("Find Appointments by hairdresser...");
     return appointmentRepository.findByHairdresser(hairdresser)
-        .stream()
-        .sorted(Comparator.comparing(Appointment::getAppointmentTime).reversed())
-        .collect(Collectors.toList());
-  }
-
-  /**
-   * Retrieves appointments for a specific beauty service. The method filters out appointments that
-   * are in the past, leaving only future appointments, sorted by date with the most recent
-   * appointments first.
-   *
-   * @param beautyService The beauty service for which to retrieve appointments.
-   * @return A list of appointments sorted by date.
-   */
-  @Override
-  public List<Appointment> findByBeautyService(BeautyService beautyService) {
-    if (beautyService == null) {
-      throw new IllegalArgumentException("BeautyService cannot be null.");
-    }
-
-    List<Appointment> allAppointments = appointmentRepository.findByBeautyService(beautyService);
-    LocalDateTime now = LocalDateTime.now();
-
-    return allAppointments.stream()
-        .filter(appointment -> appointment.getAppointmentTime().isAfter(now))
-        .sorted(Comparator.comparing(Appointment::getAppointmentTime).reversed())
-        .collect(Collectors.toList());
-  }
-
-  /**
-   * Retrieves appointments within a specific time range, sorted by date with the most recent
-   * appointments first.
-   *
-   * @param start The start of the time range for which to retrieve appointments.
-   * @param end   The end of the time range for which to retrieve appointments.
-   * @return A list of appointments sorted by date.
-   */
-  @Override
-  public List<Appointment> findByAppointmentTimeBetween(LocalDateTime start, LocalDateTime end) {
-    return appointmentRepository.findByAppointmentTimeBetween(start, end)
-        .stream()
-        .sorted(Comparator.comparing(Appointment::getAppointmentTime).reversed())
-        .collect(Collectors.toList());
-  }
-
-  /**
-   * Retrieves appointments for a specific client and hairdresser, sorted by date with the most
-   * recent appointments first.
-   *
-   * @param client      The client for whom to retrieve appointments.
-   * @param hairdresser The hairdresser for whom to retrieve appointments.
-   * @return A list of appointments sorted by date.
-   */
-  @Override
-  public List<Appointment> findByClientAndHairdresser(Client client, Hairdresser hairdresser) {
-    return appointmentRepository.findByClientAndHairdresser(client, hairdresser)
         .stream()
         .sorted(Comparator.comparing(Appointment::getAppointmentTime).reversed())
         .collect(Collectors.toList());
@@ -199,18 +147,20 @@ public class AppointmentServiceImpl implements AppointmentService {
       LOGGER.info("Fetched appointments: " + appointments);
       return appointments;
     } catch (Exception e) {
-      LOGGER.severe("Error fetching appointments: " + e.getMessage());
+      LOGGER.error("Error fetching appointments: " + e.getMessage());
       return Collections.emptyList();
     }
   }
 
   @Override
   public Optional<Appointment> findById(Long id) {
+    LOGGER.info("Find Appointment by ID...");
     return appointmentRepository.findById(id);
   }
 
   @Override
   public Appointment updateAppointment(Long id, Appointment appointmentDetails) {
+    LOGGER.info("Updating the appointment...");
     Appointment existingAppointment = appointmentRepository.findById(id)
         .orElseThrow(
             () -> new IllegalStateException("Appointment with id " + id + " does not exist."));
@@ -228,6 +178,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
   @Override
   public void updatePaymentStatus(Long appointmentId, PaymentStatus status) {
+    LOGGER.info("Updating payment status for appointment...");
     Appointment appointment = appointmentRepository.findById(appointmentId)
         .orElseThrow(() -> new ResourceNotFoundException(
             "Appointment not found for this id :: " + appointmentId));
@@ -238,15 +189,4 @@ public class AppointmentServiceImpl implements AppointmentService {
     appointmentRepository.save(appointment);
   }
 
-  @Override
-  public boolean isHairdresserAvailable(Long hairdresserId, Long serviceId,
-      LocalDateTime appointmentDateTime) {
-    List<Appointment> existingAppointments = appointmentRepository.findByHairdresserIdAndAppointmentTimeBetween(
-        hairdresserId,
-        appointmentDateTime.minusMinutes(1),
-        appointmentDateTime.plusMinutes(1)
-    );
-
-    return existingAppointments.isEmpty();
-  }
 }

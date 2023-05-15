@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public interface FeedbackService {
 
-  Feedback createFeedback(Feedback feedback);
+  void createFeedback(Feedback feedback);
 
   Optional<Feedback> getFeedbackById(Long id);
 }

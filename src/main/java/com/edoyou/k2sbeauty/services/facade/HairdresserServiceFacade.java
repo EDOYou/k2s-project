@@ -27,8 +27,9 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class HairdresserServiceFacade {
 
-  public static final Logger LOGGER = Logger.getLogger(HairdresserServiceFacade.class.getName());
+  public static final Logger LOGGER = LogManager.getLogger(HairdresserServiceFacade.class.getName());
   private final PasswordEncoder passwordEncoder;
   private final RoleService roleService;
   private final BeautyServiceService beautyServiceService;
@@ -60,6 +61,7 @@ public class HairdresserServiceFacade {
   }
 
   public AppointmentDTO getAppointments(String email) {
+    LOGGER.info("Getting appointments for a hairdresser ...");
     Optional<User> userOptional = hairdresserService.findUserByEmail(email);
     if (userOptional.isEmpty() || !(userOptional.get() instanceof Hairdresser hairdresser)) {
       throw new UserNotFoundException("The authenticated user is not a hairdresser.");
@@ -68,10 +70,10 @@ public class HairdresserServiceFacade {
       throw new UnauthorizedActionException("User does not exist or is not approved yet.");
     }
 
-    List<Appointment> appointments = appointmentService.findByHairdresser(hairdresser);
-    List<Appointment> completedAppointments = appointments.stream().filter(Appointment::isCompleted)
+    var appointments = appointmentService.findByHairdresser(hairdresser);
+    var completedAppointments = appointments.stream().filter(Appointment::isCompleted)
         .collect(Collectors.toList());
-    List<Appointment> pendingAppointments = appointments.stream()
+    var pendingAppointments = appointments.stream()
         .filter(appointment -> !appointment.isCompleted()).collect(
             Collectors.toList());
 
@@ -79,11 +81,13 @@ public class HairdresserServiceFacade {
   }
 
   public Map<LocalDate, List<TimeSlot>> getSchedule(String email) {
+    LOGGER.info("Getting schedule for a hairdresser ...");
     Hairdresser hairdresser = getAuthenticatedHairdresser(email);
     return hairdresserService.generateSchedule(hairdresser);
   }
 
   public void completeAppointment(Long id, String email) {
+    LOGGER.info("Hairdresser completed the appointment ...");
     Hairdresser hairdresser = getAuthenticatedHairdresser(email);
 
     Optional<Appointment> appointmentOptional = appointmentService.findById(id);
@@ -103,6 +107,7 @@ public class HairdresserServiceFacade {
   }
 
   private void notifyClient(Appointment appointment) {
+    LOGGER.info("Email sent to the client for feedback ...");
     ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     executorService.schedule(() -> {
       String clientEmail = appointment.getClient().getEmail();
@@ -122,11 +127,12 @@ public class HairdresserServiceFacade {
 
   public void registerHairdresser(Hairdresser hairdresser,
       Map<Integer, WorkingHoursDTO> workingHoursDtoMap) {
+    LOGGER.info("Registering the hairdresser ...");
 
     hairdresser.setPassword(passwordEncoder.encode(hairdresser.getPassword()));
     hairdresser.setRoles(Set.of(roleService.getRoleByName("ROLE_HAIRDRESSER").orElseThrow()));
 
-    List<BeautyService> services = beautyServiceService.findAllByIdIn(
+    var services = beautyServiceService.findAllByIdIn(
         hairdresser.getSelectedServiceIds());
     hairdresser.setBeautyServices(new HashSet<>(services));
 
@@ -139,14 +145,14 @@ public class HairdresserServiceFacade {
         hairdresser.getWorkingHours().add(workingHours);
 
         workingHoursService.saveWorkingHours(workingHours);
-        hairdresserService.saveHairdresser(hairdresser);
       }
     }
-
+    hairdresserService.saveHairdresser(hairdresser);
   }
 
   private WorkingHours findOrCreateWorkingHours(Integer dayOfWeekIndex,
       WorkingHoursDTO workingHoursDto) {
+    LOGGER.info("Finding if exists already in database, otherwise create a working hours ...");
     Optional<WorkingHours> existingWorkingHours = workingHoursService.findByDayOfWeekAndStartAndEnd(
         DayOfWeek.values()[dayOfWeekIndex], workingHoursDto.getStart(), workingHoursDto.getEnd());
 
