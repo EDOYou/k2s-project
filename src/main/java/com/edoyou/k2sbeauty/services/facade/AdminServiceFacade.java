@@ -1,0 +1,163 @@
+package com.edoyou.k2sbeauty.services.facade;
+
+import com.edoyou.k2sbeauty.entities.model.Appointment;
+import com.edoyou.k2sbeauty.entities.model.BeautyService;
+import com.edoyou.k2sbeauty.entities.model.Hairdresser;
+import com.edoyou.k2sbeauty.entities.model.Role;
+import com.edoyou.k2sbeauty.entities.model.WorkingHours;
+import com.edoyou.k2sbeauty.entities.payment.PaymentStatus;
+import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
+import com.edoyou.k2sbeauty.exceptions.RoleNotFoundException;
+import com.edoyou.k2sbeauty.services.implementations.NotificationService;
+import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
+import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
+import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
+import com.edoyou.k2sbeauty.services.interfaces.RoleService;
+import com.edoyou.k2sbeauty.services.interfaces.WorkingHoursService;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class AdminServiceFacade {
+
+  private final AppointmentService appointmentService;
+  private final HairdresserService hairdresserService;
+  private final BeautyServiceService beautyServiceService;
+  private final RoleService roleService;
+  private final NotificationService notificationService;
+  private final WorkingHoursService workingHoursService;
+  private final EntityManager entityManager;
+
+  @Autowired
+  public AdminServiceFacade(AppointmentService appointmentService,
+      HairdresserService hairdresserService,
+      BeautyServiceService beautyServiceService,
+      RoleService roleService,
+      NotificationService notificationService,
+      WorkingHoursService workingHoursService,
+      EntityManager entityManager) {
+    this.appointmentService = appointmentService;
+    this.hairdresserService = hairdresserService;
+    this.beautyServiceService = beautyServiceService;
+    this.roleService = roleService;
+    this.notificationService = notificationService;
+    this.workingHoursService = workingHoursService;
+    this.entityManager = entityManager;
+  }
+
+  public List<Appointment> findAllAppointments() {
+    return this.appointmentService.findAllAppointments();
+  }
+
+  public void changeTimeSlot(Long appointmentId, String newTimeSlot) {
+    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    LocalDateTime newAppointmentTime = LocalDateTime.parse(newTimeSlot, formatter);
+    Appointment appointment = appointmentService.findById(appointmentId)
+        .orElseThrow(() -> new ResourceNotFoundException(
+            "Appointment not found for this id :: " + appointmentId));
+
+    appointment.setAppointmentTime(newAppointmentTime);
+    appointmentService.updateAppointment(appointmentId, appointment);
+  }
+
+  public void updatePaymentStatus(Long appointmentId) {
+    PaymentStatus status = PaymentStatus.fromString("PAID", PaymentStatus.PENDING);
+    appointmentService.updatePaymentStatus(appointmentId, status);
+  }
+
+  public void cancelAppointment(Long appointmentId) {
+    appointmentService.deleteAppointment(appointmentId, "ROLE_ADMIN");
+  }
+
+  @Transactional
+  public void approveHairdresser(Long hairdresserId) {
+    Hairdresser hairdresser = hairdresserService.findById(hairdresserId);
+
+    if (hairdresser == null) {
+      throw new ResourceNotFoundException("Hairdresser not found for this id :: " + hairdresserId);
+    }
+
+    Role hairdresserRole = roleService.getRoleByName("ROLE_HAIRDRESSER")
+        .orElseThrow(() -> new RoleNotFoundException("Role not found."));
+
+    hairdresser.getRoles().removeIf(role -> role.getName().equals("ROLE_APPLICANT"));
+    hairdresser.getRoles().add(hairdresserRole);
+    hairdresser.setApproved(true);
+    hairdresserService.saveHairdresser(hairdresser);
+    notifyHairdresser(hairdresser);
+  }
+
+  @Transactional
+  public void rejectHairdresser(Long hairdresserId) {
+    Hairdresser hairdresser = hairdresserService.findById(hairdresserId);
+
+    if (hairdresser == null) {
+      throw new ResourceNotFoundException("Hairdresser not found for this id :: " + hairdresserId);
+    }
+
+    Set<WorkingHours> workingHoursSet = hairdresser.getWorkingHours();
+    notifyHairdresser(hairdresser);
+    hairdresserService.deleteHairdresser(hairdresserId);
+    entityManager.flush();
+    deleteWorkingHours(workingHoursSet);
+  }
+
+  public List<Hairdresser> findAllYetNotApproved(Boolean isApproved) {
+    return hairdresserService.findAllHairdressersByApprovalStatus(isApproved);
+  }
+
+  public List<Hairdresser> findAllHairdressers() {
+    return hairdresserService.findAllHairdressers();
+  }
+
+  public void saveService(BeautyService beautyService) {
+    beautyServiceService.saveService(beautyService);
+  }
+
+  public List<BeautyService> findAllBeautyServices() {
+    return beautyServiceService.findAllServices();
+  }
+
+  @Transactional
+  public void assignServiceToHairdresser(Long hairdresserId, Long serviceId) {
+    Hairdresser hairdresser = hairdresserService.findById(hairdresserId);
+    if (hairdresser == null) {
+      throw new ResourceNotFoundException("Hairdresser not found for this id :: " + hairdresserId);
+    }
+    BeautyService beautyService = beautyServiceService.findById(serviceId).orElseThrow();
+    hairdresser.getBeautyServices().add(beautyService);
+    hairdresserService.saveHairdresser(hairdresser);
+  }
+
+  public List<Hairdresser> findHairdressersWithServices() {
+    return hairdresserService.findAllWithBeautyServices();
+  }
+
+  private void deleteWorkingHours(Set<WorkingHours> workingHoursSet) {
+    for (WorkingHours workingHours : workingHoursSet) {
+      entityManager.refresh(workingHours);
+      if (workingHours.getHairdressers().isEmpty()) {
+        workingHoursService.deleteWorkingHours(workingHours.getId());
+      }
+    }
+  }
+
+  private void notifyHairdresser(Hairdresser hairdresser) {
+    if (hairdresser.isApproved()) {
+      String message = "Dear " + hairdresser.getFirstName()
+          + ", your application has been approved. Welcome to our team!";
+      notificationService.sendNotification(hairdresser.getEmail(), "Application Approved", message);
+    } else {
+      String message = "Dear " + hairdresser.getFirstName()
+          + ", your application has been reviewed and unfortunately, you were not accepted at this time. Please consider applying again in the future.";
+      notificationService.sendNotification(hairdresser.getEmail(), "Application Rejected", message);
+    }
+  }
+
+}

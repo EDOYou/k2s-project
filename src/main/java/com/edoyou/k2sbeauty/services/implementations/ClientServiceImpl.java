@@ -44,8 +44,6 @@ public class ClientServiceImpl implements ClientService {
 
   @Override
   public Optional<Client> findClientByEmail(String email) {
-    Client client = clientRepository.findByEmail(email);
     return Optional.ofNullable(clientRepository.findByEmail(email));
   }
-
 }
