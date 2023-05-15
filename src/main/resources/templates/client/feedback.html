@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Feedback</title>
+  <!-- add your necessary CSS and JavaScript files here -->
+</head>
+<body>
+<h1>Leave your feedback</h1>
+<form th:action="@{/client/feedback}" th:object="${feedback}" method="post">
+  <input type="hidden" id="appointmentId" name="appointmentId" th:value="${appointmentId}" />
+  <label for="comment">Comment:</label><br>
+  <textarea id="comment" name="comment" required></textarea><br>
+  <label for="rating">Rating:</label><br>
+  <select id="rating" name="rating" required>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+  </select><br>
+  <input type="submit" value="Submit">
+</form>
+</body>
+</html>

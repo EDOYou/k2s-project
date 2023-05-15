@@ -11,8 +11,10 @@ import com.edoyou.k2sbeauty.entities.model.appointment_details.TimeSlot;
 import com.edoyou.k2sbeauty.exceptions.AppointmentNotFoundException;
 import com.edoyou.k2sbeauty.exceptions.UnauthorizedActionException;
 import com.edoyou.k2sbeauty.exceptions.UserNotFoundException;
+import com.edoyou.k2sbeauty.services.implementations.NotificationService;
 import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
+import com.edoyou.k2sbeauty.services.interfaces.FeedbackService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
 import com.edoyou.k2sbeauty.services.interfaces.RoleService;
 import com.edoyou.k2sbeauty.services.interfaces.WorkingHoursService;
@@ -23,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,20 +44,25 @@ public class HairdresserServiceFacade {
   private final HairdresserService hairdresserService;
   private final AppointmentService appointmentService;
   private final WorkingHoursService workingHoursService;
+  private final NotificationService notificationService;
+  private final FeedbackService feedbackService;
 
 
   @Autowired
   public HairdresserServiceFacade(PasswordEncoder passwordEncoder, RoleService roleService,
       BeautyServiceService beautyServiceService, HairdresserService hairdresserService,
-      AppointmentService appointmentService, WorkingHoursService workingHoursService) {
+      AppointmentService appointmentService, WorkingHoursService workingHoursService,
+      NotificationService notificationService,
+      FeedbackService feedbackService) {
     this.passwordEncoder = passwordEncoder;
     this.roleService = roleService;
     this.beautyServiceService = beautyServiceService;
     this.hairdresserService = hairdresserService;
     this.appointmentService = appointmentService;
     this.workingHoursService = workingHoursService;
+    this.notificationService = notificationService;
+    this.feedbackService = feedbackService;
   }
-
 
   public AppointmentDTO getAppointments(String email) {
     Optional<User> userOptional = hairdresserService.findUserByEmail(email);
@@ -94,6 +104,19 @@ public class HairdresserServiceFacade {
 
     appointment.setCompleted(true);
     appointmentService.saveAppointment(appointment);
+    notifyClient(appointment);
+    hairdresserService.updateRating(hairdresser);
+  }
+
+  private void notifyClient(Appointment appointment) {
+    ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    executorService.schedule(() -> {
+      String clientEmail = appointment.getClient().getEmail();
+      LOGGER.info("Client e-mail : " + clientEmail);
+      String subject = "We'd love to hear your feedback!";
+      String text = "http://localhost:8080/client/feedback";
+      notificationService.sendNotification(clientEmail, subject, text);
+    }, 0, TimeUnit.DAYS);
   }
 
   private Hairdresser getAuthenticatedHairdresser(String email) {

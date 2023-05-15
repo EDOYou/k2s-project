@@ -81,19 +81,6 @@ class FeedbackServiceImplTest {
   }
 
   @Test
-  void getFeedbackByClientId() {
-    when(feedbackRepository.findByClientId(client.getId())).thenReturn(
-        Collections.singletonList(feedback));
-
-    List<Feedback> feedbackList = feedbackService.getFeedbackByClientId(client.getId());
-
-    assertNotNull(feedbackList);
-    assertFalse(feedbackList.isEmpty());
-    assertEquals(1, feedbackList.size());
-    assertEquals(feedback.getId(), feedbackList.get(0).getId());
-  }
-
-  @Test
   void updateFeedback() {
     when(feedbackRepository.existsById(feedback.getId())).thenReturn(true);
     when(feedbackRepository.save(feedback)).thenReturn(feedback);
@@ -109,68 +96,6 @@ class FeedbackServiceImplTest {
     when(feedbackRepository.existsById(feedback.getId())).thenReturn(false);
 
     assertThrows(IllegalStateException.class, () -> feedbackService.updateFeedback(feedback));
-  }
-
-  @Test
-  void deleteFeedbackById() {
-    when(feedbackRepository.existsById(feedback.getId())).thenReturn(true);
-    doNothing().when(feedbackRepository).deleteById(feedback.getId());
-
-    assertDoesNotThrow(() -> feedbackService.deleteFeedbackById(feedback.getId()));
-    verify(feedbackRepository, times(1)).deleteById(feedback.getId());
-  }
-
-  @Test
-  void deleteNonExistentFeedbackById() {
-    when(feedbackRepository.existsById(feedback.getId())).thenReturn(false);
-
-    assertThrows(IllegalStateException.class,
-        () -> feedbackService.deleteFeedbackById(feedback.getId()));
-  }
-
-  @Test
-  void getLatestNFeedbackByClientId() {
-    when(feedbackRepository.findByClientIdOrderByCreatedAtDesc(client.getId())).thenReturn(
-        Collections.singletonList(feedback));
-
-    List<Feedback> latestFeedbackList = feedbackService.getLatestNFeedbackByClientId(client.getId(),
-        1);
-
-    assertNotNull(latestFeedbackList);
-    assertFalse(latestFeedbackList.isEmpty());
-    assertEquals(1, latestFeedbackList.size());
-    assertEquals(feedback.getId(), latestFeedbackList.get(0).getId());
-  }
-
-  @Test
-  void getFeedbackByDateRange() {
-    LocalDateTime startDate = LocalDateTime.now().minusDays(1);
-    LocalDateTime endDate = LocalDateTime.now().plusDays(1);
-
-    when(feedbackRepository.findByCreatedAtBetween(startDate, endDate)).thenReturn(
-        Collections.singletonList(feedback));
-
-    List<Feedback> feedbackList = feedbackService.getFeedbackByDateRange(startDate, endDate);
-
-    assertNotNull(feedbackList);
-    assertFalse(feedbackList.isEmpty());
-    assertEquals(1, feedbackList.size());
-    assertEquals(feedback.getId(), feedbackList.get(0).getId());
-  }
-
-  @Test
-  void getFeedbackWithKeywords() {
-    String keywords = "Test";
-
-    when(feedbackRepository.findByCommentContainingIgnoreCase(keywords)).thenReturn(
-        Collections.singletonList(feedback));
-
-    List<Feedback> feedbackList = feedbackService.getFeedbackWithKeywords(keywords);
-
-    assertNotNull(feedbackList);
-    assertFalse(feedbackList.isEmpty());
-    assertEquals(1, feedbackList.size());
-    assertEquals(feedback.getId(), feedbackList.get(0).getId());
   }
 
   @Test

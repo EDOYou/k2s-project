@@ -129,24 +129,5 @@ public class Hairdresser extends User {
         '}';
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    if (!super.equals(o)) {
-      return false;
-    }
-    Hairdresser that = (Hairdresser) o;
-    return Double.compare(that.rating, rating) == 0 && isApproved == that.isApproved
-        && Objects.equals(specialization, that.specialization);
-  }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(super.hashCode(), specialization, rating, isApproved);
-  }
 }

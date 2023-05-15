@@ -24,7 +24,7 @@ public class Appointment {
   @JoinColumn(nullable = false)
   private Client client;
 
-  @ManyToOne(cascade = CascadeType.MERGE)
+  @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
   @JoinColumn(nullable = false)
   private Hairdresser hairdresser;
 

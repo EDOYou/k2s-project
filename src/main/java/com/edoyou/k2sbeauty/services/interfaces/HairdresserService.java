@@ -18,14 +18,6 @@ public interface HairdresserService extends UserService {
   Hairdresser saveHairdresser(Hairdresser hairdresser);
 
   /**
-   * Find hairdressers by their specialization.
-   *
-   * @param specialization The specialization to search for.
-   * @return A list of hairdressers with the given specialization.
-   */
-  List<Hairdresser> findBySpecialization(String specialization);
-
-  /**
    * Retrieve all hairdressers from the database with optional sorting.
    *
    * @param sortBy The sorting criteria, can be null.
@@ -72,4 +64,6 @@ public interface HairdresserService extends UserService {
   List<Hairdresser> findAllHairdressersByApprovalStatus(boolean isApproved);
 
   Map<LocalDate, List<TimeSlot>> generateSchedule(Hairdresser hairdresser);
+
+  void updateRating(Hairdresser hairdresser);
 }

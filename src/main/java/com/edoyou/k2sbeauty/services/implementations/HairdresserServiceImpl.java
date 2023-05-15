@@ -1,6 +1,7 @@
 package com.edoyou.k2sbeauty.services.implementations;
 
 import com.edoyou.k2sbeauty.entities.model.Appointment;
+import com.edoyou.k2sbeauty.entities.model.Feedback;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.entities.model.appointment_details.TimeSlot;
 import com.edoyou.k2sbeauty.entities.model.WorkingHours;
@@ -10,17 +11,13 @@ import com.edoyou.k2sbeauty.repositories.RoleRepository;
 import com.edoyou.k2sbeauty.repositories.UserRepository;
 import com.edoyou.k2sbeauty.services.implementations.appointment_details.TimeSlotService;
 import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
+import com.edoyou.k2sbeauty.services.interfaces.FeedbackService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,17 +41,20 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
   private final HairdresserRepository hairdresserRepository;
   private final AppointmentService appointmentService;
   private final TimeSlotService timeSlotService;
+  private final FeedbackService feedbackService;
 
   @Autowired
   public HairdresserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
       HairdresserRepository hairdresserRepository,
       AppointmentService appointmentService,
       PasswordEncoder passwordEncoder,
-      TimeSlotService timeSlotService) {
+      TimeSlotService timeSlotService,
+      FeedbackService feedbackService) {
     super(userRepository, roleRepository, passwordEncoder);
     this.hairdresserRepository = hairdresserRepository;
     this.appointmentService = appointmentService;
     this.timeSlotService = timeSlotService;
+    this.feedbackService = feedbackService;
   }
 
 
@@ -62,12 +62,6 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
   public Hairdresser saveHairdresser(Hairdresser hairdresser) {
     LOGGER.info("Saving hairdresser.");
     return hairdresserRepository.save(hairdresser);
-  }
-
-  @Override
-  public List<Hairdresser> findBySpecialization(String specialization) {
-    LOGGER.info("Searching hairdresser by specialization.");
-    return hairdresserRepository.findBySpecialization(specialization);
   }
 
   @Override
@@ -212,6 +206,28 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
     }
 
     return schedule;
+  }
+
+  @Override
+  public void updateRating(Hairdresser hairdresser) {
+    double totalRating = 0.0;
+    int numberOfRatings = 0;
+
+    // Iterate through all appointments of the hairdresser
+    for (Appointment appointment : hairdresser.getAppointments()) {
+      // Get the feedback related to the appointment
+      Feedback feedback = feedbackService.getFeedbackById(appointment.getId()).orElseThrow();
+
+      totalRating += feedback.getRating();
+      numberOfRatings++;
+    }
+
+    // Calculate the average rating and set it as the hairdresser's rating
+    if (numberOfRatings > 0) {
+      double averageRating = totalRating / numberOfRatings;
+      hairdresser.setRating(averageRating);
+      hairdresserRepository.save(hairdresser);
+    }
   }
 
 }

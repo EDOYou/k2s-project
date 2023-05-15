@@ -2,6 +2,7 @@ package com.edoyou.k2sbeauty.controllers;
 
 import com.edoyou.k2sbeauty.entities.model.Appointment;
 import com.edoyou.k2sbeauty.entities.model.Client;
+import com.edoyou.k2sbeauty.entities.model.Feedback;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.services.facade.ClientServiceFacade;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,19 @@ public class ClientController {
     List<Appointment> appointments = clientServiceFacade.getClientAppointments(authentication);
     model.addAttribute("appointments", appointments);
     return "client/appointments";
+  }
+
+  @GetMapping("/client/feedback")
+  public String showFeedbackForm(Model model) {
+    model.addAttribute("feedback", new Feedback());
+    return "client/feedback";
+  }
+
+  @PostMapping("/client/feedback")
+  public String submitFeedback(Authentication authentication,
+      @ModelAttribute("feedback") Feedback feedback, @RequestParam Long appointmentId) {
+    clientServiceFacade.saveFeedback(authentication, appointmentId, feedback);
+    return "redirect:/client/appointments";
   }
 
   @GetMapping("/register")

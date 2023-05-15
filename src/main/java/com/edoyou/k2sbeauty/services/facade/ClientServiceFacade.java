@@ -3,14 +3,17 @@ package com.edoyou.k2sbeauty.services.facade;
 import com.edoyou.k2sbeauty.entities.model.Appointment;
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Client;
+import com.edoyou.k2sbeauty.entities.model.Feedback;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.entities.model.appointment_details.TimeSlot;
 import com.edoyou.k2sbeauty.entities.payment.PaymentStatus;
+import com.edoyou.k2sbeauty.exceptions.AppointmentNotFoundException;
 import com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException;
 import com.edoyou.k2sbeauty.repositories.RoleRepository;
 import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import com.edoyou.k2sbeauty.services.interfaces.ClientService;
+import com.edoyou.k2sbeauty.services.interfaces.FeedbackService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
 import com.edoyou.k2sbeauty.services.implementations.appointment_details.TimeSlotService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ClientServiceFacade {
@@ -36,12 +40,13 @@ public class ClientServiceFacade {
   private final PasswordEncoder passwordEncoder;
   private final RoleRepository roleRepository;
   private final TimeSlotService timeSlotService;
+  private final FeedbackService feedbackService;
 
   @Autowired
   public ClientServiceFacade(ClientService clientService, HairdresserService hairdresserService,
       BeautyServiceService beautyServiceService, AppointmentService appointmentService,
       PasswordEncoder passwordEncoder, RoleRepository roleRepository,
-      TimeSlotService timeSlotService) {
+      TimeSlotService timeSlotService, FeedbackService feedbackService) {
     this.clientService = clientService;
     this.hairdresserService = hairdresserService;
     this.beautyServiceService = beautyServiceService;
@@ -49,6 +54,7 @@ public class ClientServiceFacade {
     this.passwordEncoder = passwordEncoder;
     this.roleRepository = roleRepository;
     this.timeSlotService = timeSlotService;
+    this.feedbackService = feedbackService;
   }
 
   public void processRegistrationForm(Client client) {
@@ -112,6 +118,24 @@ public class ClientServiceFacade {
             "Client not found with email: " + userDetails.getUsername()));
 
     return appointmentService.findByClient(client);
+  }
+
+  @Transactional
+  public void saveFeedback(Authentication authentication, Long appointmentId, Feedback feedback) {
+
+    Appointment appointment = appointmentService.findById(appointmentId)
+        .orElseThrow(
+            () -> new AppointmentNotFoundException("No appointment found with the provided ID."));
+
+    feedback.setAppointment(appointment);
+
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    Client client = clientService.findClientByEmail(userDetails.getUsername()).orElseThrow(
+        () -> new UsernameNotFoundException(
+            "Client not found with email: " + userDetails.getUsername()));
+    feedback.setClient(client);
+    feedback.setCreatedAt(LocalDateTime.now());
+    feedbackService.createFeedback(feedback);
   }
 
 }
