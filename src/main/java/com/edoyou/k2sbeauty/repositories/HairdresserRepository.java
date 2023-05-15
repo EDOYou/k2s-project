@@ -1,6 +1,7 @@
 package com.edoyou.k2sbeauty.repositories;
 
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
+import java.util.Optional;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -46,4 +47,7 @@ public interface HairdresserRepository extends JpaRepository<Hairdresser, Long> 
   List<Hairdresser> findByIsApprovedTrue();
 
   List<Hairdresser> findByIsApprovedTrue(Sort sort);
+
+  @Query("SELECT h FROM Hairdresser h JOIN FETCH h.appointments WHERE h.id = :id")
+  Optional<Hairdresser> findByIdWithAppointments(@Param("id") Long id);
 }

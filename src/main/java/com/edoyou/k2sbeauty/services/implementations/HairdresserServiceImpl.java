@@ -16,6 +16,7 @@ import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -210,16 +211,21 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
 
   @Override
   public void updateRating(Hairdresser hairdresser) {
+    Hairdresser hairdresserWithAppointments = hairdresserRepository.findByIdWithAppointments(hairdresser.getId())
+        .orElseThrow(() -> new ResourceNotFoundException("Hairdresser with id " + hairdresser.getId() + " not found"));
+
     double totalRating = 0.0;
     int numberOfRatings = 0;
 
     // Iterate through all appointments of the hairdresser
-    for (Appointment appointment : hairdresser.getAppointments()) {
+    for (Appointment appointment : hairdresserWithAppointments.getAppointments()) {
       // Get the feedback related to the appointment
-      Feedback feedback = feedbackService.getFeedbackById(appointment.getId()).orElseThrow();
-
-      totalRating += feedback.getRating();
-      numberOfRatings++;
+      Optional<Feedback> optionalFeedback = feedbackService.getFeedbackById(appointment.getId());
+      if (optionalFeedback.isPresent()) {
+        Feedback feedback = optionalFeedback.get();
+        totalRating += feedback.getRating();
+        numberOfRatings++;
+      }
     }
 
     // Calculate the average rating and set it as the hairdresser's rating

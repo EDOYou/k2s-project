@@ -135,6 +135,7 @@ public class ClientServiceFacade {
             "Client not found with email: " + userDetails.getUsername()));
     feedback.setClient(client);
     feedback.setCreatedAt(LocalDateTime.now());
+    System.out.println(feedback);
     feedbackService.createFeedback(feedback);
   }
 

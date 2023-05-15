@@ -14,7 +14,6 @@ import com.edoyou.k2sbeauty.exceptions.UserNotFoundException;
 import com.edoyou.k2sbeauty.services.implementations.NotificationService;
 import com.edoyou.k2sbeauty.services.interfaces.AppointmentService;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
-import com.edoyou.k2sbeauty.services.interfaces.FeedbackService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
 import com.edoyou.k2sbeauty.services.interfaces.RoleService;
 import com.edoyou.k2sbeauty.services.interfaces.WorkingHoursService;
@@ -45,15 +44,12 @@ public class HairdresserServiceFacade {
   private final AppointmentService appointmentService;
   private final WorkingHoursService workingHoursService;
   private final NotificationService notificationService;
-  private final FeedbackService feedbackService;
-
 
   @Autowired
   public HairdresserServiceFacade(PasswordEncoder passwordEncoder, RoleService roleService,
       BeautyServiceService beautyServiceService, HairdresserService hairdresserService,
       AppointmentService appointmentService, WorkingHoursService workingHoursService,
-      NotificationService notificationService,
-      FeedbackService feedbackService) {
+      NotificationService notificationService) {
     this.passwordEncoder = passwordEncoder;
     this.roleService = roleService;
     this.beautyServiceService = beautyServiceService;
@@ -61,7 +57,6 @@ public class HairdresserServiceFacade {
     this.appointmentService = appointmentService;
     this.workingHoursService = workingHoursService;
     this.notificationService = notificationService;
-    this.feedbackService = feedbackService;
   }
 
   public AppointmentDTO getAppointments(String email) {
@@ -105,16 +100,14 @@ public class HairdresserServiceFacade {
     appointment.setCompleted(true);
     appointmentService.saveAppointment(appointment);
     notifyClient(appointment);
-    hairdresserService.updateRating(hairdresser);
   }
 
   private void notifyClient(Appointment appointment) {
     ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     executorService.schedule(() -> {
       String clientEmail = appointment.getClient().getEmail();
-      LOGGER.info("Client e-mail : " + clientEmail);
       String subject = "We'd love to hear your feedback!";
-      String text = "http://localhost:8080/client/feedback";
+      String text = "http://localhost:8080/login?redirectUrl=/client/feedback?appointmentId=" + appointment.getId();
       notificationService.sendNotification(clientEmail, subject, text);
     }, 0, TimeUnit.DAYS);
   }

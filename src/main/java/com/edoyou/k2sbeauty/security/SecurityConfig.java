@@ -16,9 +16,9 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+  private static final Logger LOGGER = Logger.getLogger(SecurityConfig.class.getName());
   private final CustomUserDetailsService customUserDetailsService;
   private final PasswordEncoder passwordEncoder;
-  private static final Logger LOGGER = Logger.getLogger(SecurityConfig.class.getName());
 
   @Autowired
   public SecurityConfig(CustomUserDetailsService customUserDetailsService,
@@ -32,7 +32,6 @@ public class SecurityConfig {
     System.out.println("configureGlobal called");
     auth.userDetailsService(customUserDetailsService)
         .passwordEncoder(passwordEncoder);
-    //System.out.println("Using PasswordEncoder in ConfigureGlobal: " + passwordEncoder);
   }
 
   @Bean
@@ -40,10 +39,9 @@ public class SecurityConfig {
     http
         .authorizeHttpRequests(requests -> requests
             .requestMatchers("/", "/home", "/register", "/guest", "/guest/**",
-                "/hairdresser/register_hairdresser").permitAll()
-            .requestMatchers(HttpMethod.GET, "/", "/client/book", "/client/appointments")
-            .permitAll()
-            .requestMatchers(HttpMethod.POST, "/client/book").authenticated()
+                "/hairdresser/register_hairdresser", "/client/feedback").permitAll()
+            .requestMatchers(HttpMethod.GET, "/client/**").hasRole("CLIENT")
+            .requestMatchers(HttpMethod.POST, "/client/book").hasRole("CLIENT")
             .requestMatchers("/admin/**").hasRole("ADMIN")
             .requestMatchers("/hairdresser/**").hasRole("HAIRDRESSER")
             .anyRequest().authenticated()
@@ -58,21 +56,27 @@ public class SecurityConfig {
             .failureUrl("/login?error=true")
             .successHandler((request, response, authentication) -> {
               LOGGER.info("User '{" + authentication.getName() + "}' logged in successfully");
-              String redirectURL;
+              String redirectUrl = request.getParameter("redirectUrl");
 
+              if (redirectUrl != null && !redirectUrl.isEmpty()) {
+                response.sendRedirect(redirectUrl);
+                return;
+              }
+
+              String defaultRedirectURL;
               if (authentication.getAuthorities().stream()
                   .anyMatch(
                       grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
-                redirectURL = "/admin/dashboard";
+                defaultRedirectURL = "/admin/dashboard";
               } else if (authentication.getAuthorities().stream().anyMatch(
                   grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_HAIRDRESSER"))) {
-                redirectURL = "/hairdresser/appointments";
+                defaultRedirectURL = "/hairdresser/appointments";
               } else {
-                redirectURL = "/client/appointments";
+                defaultRedirectURL = "/client/appointments";
               }
-              LOGGER.info("URL in success: " + redirectURL);
-              response.sendRedirect(redirectURL);
 
+              LOGGER.info("URL in success: " + defaultRedirectURL);
+              response.sendRedirect(defaultRedirectURL);
             })
             .failureHandler((request, response, exception) -> {
               LOGGER.warning("Login failure: {" + exception.getMessage() + "}");

@@ -76,14 +76,21 @@ public class ClientController {
   }
 
   @GetMapping("/client/feedback")
-  public String showFeedbackForm(Model model) {
+  public String showFeedbackForm(@RequestParam("appointmentId") Long appointmentId, Model model) {
     model.addAttribute("feedback", new Feedback());
+    model.addAttribute("appointmentId", appointmentId);
     return "client/feedback";
   }
 
   @PostMapping("/client/feedback")
   public String submitFeedback(Authentication authentication,
-      @ModelAttribute("feedback") Feedback feedback, @RequestParam Long appointmentId) {
+      @ModelAttribute("feedback") Feedback feedback,
+      @RequestParam("appointmentId") Long appointmentId) {
+    if (authentication == null || !authentication.isAuthenticated()) {
+      // User is not authenticated, redirect to login page
+      return "redirect:/login";
+    }
+    // User is authenticated, proceed with saving feedback
     clientServiceFacade.saveFeedback(authentication, appointmentId, feedback);
     return "redirect:/client/appointments";
   }

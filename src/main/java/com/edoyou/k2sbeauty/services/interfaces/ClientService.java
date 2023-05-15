@@ -6,7 +6,6 @@ import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface ClientService {
 
@@ -26,10 +25,7 @@ public interface ClientService {
    */
   List<Client> findByAppointmentsHairdresser(Hairdresser hairdresser);
 
-  Optional<Client> findClientById(Long id);
-
   Optional<Client> findClientByEmail(String email);
 
   void saveClient(Client client);
 }
-

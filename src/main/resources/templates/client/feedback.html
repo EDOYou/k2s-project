@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
   <title>Feedback</title>
   <!-- add your necessary CSS and JavaScript files here -->
@@ -7,7 +7,8 @@
 <body>
 <h1>Leave your feedback</h1>
 <form th:action="@{/client/feedback}" th:object="${feedback}" method="post">
-  <input type="hidden" id="appointmentId" name="appointmentId" th:value="${appointmentId}" />
+  <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+  <input type="hidden" id="appointmentId" name="appointmentId" th:value="${appointmentId}"/>
   <label for="comment">Comment:</label><br>
   <textarea id="comment" name="comment" required></textarea><br>
   <label for="rating">Rating:</label><br>
