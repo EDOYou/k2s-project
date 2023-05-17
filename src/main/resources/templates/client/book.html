@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <title>Book Appointment</title>
+  <title th:text="#{client_book.title}"></title>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <!-- Add Bootstrap CSS link here -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <script>
     function updateHairdressers() {
       const serviceName = document.getElementById("serviceId").value;
@@ -12,7 +15,7 @@
       const hairdressers = document.querySelectorAll("#hairdresserId option");
 
       hairdressers.forEach((hairdresser) => {
-        const services = hairdresser.getAttribute("data-services").split(",");
+        const services = hairdresser.getAttribute("data-services").split(",").map(service => service.trim());
         console.log("Hairdresser:", hairdresser.textContent, "Services:", services);
 
         // Additional debugging information
@@ -65,39 +68,113 @@
       updateHairdressers();
     });
   </script>
+  <style>
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      padding: 1rem 0;
+      background-color: #b39c4d;
+      color: #020202;
+    }
+
+    #lang-selector {
+      position: fixed;
+      top: 2%;
+      right: 2%;
+    }
+
+    #lang-selector img {
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      margin: 5px;
+    }
+  </style>
 </head>
+
 <body>
-<h1>Book an Appointment</h1>
-<form th:action="@{/client/book}" method="post">
-  <label for="hairdresserId">Hairdresser:</label>
-  <select id="hairdresserId" name="hairdresserId"
-          onchange="updateTimeSlots(this.value, document.getElementById('serviceId').value)">
-    <option th:each="hairdresser : ${hairdressers}"
-            th:value="${hairdresser.id}"
-            th:text="${hairdresser.firstName + ' ' + hairdresser.lastName}"
-            th:attr="data-services=${#strings.replace(#strings.replace(hairdresser.getBeautyServicesNames(), '[', ''), ']', '')}">
-    </option>
-  </select>
+<div class="container">
+  <h1 class="mt-4" th:text="#{client_book.header1}"></h1>
+  <form th:action="@{/client/book}" method="post">
+    <div class="form-group">
+      <label for="hairdresserId" th:text="#{client_book.hairdresser}"></label>
+      <select id="hairdresserId" name="hairdresserId"
+              onchange="updateTimeSlots(this.value, document.getElementById('serviceId').value)"
+              class="form-control">
+        <option th:each="hairdresser : ${hairdressers}"
+                th:value="${hairdresser.id}"
+                th:text="${hairdresser.firstName + ' ' + hairdresser.lastName}"
+                th:attr="data-services=${#strings.replace(#strings.replace(hairdresser.getBeautyServicesNames(), '[', ''), ']', '')}">
+        </option>
+      </select>
+    </div>
 
-  <br>
+    <div class="form-group">
+      <label for="serviceId" th:text="#{client_book.service}"></label>
+      <select id="serviceId" name="serviceName" onchange="updateHairdressers()" class="form-control">
+        <option th:each="serviceName : ${services}"
+                th:value="${serviceName}"
+                th:text="${serviceName}">
+        </option>
+      </select>
+    </div>
 
-  <label for="serviceId">Service:</label>
-  <select id="serviceId" name="serviceName" onchange="updateHairdressers()">
-    <option th:each="serviceName : ${services}"
-            th:value="${serviceName}"
-            th:text="${serviceName}">
-    </option>
-  </select>
+    <div class="form-group">
+      <label for="timeSlotId" th:text="#{client_book.timeSlot}"></label>
+      <select id="timeSlotId" name="dateTime" class="form-control">
+        <!-- Time slot options will be populated by JavaScript -->
+      </select>
+    </div>
 
-  <br>
-  <label for="timeSlotId">Time Slot:</label>
-  <select id="timeSlotId" name="dateTime">
-    <!-- Time slot options will be populated by JavaScript -->
-  </select>
+    <button type="submit" class="btn btn-primary" th:text="#{client_book.book}"></button>
+  </form>
+</div>
 
-  <br>
+<div id="lang-selector">
+  <img
+      src="https://2.bp.blogspot.com/-5qMFKoqF-RI/Vy_gEJrqm6I/AAAAAAAAES4/jNwUhn50qXg5GyZGR9sMm8y_--_rLBRIQCLcB/s1600/flag%2Bof%2BEngland.jpg"
+      alt="English"
+      onclick="changeLanguage('en')">
+  <img
+      src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.h3jAUByreIZAoyLnKZtYEwHaEK%26pid%3DApi&f=1&ipt=e9080505754a9f5e6aeef31691ef811090554ba76a4d22963ebb3ab6710e7a0f&ipo=images"
+      alt="Azerbaijani"
+      onclick="changeLanguage('az')">
+</div>
 
-  <button type="submit">Book Appointment</button>
-</form>
+<footer>
+  <p>&copy; 2023 K2Salon. All rights reserved.</p>
+</footer>
+
+<script>
+  function changeLanguage(lang) {
+    const form = document.createElement('form');
+    form.method = 'get';
+    form.action = '/admin/changeLanguage';
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'lang';
+    hiddenInput.value = lang;
+    form.appendChild(hiddenInput);
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  $(document).ready(function () {
+    $("form").on("submit", function () {
+      $(this).find("button:submit").prop("disabled", true);
+    });
+  });
+</script>
+<!-- Add Bootstrap JS scripts here -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+  // JavaScript code here
+</script>
 </body>
+
 </html>

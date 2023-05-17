@@ -1,54 +1,132 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-  <title>Hairdresser Appointments</title>
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <title th:text="#{hairdresser_appointments.title}">Hairdresser Appointments</title>
+  <style>
+    body {
+      background-color: #333333;
+      color: #ffffff;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      padding: 1rem 0;
+      background-color: #b39c4d;
+      color: #020202;
+    }
+
+    #lang-selector {
+      position: fixed;
+      top: 2%;
+      right: 2%;
+    }
+
+    #lang-selector img {
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    .form-control, .btn {
+      border-radius: 50px;
+    }
+  </style>
 </head>
 
-<body>
-<h1>Hairdresser Appointments</h1>
-<h2>Completed Appointments</h2>
-<table>
-  <thead>
-  <tr>
-    <th>Date</th>
-    <th>Client</th>
-    <th>Service</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr th:each="appointment : ${completedAppointments}">
-    <td th:text="${appointment.appointmentTime}"></td>
-    <td th:text="${appointment.client.lastName + ' ' + appointment.client.firstName}"></td>
-    <td th:text="${appointment.beautyService.name}"></td>
-  </tr>
-  </tbody>
-</table>
+<body class="bg-dark text-white">
+<div class="container">
+  <h1 th:text="#{hairdresser_appointments.title}">Hairdresser Appointments</h1>
+  <h2 th:text="#{hairdresser_appointments.completed}">Completed Appointments</h2>
+  <table class="table table-dark">
+    <thead>
+    <tr>
+      <th th:text="#{hairdresser_appointments.date}">Date</th>
+      <th th:text="#{hairdresser_appointments.client}">Client</th>
+      <th th:text="#{client_appointments.service}">Service</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="appointment : ${completedAppointments}">
+      <td th:text="${appointment.appointmentTime}"></td>
+      <td th:text="${appointment.client.lastName + ' ' + appointment.client.firstName}"></td>
+      <td th:text="${appointment.beautyService.name}"></td>
+    </tr>
+    </tbody>
+  </table>
 
-<h2>Pending Appointments</h2>
-<table>
-  <thead>
-  <tr>
-    <th>Date</th>
-    <th>Client</th>
-    <th>Service</th>
-    <th>Action</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr th:each="appointment : ${pendingAppointments}">
-    <td th:text="${appointment.appointmentTime}"></td>
-    <td th:text="${appointment.client.lastName + ' ' + appointment.client.firstName}"></td>
-    <td th:text="${appointment.beautyService.name}"></td>
-    <td th:text="${appointment.isCompleted ? 'Completed' : 'Pending'}"></td>
-    <td>
-      <form th:action="@{/hairdresser/appointments/{id}/complete(id=${appointment.id})}"
-            method="post">
-        <button type="submit">Mark as completed</button>
-      </form>
-    </td>
-  </tr>
-  </tbody>
-</table>
+  <h2 th:text="#{hairdresser_appointments.pending}">Pending Appointments</h2>
+  <table class="table table-dark">
+    <thead>
+    <tr>
+      <th th:text="#{hairdresser_appointments.date}">Date</th>
+      <th th:text="#{hairdresser_appointments.client}">Client</th>
+      <th th:text="#{assign_service.label.service}">Service</th>
+      <th th:text="#{hairdresser_appointments.action}">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="appointment : ${pendingAppointments}">
+      <td th:text="${appointment.appointmentTime}"></td>
+      <td th:text="${appointment.client.lastName + ' ' + appointment.client.firstName}"></td>
+      <td th:text="${appointment.beautyService.name}"></td>
+      <td th:text="${appointment.isCompleted ? 'Completed' : 'Pending'}"></td>
+      <td>
+        <form th:action="@{/hairdresser/appointments/{id}/complete(id=${appointment.id})}"
+              method="post">
+          <button type="submit" class="btn btn-dark" th:text="#{hairdresser_appointments.mark}">Mark
+            as completed
+          </button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<div id="lang-selector">
+  <img
+      src="https://2.bp.blogspot.com/-5qMFKoqF-RI/Vy_gEJrqm6I/AAAAAAAAES4/jNwUhn50qXg5GyZGR9sMm8y_--_rLBRIQCLcB/s1600/flag%2Bof%2BEngland.jpg"
+      alt="English"
+      onclick="changeLanguage('en')">
+  <img
+      src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.h3jAUByreIZAoyLnKZtYEwHaEK%26pid%3DApi&f=1&ipt=e9080505754a9f5e6aeef31691ef811090554ba76a4d22963ebb3ab6710e7a0f&ipo=images"
+      alt="Azerbaijani"
+      onclick="changeLanguage('az')">
+</div>
+
+<footer>
+  <p>&copy; 2023 K2Salon. All rights reserved.</p>
+</footer>
+
+<script>
+  function changeLanguage(lang) {
+    const form = document.createElement('form');
+    form.method = 'get';
+    form.action = '/hairdresser/changeLanguage';
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'lang';
+    hiddenInput.value = lang;
+    form.appendChild(hiddenInput);
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  $(document).ready(function () {
+    $("form").on("submit", function () {
+      $(this).find("button:submit").prop("disabled", true);
+    });
+  });
+</script>
 
 </body>
 </html>

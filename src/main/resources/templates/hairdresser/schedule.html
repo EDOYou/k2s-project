@@ -1,8 +1,32 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-  <title>Hairdresser Schedule</title>
+  <title th:text="#{hairdresser_schedule}">Hairdresser Schedule</title>
   <style>
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      padding: 1rem 0;
+      background-color: #b39c4d;
+      color: #020202;
+    }
+
+    #lang-selector {
+      position: fixed;
+      top: 2%;
+      right: 2%;
+    }
+
+    #lang-selector img {
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      margin: 5px;
+    }
+
     .busy {
       background-color: #ff0000; /* red */
       color: #ffffff; /* white */
@@ -15,7 +39,7 @@
   </style>
 </head>
 <body>
-<h1>Hairdresser Schedule</h1>
+<h1 th:text="#{hairdresser_schedule}">Hairdresser Schedule</h1>
 <div th:each="entry : ${schedule}">
   <h2 th:text="${entry.key}"></h2> <!-- Date -->
 
@@ -23,9 +47,9 @@
   <table>
     <thead>
     <tr>
-      <th>Start</th>
-      <th>End</th>
-      <th>Appointment</th>
+      <th th:text="#{hairdresser.register.start}">Start</th>
+      <th th:text="#{hairdresser.register.end}">End</th>
+      <th th:text="#{hairdresser_schedule.appointment}">Appointment</th>
     </tr>
     </thead>
     <tbody>
@@ -34,16 +58,51 @@
       <td th:text="${timeSlot.start.toLocalTime().format(timeFormatter)}"></td>
       <td th:text="${timeSlot.end.toLocalTime().format(timeFormatter)}"></td>
       <td th:text="${timeSlot.appointment != null ? 'Busy' : 'Free'}"></td>
-      <td th:if="${timeSlot.appointment != null}">
+      <td th:if="${timeSlot.appointment != null}" th:text="#{hairdresser_schedule.with}">
         Appointment with
         <span th:text="${timeSlot.appointment.client.firstName + ' ' + timeSlot.appointment.client.lastName}"></span>
         for
         <span th:text="${timeSlot.appointment.beautyService.name}"></span>
       </td>
-      <td th:if="${timeSlot.appointment == null}">Free</td>
+      <td th:if="${timeSlot.appointment == null}" th:text="#{hairdresser_schedule.free}">Free</td>
     </tr>
     </tbody>
   </table>
   </div>
+<div id="lang-selector">
+  <img
+      src="https://2.bp.blogspot.com/-5qMFKoqF-RI/Vy_gEJrqm6I/AAAAAAAAES4/jNwUhn50qXg5GyZGR9sMm8y_--_rLBRIQCLcB/s1600/flag%2Bof%2BEngland.jpg"
+      alt="English"
+      onclick="changeLanguage('en')">
+  <img
+      src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.h3jAUByreIZAoyLnKZtYEwHaEK%26pid%3DApi&f=1&ipt=e9080505754a9f5e6aeef31691ef811090554ba76a4d22963ebb3ab6710e7a0f&ipo=images"
+      alt="Azerbaijani"
+      onclick="changeLanguage('az')">
+</div>
+
+<footer>
+  <p>&copy; 2023 K2Salon. All rights reserved.</p>
+</footer>
+
+<script>
+  function changeLanguage(lang) {
+    const form = document.createElement('form');
+    form.method = 'get';
+    form.action = '/admin/changeLanguage';
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'lang';
+    hiddenInput.value = lang;
+    form.appendChild(hiddenInput);
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  $(document).ready(function () {
+    $("form").on("submit", function () {
+      $(this).find("button:submit").prop("disabled", true);
+    });
+  });
+</script>
 </body>
 </html>

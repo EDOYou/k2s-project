@@ -2,21 +2,115 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Services</title>
+  <title th:text="#{admin_hairdressers.table.services}">Services</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #000000;
+    }
+
+    .container {
+      margin-top: 50px;
+      display: flex;
+      justify-content: center;  /* Center align the table */
+    }
+
+    table {
+      color: #ffffff;
+      margin-bottom: 100px;  /* Added space between table and footer */
+    }
+
+    th {
+      background-color: #000000;
+      color: #ffffff;
+      font-size: 1.2em;  /* Increase table header font size */
+    }
+
+    td {
+      padding: 15px;  /* Added padding to table cells */
+    }
+
+    tr:hover {
+      background-color: #111111;
+    }
+
+    #lang-selector {
+      position: fixed;
+      top: 2%;
+      right: 2%;
+    }
+
+    #lang-selector img {
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      padding: 1rem 0;
+      background-color: #b39c4d;
+      color: #020202;
+    }
+  </style>
 </head>
 <body>
-<table>
-  <tr>
-    <th>Service Name</th>
-    <th>Description</th>
-    <th>Price</th>
-  </tr>
-  <tr th:each="service : ${services}">
-    <td th:text="${service.name}"></td>
-    <td th:text="${service.description}"></td>
-    <td th:text="${service.price}"></td>
-  </tr>
-</table>
+<div class="container">
+  <table class="table table-dark table-hover">
+    <thead>
+    <tr>
+      <th th:text="#{add_service.label.service_name}">Service Name</th>
+      <th th:text="#{add_service.label.description}">Description</th>
+      <th th:text="#{add_service.label.price}">Price</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="service : ${services}">
+      <td th:text="${service.name}"></td>
+      <td th:text="${service.description}"></td>
+      <td th:text="${service.price}"></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<div id="lang-selector">
+  <img
+      src="https://2.bp.blogspot.com/-5qMFKoqF-RI/Vy_gEJrqm6I/AAAAAAAAES4/jNwUhn50qXg5GyZGR9sMm8y_--_rLBRIQCLcB/s1600/flag%2Bof%2BEngland.jpg"
+      alt="English"
+      onclick="changeLanguage('en')">
+  <img
+      src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.h3jAUByreIZAoyLnKZtYEwHaEK%26pid%3DApi&f=1&ipt=e9080505754a9f5e6aeef31691ef811090554ba76a4d22963ebb3ab6710e7a0f&ipo=images"
+      alt="Azerbaijani"
+      onclick="changeLanguage('az')">
+</div>
+
+<footer class="fixed-bottom bg-dark text-white text-center">
+  <p>&copy; 2023 K2Salon. All rights reserved.</p>
+</footer>
+
+<script>
+  function changeLanguage(lang) {
+    const form = document.createElement('form');
+    form.method = 'get';
+    form.action = '/admin/changeLanguage';
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'lang';
+    hiddenInput.value = lang;
+    form.appendChild(hiddenInput);
+    document.body.appendChild(form);
+    form.submit();
+  }
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
 </body>
 </html>

@@ -2,21 +2,109 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Hairdresser Registration Review</title>
+  <title th:text="#{hairdresserRegisterView.title}">Hairdresser Registration Review</title>
+
+  <style>
+    body {
+      background-color: #100b00;
+      font-family: 'Brush Script MT', cursive;
+      color: #e5d5b3;
+    }
+
+    h1, h2 {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 2em;
+      color: #e5d5b3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 30px;
+      overflow: hidden;
+      background-color: #3b341f;
+      margin-top: 20px;
+    }
+
+    th, td {
+      text-align: center;
+      padding: 10px;
+      border: 1px solid #3b341f;
+      border-radius: 15px;
+      color: #e5d5b3;
+      font-size: 1.2em;
+    }
+
+    button {
+      background-color: #3b341f;
+      color: #e5d5b3; /* Lightened color for better readability */
+      border-radius: 15px;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-size: 1rem;
+      margin: 5px;
+    }
+
+    button:hover {
+      background-color: #100b00;
+      color: #e5d5b3; /* Lightened color for better readability */
+    }
+
+    form {
+      text-align: center;
+      margin-bottom: 2em;
+    }
+
+    select {
+      border-radius: 15px;
+      padding: 5px;
+      background-color: #3b341f;
+      color: #e5d5b3; /* Lightened color for better readability */
+    }
+
+    #lang-selector {
+      position: fixed;
+      top: 2%;
+      right: 2%;
+    }
+
+    #lang-selector img {
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      padding: 1rem 0;
+      background-color: #b39c4d;
+      color: #020202;
+    }
+
+  </style>
+
 </head>
 <body>
-<h1>Hairdresser Registration Review</h1>
+<h1 th:text="#{hairdresserRegisterView.head1}"></h1>
 
 <div th:if="${!#lists.isEmpty(hairdressers)}">
-  <table>
+  <table class="table table-bordered table-hover">
     <thead>
-    <h2>Personal Information</h2>
+    <h2 th:text="#{hairdresserRegisterView.pers.info}"></h2>
     <tr>
-      <th>ID</th>
-      <th>First Name:</th>
-      <th>Last Name:</th>
-      <th>Email:</th>
-      <th>Phone:</th>
+      <th th:text="#{hairdresserRegisterView.id}">ID</th>
+      <th th:text="#{hairdresserRegisterView.firstName}">First Name:</th>
+      <th th:text="#{hairdresserRegisterView.lastName}">Last Name:</th>
+      <th th:text="#{hairdresserRegisterView.email}">Email:</th>
+      <th th:text="#{hairdresserRegisterView.phone}">Phone:</th>
     </tr>
     </thead>
     <tbody>
@@ -30,11 +118,11 @@
         <form action="#"
               th:action="@{/admin/approveHairdresser/{userId}(userId=${hairdresser.id})}"
               method="post">
-          <button type="submit">Approve</button>
+          <button type="submit" th:text="#{hairdresserRegisterView.approveButton}"></button>
         </form>
         <form th:action="@{/admin/rejectHairdresser/{userId}(userId=${hairdresser.id})}"
               method="post">
-          <button type="submit">Reject</button>
+          <button type="submit" th:text="#{hairdresserRegisterView.rejectButton}"></button>
         </form>
       </td>
     </tr>
@@ -42,7 +130,45 @@
   </table>
 </div>
 <div th:if="${#lists.isEmpty(hairdressers)}">
-  <h2>No pending applications at the moment.</h2>
+  <h2 th:text="#{hairdresserRegisterView.noPending}"></h2>
 </div>
+
+<
+<div id="lang-selector">
+  <img
+      src="https://2.bp.blogspot.com/-5qMFKoqF-RI/Vy_gEJrqm6I/AAAAAAAAES4/jNwUhn50qXg5GyZGR9sMm8y_--_rLBRIQCLcB/s1600/flag%2Bof%2BEngland.jpg"
+      alt="English"
+      onclick="changeLanguage('en')">
+  <img
+      src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.h3jAUByreIZAoyLnKZtYEwHaEK%26pid%3DApi&f=1&ipt=e9080505754a9f5e6aeef31691ef811090554ba76a4d22963ebb3ab6710e7a0f&ipo=images"
+      alt="Azerbaijani"
+      onclick="changeLanguage('az')">
+</div>
+
+<footer>
+  <p>&copy; 2023 K2Salon. All rights reserved.</p>
+</footer>
+
+<script>
+  function changeLanguage(lang) {
+    const form = document.createElement('form');
+    form.method = 'get';
+    form.action = '/client/changeLanguage';
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'lang';
+    hiddenInput.value = lang;
+    form.appendChild(hiddenInput);
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  $(document).ready(function () {
+    $("form").on("submit", function () {
+      $(this).find("button:submit").prop("disabled", true);
+    });
+  });
+</script>
+
 </body>
 </html>

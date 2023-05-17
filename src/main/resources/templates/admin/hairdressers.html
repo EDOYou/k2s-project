@@ -2,19 +2,100 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hairdressers</title>
+  <title th:text="#{admin_hairdressers.title}"></title>
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
-<body>
-<table>
-  <tr>
-    <th>Hairdresser Name</th>
-    <th>Services</th>
-  </tr>
-  <tr th:each="hairdresser : ${hairdressers}">
-    <td th:text="${hairdresser.lastName + ' ' + hairdresser.firstName}"></td>
-    <td th:each="service : ${hairdresser.beautyServices}" th:text="${service.name}"></td>
-  </tr>
-</table>
+<style>
+  #lang-selector {
+    position: fixed;
+    top: 2%;
+    right: 2%;
+  }
 
+  #lang-selector img {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 5px;
+  }
+
+  footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    padding: 1rem 0;
+    background-color: #b39c4d;
+    color: #020202;
+  }
+
+  .container {
+    margin-top: 80px;
+  }
+
+</style>
+<body>
+<div class="container">
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th th:text="#{admin_hairdressers.table.hairdresser_name}"></th>
+        <th th:text="#{admin_hairdressers.table.services}"></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="hairdresser : ${hairdressers}">
+        <td th:text="${hairdresser.lastName + ' ' + hairdresser.firstName}"></td>
+        <td>
+          <div class="service-list">
+            <span th:each="service : ${hairdresser.beautyServices}">
+              <span th:if="${#strings.contains(service.name, ' ')}"
+                    th:text="#{${'service.' + service.name.replace(' ', '_')}}"></span>
+              <span th:unless="${#strings.contains(service.name, ' ')}"
+                    th:text="#{${'service.' + service.name}}"></span>
+            </span>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="lang-selector">
+  <img
+      src="https://2.bp.blogspot.com/-5qMFKoqF-RI/Vy_gEJrqm6I/AAAAAAAAES4/jNwUhn50qXg5GyZGR9sMm8y_--_rLBRIQCLcB/s1600/flag%2Bof%2BEngland.jpg"
+      alt="English"
+      onclick="changeLanguage('en')">
+  <img
+      src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.h3jAUByreIZAoyLnKZtYEwHaEK%26pid%3DApi&f=1&ipt=e9080505754af5e6aeef31691ef811090554ba76a4d22963ebb3ab6710e7a0f&ipo=images"
+      alt="Azerbaijani"
+      onclick="changeLanguage('az')">
+</div>
+
+<footer class="fixed-bottom bg-dark text-white text-center">
+  <p>&copy; 2023 K2Salon. All rights reserved.</p>
+</footer>
+
+<script>
+  function changeLanguage(lang) {
+    const form = document.createElement('form');
+    form.method = 'get';
+    form.action = '/admin/changeLanguage';
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'lang';
+    hiddenInput.value = lang;
+    form.appendChild(hiddenInput);
+    document.body.appendChild(form);
+    form.submit();
+  }
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>

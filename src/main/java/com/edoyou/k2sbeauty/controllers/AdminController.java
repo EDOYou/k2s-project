@@ -4,12 +4,15 @@ import com.edoyou.k2sbeauty.entities.model.Appointment;
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.services.facade.AdminServiceFacade;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 @Controller
 @RequestMapping("/admin")
@@ -107,6 +110,13 @@ public class AdminController {
     List<Hairdresser> hairdressers = adminServiceFacade.findHairdressersWithServices();
     model.addAttribute("hairdressers", hairdressers);
     return "admin/hairdressers";
+  }
+
+  @GetMapping("/changeLanguage")
+  public String changeLanguage(HttpServletRequest request, @RequestParam String lang) {
+    Locale locale = Locale.forLanguageTag(lang);
+    request.getSession().setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, locale);
+    return "redirect:" + request.getHeader("referer");
   }
 
 }

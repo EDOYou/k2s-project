@@ -2,53 +2,143 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hairdresser Registration</title>
+  <title th:text="#{hairdresser.register.title}">Hairdresser Registration</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        rel="stylesheet">
+  <style>
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      padding: 1rem 0;
+      background-color: #b39c4d;
+      color: #020202;
+    }
+
+    #lang-selector {
+      position: fixed;
+      top: 2%;
+      right: 2%;
+    }
+
+    #lang-selector img {
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      margin: 5px;
+    }
+  </style>
 </head>
 <body>
-<h1>Hairdresser Registration</h1>
-<form th:action="@{/hairdresser/register_hairdresser}" method="post">
-  <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
-  <div th:object="${hairdresser}">
-    <label for="firstName">First name:</label>
-    <input type="text" id="firstName" th:field="*{firstName}" required>
-    <br>
-    <label for="lastName">Last name:</label>
-    <input type="text" id="lastName" th:field="*{lastName}" required>
-    <br>
-    <label for="email">Email:</label>
-    <input type="email" id="email" th:field="*{email}" required>
-    <br>
-    <label for="phone">Phone number:</label>
-    <input type="number" id="phone" th:field="*{phone}" required>
-    <br>
-    <label for="password">Password:</label>
-    <input type="password" id="password" th:field="*{password}" required>
-    <br>
-    <label for="specialization">Specialization:</label>
-    <input type="text" id="specialization" th:field="*{specialization}" required>
+<div class="container">
+  <h1 class="mt-4 mb-4" th:text="#{hairdresser.register.title}">Hairdresser Registration</h1>
+  <form th:action="@{/hairdresser/register_hairdresser}" method="post">
+    <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+    <div th:object="${hairdresser}">
+      <div class="form-group">
+        <label for="firstName" th:text="#{hairdresserRegisterView.firstName}">First name:</label>
+        <input type="text" id="firstName" th:field="*{firstName}" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="lastName" th:text="#{hairdresserRegisterView.lastName}">Last name:</label>
+        <input type="text" id="lastName" th:field="*{lastName}" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="email" th:text="#{hairdresserRegisterView.email}">Email:</label>
+        <input type="email" id="email" th:field="*{email}" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="phone" th:text="#{hairdresserRegisterView.phone}">Phone number:</label>
+        <input type="number" id="phone" th:field="*{phone}" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="password" th:text="#{login.password}">Password:</label>
+        <input type="password" id="password" th:field="*{password}" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="specialization" th:text="#{hairdresser.register.spec}">Specialization:</label>
+        <input type="text" id="specialization" th:field="*{specialization}" class="form-control"
+               required>
+      </div>
 
-    <h3>Select Services</h3>
-    <div th:each="service : ${services}">
-      <label>
-        <input type="checkbox" th:value="${service.id}" th:field="*{selectedServiceIds}"/>
-      </label>
-      <label th:for="${#ids.next('service')}" th:text="${service.name}">Service Name</label>
+      <h3 th:text="#{hairdresser.register.selectServices}">Select Services</h3>
+      <div th:each="service : ${services}">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" th:value="${service.id}"
+                 th:field="*{selectedServiceIds}"/>
+          <label class="form-check-label" th:for="${#ids.next('service')}"
+                 th:text="${service.name}">Service Name</label>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div th:object="${workingHours}">
-    <h3>Working Hours</h3>
-    <div th:each="dayOfWeek : ${T(java.time.DayOfWeek).values()}">
-      <h4 th:text="${dayOfWeek}">DayOfWeek</h4>
-      <label for="start">Start:</label>
-      <input type="time" id="start" th:name="|workingHoursMap[${dayOfWeek.ordinal()}].start|">
-      <br>
-      <label for="end">End:</label>
-      <input type="time" id="end" th:name="|workingHoursMap[${dayOfWeek.ordinal()}].end|">
-      <br>
+    <div th:object="${workingHours}">
+      <h3 th:text="#{hairdresser.register.workingHours}">Working Hours</h3>
+      <div th:each="dayOfWeek : ${T(java.time.DayOfWeek).values()}">
+        <h4 th:text="#{${'dayOfWeek.' + dayOfWeek}}">DayOfWeek</h4>
+        <div class="form-group">
+          <label for="start" th:text="#{hairdresser.register.start}">Start:</label>
+          <input type="time" id="start" th:name="|workingHoursMap[${dayOfWeek.ordinal()}].start|"
+                 class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="end" th:text="#{hairdresser.register.end}">End:</label>
+          <input type="time" id="end" th:name="|workingHoursMap[${dayOfWeek.ordinal()}].end|"
+                 class="form-control">
+        </div>
+      </div>
     </div>
-  </div>
-  <input type="submit" value="Register">
+    <button type="submit" class="btn btn-primary" th:text="#{register.button}">Register</button>
+  </form>
+</div>
+
+<form th:action="@{/admin/changeLanguage}" method="get">
+  <label>
+    <select name="lang">
+      <option value="en" th:text="#{assign_service.en}"></option>
+      <option value="az" th:text="#{assign_service.az}"></option>
+    </select>
+  </label>
+  <input type="submit" th:value="#{assign_service.change.lang}"/>
 </form>
+
+<div id="lang-selector">
+  <img
+      src="https://2.bp.blogspot.com/-5qMFKoqF-RI/Vy_gEJrqm6I/AAAAAAAAES4/jNwUhn50qXg5GyZGR9sMm8y_--_rLBRIQCLcB/s1600/flag%2Bof%2BEngland.jpg"
+      alt="English"
+      onclick="changeLanguage('en')">
+  <img
+      src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.h3jAUByreIZAoyLnKZtYEwHaEK%26pid%3DApi&f=1&ipt=e9080505754a9f5e6aeef31691ef811090554ba76a4d22963ebb3ab6710e7a0f&ipo=images"
+      alt="Azerbaijani"
+      onclick="changeLanguage('az')">
+</div>
+
+<footer>
+  <p>&copy; 2023 K2Salon. All rights reserved.</p>
+</footer>
+
+<script>
+  function changeLanguage(lang) {
+    const form = document.createElement('form');
+    form.method = 'get';
+    form.action = '/admin/changeLanguage';
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'lang';
+    hiddenInput.value = lang;
+    form.appendChild(hiddenInput);
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  $(document).ready(function () {
+    $("form").on("submit", function () {
+      $(this).find("button:submit").prop("disabled", true);
+    });
+  });
+</script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>

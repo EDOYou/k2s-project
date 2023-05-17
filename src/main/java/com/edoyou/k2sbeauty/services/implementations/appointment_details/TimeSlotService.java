@@ -23,6 +23,7 @@ public class TimeSlotService {
       DayOfWeek dayOfWeek = dateTime.getDayOfWeek();
 
       Optional<WorkingHours> workingHoursOptional = hairdresser.getWorkingHoursForDay(dayOfWeek);
+      System.out.println(workingHoursOptional.toString());
 
       if (workingHoursOptional.isPresent()) {
         WorkingHours workingHours = workingHoursOptional.get();

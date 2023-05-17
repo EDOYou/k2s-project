@@ -2,39 +2,152 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>Login</title>
+  <title th:text="#{login.title}"></title>
   <link rel="stylesheet"
         href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at center, #020202, #34623f);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      border: none;
+      border-radius: 1rem;
+      transition: all 0.2s;
+      background-color: #b39c4d;
+      color: #020202;
+      width: 50%;
+      box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    }
+
+    .card .card-title {
+      color: #020202;
+      font-weight: bold;
+    }
+
+    .card .card-body {
+      padding: 2rem;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+    }
+
+    .form-control, .btn-primary {
+      border-radius: 50px;
+    }
+
+    .btn-primary {
+      background-color: #020202;
+      border-color: #34623f;
+      color: #b39c4d;
+    }
+
+    .btn-primary:hover {
+      background-color: #34623f;
+      border-color: #020202;
+      color: #b39c4d;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      padding: 1rem 0;
+      background-color: #b39c4d;
+      color: #020202;
+    }
+
+    #lang-selector {
+      position: fixed;
+      top: 2%;
+      right: 2%;
+    }
+
+    #lang-selector img {
+      height: 40px;
+      width: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    .form-control, .btn {
+      border-radius: 50px;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-  <div class="row justify-content-center">
-    <div class="col-md-4 mt-5">
-      <h2>Login</h2>
-      <div th:if="${param.error}" class="alert alert-danger" role="alert">
-        Invalid email or password. Please try again.
-      </div>
-      <form th:action="@{/perform_login}" method="post">
-        <input type="hidden" id="redirectUrl" name="redirectUrl" th:value="${param.redirectUrl}"/>
-        <div class="form-group">
-          <label for="email">E-mail:</label>
-          <input type="email" id="email" name="email" class="form-control"
-                 placeholder="your@email.com"
-                 required autofocus>
-        </div>
-        <div class="form-group">
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password" class="form-control"
-                 placeholder="password"
-                 required>
-        </div>
-        <button type="submit" class="btn btn-primary">Log in</button>
-      </form>
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title text-center mb-4" th:text="#{login.header1}"></h5>
+    <div th:if="${param.error}" class="alert alert-danger" role="alert"
+         th:text="#{login.alert_message}">
     </div>
+    <form th:action="@{/perform_login}" method="post">
+      <input type="hidden" id="redirectUrl" name="redirectUrl"
+             th:value="${param.redirectUrl}"/>
+      <div class="form-group">
+        <label for="email" th:text="#{login.email}"></label>
+        <input type="email" id="email" name="email" class="form-control"
+               placeholder="your@email.com"
+               required autofocus>
+      </div>
+      <div class="form-group">
+        <label for="password" th:text="#{login.password}"></label>
+        <input type="password" id="password" name="password" class="form-control"
+               placeholder="password"
+               required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg btn-block"
+              th:text="#{login.log_in}"></button>
+    </form>
   </div>
 </div>
+
+<div id="lang-selector">
+  <img
+      src="https://2.bp.blogspot.com/-5qMFKoqF-RI/Vy_gEJrqm6I/AAAAAAAAES4/jNwUhn50qXg5GyZGR9sMm8y_--_rLBRIQCLcB/s1600/flag%2Bof%2BEngland.jpg"
+      alt="English"
+      onclick="changeLanguage('en')">
+  <img
+      src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.h3jAUByreIZAoyLnKZtYEwHaEK%26pid%3DApi&f=1&ipt=e9080505754a9f5e6aeef31691ef811090554ba76a4d22963ebb3ab6710e7a0f&ipo=images"
+      alt="Azerbaijani"
+      onclick="changeLanguage('az')">
+</div>
+
+<footer>
+  <p>&copy; 2023 K2Salon. All rights reserved.</p>
+</footer>
+
+<script>
+  function changeLanguage(lang) {
+    const form = document.createElement('form');
+    form.method = 'get';
+    form.action = '/admin/changeLanguage';
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'lang';
+    hiddenInput.value = lang;
+    form.appendChild(hiddenInput);
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  $(document).ready(function () {
+    $("form").on("submit", function () {
+      $(this).find("button:submit").prop("disabled", true);
+    });
+  });
+</script>
+
 </body>
 </html>

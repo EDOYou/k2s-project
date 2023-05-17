@@ -4,11 +4,14 @@ import com.edoyou.k2sbeauty.pojo.ServicesData;
 import com.edoyou.k2sbeauty.services.facade.GuestServiceFacade;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Locale;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 /**
  * <code>GuestController</code> is a Spring controller for handling guest user
@@ -47,5 +50,12 @@ public class GuestController {
     model.addAttribute("selectedHairdresser", servicesData.getSelectedHairdresser());
     model.addAttribute("selectedService", servicesData.getSelectedService());
     return "/guest/services";
+  }
+
+  @GetMapping("/changeLanguage")
+  public String changeLanguage(HttpServletRequest request, @RequestParam String lang) {
+    Locale locale = Locale.forLanguageTag(lang);
+    request.getSession().setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, locale);
+    return "redirect:" + request.getHeader("referer");
   }
 }

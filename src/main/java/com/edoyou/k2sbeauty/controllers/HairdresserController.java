@@ -7,10 +7,12 @@ import com.edoyou.k2sbeauty.entities.model.wrapper.WorkingHoursWrapper;
 import com.edoyou.k2sbeauty.exceptions.UnauthorizedActionException;
 import com.edoyou.k2sbeauty.services.facade.HairdresserServiceFacade;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 @Controller
 @RequestMapping("/hairdresser")
@@ -91,5 +95,12 @@ public class HairdresserController {
     model.addAttribute("hairdresser", new Hairdresser());
     model.addAttribute("workingHours", new WorkingHoursWrapper());
     return "/hairdresser/register_hairdresser";
+  }
+
+  @GetMapping("/changeLanguage")
+  public String changeLanguage(HttpServletRequest request, @RequestParam String lang) {
+    Locale locale = Locale.forLanguageTag(lang);
+    request.getSession().setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, locale);
+    return "redirect:" + request.getHeader("referer");
   }
 }

@@ -11,10 +11,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig implements WebMvcConfigurer {
 
   private static final Logger LOGGER = Logger.getLogger(SecurityConfig.class.getName());
   private final CustomUserDetailsService customUserDetailsService;
@@ -29,7 +30,6 @@ public class SecurityConfig {
 
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-    System.out.println("configureGlobal called");
     auth.userDetailsService(customUserDetailsService)
         .passwordEncoder(passwordEncoder);
   }
@@ -49,7 +49,7 @@ public class SecurityConfig {
         .formLogin(loginConfigurer -> loginConfigurer
             .loginPage("/login")
             .permitAll()
-            .loginProcessingUrl("/perform_login") // Specify the URL to submit the login form
+            .loginProcessingUrl("/perform_login")
             .usernameParameter("email")
             .defaultSuccessUrl("/client/appointments",
                 true)
