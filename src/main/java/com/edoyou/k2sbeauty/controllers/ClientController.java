@@ -5,8 +5,6 @@ import com.edoyou.k2sbeauty.entities.model.Client;
 import com.edoyou.k2sbeauty.entities.model.Feedback;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.services.facade.ClientServiceFacade;
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 @Controller
 public class ClientController {
@@ -95,14 +92,7 @@ public class ClientController {
     }
     // User is authenticated, proceed with saving feedback
     clientServiceFacade.saveFeedback(authentication, appointmentId, feedback);
-    return "redirect:/client/appointments";
-  }
-
-  @GetMapping("/client/changeLanguage")
-  public String changeLanguage(HttpServletRequest request, @RequestParam String lang) {
-    Locale locale = Locale.forLanguageTag(lang);
-    request.getSession().setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, locale);
-    return "redirect:" + request.getHeader("referer");
+    return "redirect:/admin/appointments";
   }
 
   @GetMapping("/register")

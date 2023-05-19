@@ -38,7 +38,7 @@ public class SecurityConfig implements WebMvcConfigurer {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
         .authorizeHttpRequests(requests -> requests
-            .requestMatchers("/", "/home", "/register", "/guest", "/guest/**",
+            .requestMatchers("/", "/home", "/changeLanguage","/register", "/guest", "/guest/**",
                 "/hairdresser/register_hairdresser", "/client/feedback").permitAll()
             .requestMatchers(HttpMethod.GET, "/client/**").hasRole("CLIENT")
             .requestMatchers(HttpMethod.POST, "/client/book").hasRole("CLIENT")

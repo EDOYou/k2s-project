@@ -47,7 +47,7 @@
 </nav>
 
 <div class="container">
-  <h1 class="my-3">Services</h1>
+  <h1 class="my-3" th:text="#{guest_services.allServices}">Services</h1>
 
   <div>
     <form th:action="@{/guest/services}" method="get" class="mb-3">
@@ -132,7 +132,7 @@
   function changeLanguage(lang) {
     const form = document.createElement('form');
     form.method = 'get';
-    form.action = '/admin/changeLanguage';
+    form.action = '/changeLanguage';
     const hiddenInput = document.createElement('input');
     hiddenInput.type = 'hidden';
     hiddenInput.name = 'lang';
