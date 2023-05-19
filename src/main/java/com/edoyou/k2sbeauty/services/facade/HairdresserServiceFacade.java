@@ -3,7 +3,6 @@ package com.edoyou.k2sbeauty.services.facade;
 import com.edoyou.k2sbeauty.dto.AppointmentDTO;
 import com.edoyou.k2sbeauty.dto.WorkingHoursDTO;
 import com.edoyou.k2sbeauty.entities.model.Appointment;
-import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.entities.model.User;
 import com.edoyou.k2sbeauty.entities.model.WorkingHours;

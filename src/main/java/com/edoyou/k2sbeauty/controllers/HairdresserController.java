@@ -4,7 +4,6 @@ import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.entities.model.appointment_details.TimeSlot;
 import com.edoyou.k2sbeauty.entities.model.wrapper.WorkingHoursWrapper;
-import com.edoyou.k2sbeauty.exceptions.UnauthorizedActionException;
 import com.edoyou.k2sbeauty.services.facade.HairdresserServiceFacade;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import jakarta.validation.Valid;
@@ -41,16 +40,10 @@ public class HairdresserController {
 
   @GetMapping("/appointments")
   public String getAppointments(Authentication authentication, Model model) {
-    try {
-      var appointments = hairdresserServiceFacade.getAppointments(authentication.getName());
-      model.addAttribute("completedAppointments", appointments.getCompletedAppointments());
-      model.addAttribute("pendingAppointments", appointments.getPendingAppointments());
-      return "hairdresser/hairdresser_appointments";
-    } catch (Exception ex) {
-      LOGGER.info(ex.getMessage());
-      return ex instanceof UnauthorizedActionException ? "redirect:/not_approved"
-          : "redirect:/login";
-    }
+    var appointments = hairdresserServiceFacade.getAppointments(authentication.getName());
+    model.addAttribute("completedAppointments", appointments.getCompletedAppointments());
+    model.addAttribute("pendingAppointments", appointments.getPendingAppointments());
+    return "hairdresser/hairdresser_appointments";
   }
 
   @PostMapping("/appointments/{id}/complete")

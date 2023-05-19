@@ -31,7 +31,6 @@ public class AdminController {
       @RequestParam(defaultValue = "4") int size,
       Authentication authentication, Model model) {
     if (authentication == null || !authentication.isAuthenticated()) {
-      // User is not authenticated, redirect to login page
       return "redirect:/login";
     }
     PageRequest pageReq = PageRequest.of(page, size, Sort.by("id"));
@@ -108,7 +107,6 @@ public class AdminController {
   @GetMapping("/assign_service")
   public String showAssignServiceForm(Authentication authentication, Model model) {
     if (authentication == null || !authentication.isAuthenticated()) {
-      // User is not authenticated, redirect to login page
       return "redirect:/login";
     }
     List<BeautyService> services = adminServiceFacade.findAllBeautyServices();
