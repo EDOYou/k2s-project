@@ -79,7 +79,6 @@
       <td th:text="${appointment.appointmentTime}"></td>
       <td th:text="${appointment.client.lastName + ' ' + appointment.client.firstName}"></td>
       <td th:text="${appointment.beautyService.name}"></td>
-      <td th:text="${appointment.isCompleted ? 'Completed' : 'Pending'}"></td>
       <td>
         <form th:action="@{/hairdresser/appointments/{id}/complete(id=${appointment.id})}"
               method="post">

@@ -138,6 +138,23 @@
       </form>
     </td>
   </tr>
+  <div>
+    <ul class="pagination">
+      <li class="page-item" th:classappend="${appointments.first ? 'disabled' : ''}">
+        <a class="page-link"
+           th:href="@{dashboard(page=${appointments.number - 1}, size=${appointments.size})}">Previous</a>
+      </li>
+      <li class="page-item" th:each="item : ${#numbers.sequence(0, (appointments.totalPages - 1))}">
+        <a class="page-link" th:href="@{dashboard(page=${item}, size=${appointments.size})}"
+           th:text="${item + 1}"></a>
+      </li>
+      <li class="page-item" th:classappend="${appointments.last ? 'disabled' : ''}">
+        <a class="page-link"
+           th:href="@{dashboard(page=${appointments.number + 1}, size=${appointments.size})}">Next</a>
+      </li>
+    </ul>
+  </div>
+
   </tbody>
 </table>
 

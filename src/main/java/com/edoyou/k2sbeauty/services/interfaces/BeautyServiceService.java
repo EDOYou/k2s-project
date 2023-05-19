@@ -3,6 +3,8 @@ package com.edoyou.k2sbeauty.services.interfaces;
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface BeautyServiceService {
 
@@ -22,6 +24,8 @@ public interface BeautyServiceService {
    * @return A list of all beauty services.
    */
   List<BeautyService> findAll();
+
+  Page<BeautyService> findAll(Pageable pageable);
 
   List<BeautyService> findAllServices();
 

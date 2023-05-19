@@ -5,6 +5,9 @@ import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.services.facade.AdminServiceFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,12 +27,15 @@ public class AdminController {
   }
 
   @GetMapping("/dashboard")
-  public String adminDashboard(Authentication authentication, Model model) {
+  public String adminDashboard(@RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "4") int size,
+      Authentication authentication, Model model) {
     if (authentication == null || !authentication.isAuthenticated()) {
       // User is not authenticated, redirect to login page
       return "redirect:/login";
     }
-    List<Appointment> appointments = adminServiceFacade.findAllAppointments();
+    PageRequest pageReq = PageRequest.of(page, size, Sort.by("id"));
+    Page<Appointment> appointments = adminServiceFacade.findAllAppointments(pageReq);
     model.addAttribute("appointments", appointments);
     return "admin/dashboard";
   }
@@ -56,18 +62,26 @@ public class AdminController {
   @PostMapping("/approveHairdresser/{userId}")
   public String approveHairdresser(@PathVariable("userId") Long hairdresserId) {
     adminServiceFacade.approveHairdresser(hairdresserId);
-    return "redirect:/admin/dashboard";
+    return "redirect:/admin/hairdresserRegistrationReview";
   }
 
   @PostMapping("/rejectHairdresser/{userId}")
   public String rejectHairdresser(@PathVariable("userId") Long hairdresserId) {
     adminServiceFacade.rejectHairdresser(hairdresserId);
-    return "redirect:/admin/dashboard";
+    return "redirect:/admin/hairdresserRegistrationReview";
   }
 
   @GetMapping("/hairdresserRegistrationReview")
-  public String reviewHairdresserRegistration(Model model) {
-    List<Hairdresser> hairdressers = adminServiceFacade.findAllYetNotApproved(false);
+  public String reviewHairdresserRegistration(@RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "4") int size,
+      Model model) {
+
+    if (page < 0) {
+      page = 0;
+    }
+
+    PageRequest pageRequest = PageRequest.of(page, size);
+    Page<Hairdresser> hairdressers = adminServiceFacade.findAllYetNotApproved(false, pageRequest);
     model.addAttribute("hairdressers", hairdressers);
     return "admin/hairdresserRegistrationReview";
   }
@@ -112,8 +126,10 @@ public class AdminController {
   }
 
   @GetMapping("/hairdressers")
-  public String showHairdressers(Model model) {
-    List<Hairdresser> hairdressers = adminServiceFacade.findHairdressersWithServices();
+  public String showHairdressers(@RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "4") int size, Model model) {
+    PageRequest pageRequest = PageRequest.of(page, size);
+    Page<Hairdresser> hairdressers = adminServiceFacade.findHairdressersWithServices(pageRequest);
     model.addAttribute("hairdressers", hairdressers);
     return "admin/hairdressers";
   }

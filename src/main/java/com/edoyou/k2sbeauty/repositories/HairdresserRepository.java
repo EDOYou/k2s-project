@@ -2,6 +2,8 @@ package com.edoyou.k2sbeauty.repositories;
 
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -34,7 +36,13 @@ public interface HairdresserRepository extends JpaRepository<Hairdresser, Long> 
   @Query("SELECT h FROM Hairdresser h JOIN FETCH h.beautyServices")
   List<Hairdresser> findAllWithBeautyServices();
 
-  List<Hairdresser> findByIsApproved(boolean isApproved);
+  @Query(value = "SELECT h FROM Hairdresser h JOIN FETCH h.beautyServices",
+      countQuery = "SELECT count(h) FROM Hairdresser h")
+  Page<Hairdresser> findAllWithBeautyServices(Pageable pageable);
+
+  @Query("SELECT h FROM Hairdresser h WHERE h.isApproved = :isApproved")
+  Page<Hairdresser> findByIsApproved(@Param("isApproved") boolean isApproved, Pageable pageable);
+
 
   List<Hairdresser> findByIsApprovedTrue();
 

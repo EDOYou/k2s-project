@@ -17,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -151,6 +154,20 @@ public class AppointmentServiceImpl implements AppointmentService {
       return Collections.emptyList();
     }
   }
+
+  @Override
+  public Page<Appointment> findAllAppointments(Pageable pageable) {
+    try {
+      LOGGER.info("Fetching appointments page: " + pageable.getPageNumber());
+      Page<Appointment> appointments = appointmentRepository.findAll(pageable);
+      LOGGER.info("Fetched appointments: " + appointments.getContent());
+      return appointments;
+    } catch (Exception e) {
+      LOGGER.error("Error fetching appointments: " + e.getMessage());
+      return Page.empty();
+    }
+  }
+
 
   @Override
   public Optional<Appointment> findById(Long id) {

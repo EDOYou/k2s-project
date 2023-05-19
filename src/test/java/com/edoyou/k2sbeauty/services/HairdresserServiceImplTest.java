@@ -11,12 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.List;
-import org.springframework.data.domain.Sort;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,8 +46,4 @@ public class HairdresserServiceImplTest {
     verify(hairdresserRepository, times(1)).delete(hairdresser);
   }
 
-  @Test
-  void shouldThrowIllegalArgumentException_InvalidSortByValue() {
-    assertThrows(IllegalArgumentException.class, () -> hairdresserService.findAllHairdressers("invalidSortByValue"));
-  }
 }

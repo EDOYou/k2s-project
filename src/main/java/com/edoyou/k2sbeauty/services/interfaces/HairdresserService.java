@@ -6,6 +6,8 @@ import com.edoyou.k2sbeauty.entities.model.appointment_details.TimeSlot;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 
 /**
@@ -42,6 +44,9 @@ public interface HairdresserService extends UserService {
   @Query("SELECT h FROM Hairdresser h JOIN FETCH h.beautyServices")
   List<Hairdresser> findAllWithBeautyServices();
 
+  @Query("SELECT h FROM Hairdresser h JOIN FETCH h.beautyServices")
+  Page<Hairdresser> findAllWithBeautyServices(Pageable pageable);
+
   /**
    * Deleted the hairdresser from the repository.
    *
@@ -51,7 +56,9 @@ public interface HairdresserService extends UserService {
    */
   void deleteHairdresser(Long id);
 
-  List<Hairdresser> findAllHairdressersByApprovalStatus(boolean isApproved);
+  //List<Hairdresser> findAllHairdressersByApprovalStatus(boolean isApproved);
+
+  Page<Hairdresser> findAllHairdressersByApprovalStatus(boolean isApproved, Pageable pageable);
 
   Map<LocalDate, List<TimeSlot>> generateSchedule(Hairdresser hairdresser);
 

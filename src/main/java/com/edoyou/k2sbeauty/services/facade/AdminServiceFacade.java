@@ -23,6 +23,8 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -54,9 +56,9 @@ public class AdminServiceFacade {
     this.entityManager = entityManager;
   }
 
-  public List<Appointment> findAllAppointments() {
+  public Page<Appointment> findAllAppointments(Pageable pageable) {
     LOGGER.info("Find all appointments in Admin Facade ...");
-    return this.appointmentService.findAllAppointments();
+    return this.appointmentService.findAllAppointments(pageable);
   }
 
   public void changeTimeSlot(Long appointmentId, String newTimeSlot) {
@@ -117,9 +119,9 @@ public class AdminServiceFacade {
     deleteWorkingHours(workingHoursSet);
   }
 
-  public List<Hairdresser> findAllYetNotApproved(Boolean isApproved) {
+  public Page<Hairdresser> findAllYetNotApproved(Boolean isApproved, Pageable pageable) {
     LOGGER.info("Display all the hairdressers whose is_approved column is false ...");
-    return hairdresserService.findAllHairdressersByApprovalStatus(isApproved);
+    return hairdresserService.findAllHairdressersByApprovalStatus(isApproved, pageable);
   }
 
   public List<Hairdresser> findAllHairdressers() {
@@ -147,8 +149,8 @@ public class AdminServiceFacade {
     hairdresserService.saveHairdresser(hairdresser);
   }
 
-  public List<Hairdresser> findHairdressersWithServices() {
-    return hairdresserService.findAllWithBeautyServices();
+  public Page<Hairdresser> findHairdressersWithServices(Pageable pageable) {
+    return hairdresserService.findAllWithBeautyServices(pageable);
   }
 
   private void deleteWorkingHours(Set<WorkingHours> workingHoursSet) {

@@ -62,6 +62,24 @@
       </tr>
       </tbody>
     </table>
+    <div>
+      <ul class="pagination">
+        <li class="page-item" th:classappend="${hairdressers.first ? 'disabled' : ''}">
+          <a class="page-link"
+             th:href="@{hairdressers(page=${hairdressers.number - 1}, size=${hairdressers.size})}">Previous</a>
+        </li>
+        <li class="page-item"
+            th:each="item : ${#numbers.sequence(0, (hairdressers.totalPages - 1))}">
+          <a class="page-link"
+             th:href="@{hairdressers(page=${item}, size=${hairdressers.size})}"
+             th:text="${item + 1}"></a>
+        </li>
+        <li class="page-item" th:classappend="${hairdressers.last ? 'disabled' : ''}">
+          <a class="page-link"
+             th:href="@{hairdressers(page=${hairdressers.number + 1}, size=${hairdressers.size})}">Next</a>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
 

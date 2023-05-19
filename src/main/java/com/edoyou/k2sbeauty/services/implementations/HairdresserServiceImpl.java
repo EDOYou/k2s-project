@@ -19,6 +19,8 @@ import java.util.TreeMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -111,6 +113,11 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
   }
 
   @Override
+  public Page<Hairdresser> findAllWithBeautyServices(Pageable pageable) {
+    return hairdresserRepository.findAllWithBeautyServices(pageable);
+  }
+
+  @Override
   public Hairdresser findById(Long id) {
     LOGGER.info("Find hairdresser by ID ...");
     return hairdresserRepository.findById(id)
@@ -149,9 +156,10 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
   }
 
   @Override
-  public List<Hairdresser> findAllHairdressersByApprovalStatus(boolean isApproved) {
+  public Page<Hairdresser> findAllHairdressersByApprovalStatus(boolean isApproved,
+      Pageable pageable) {
     LOGGER.info("Finding all hairdressers by their approval status ...");
-    return hairdresserRepository.findByIsApproved(isApproved);
+    return hairdresserRepository.findByIsApproved(isApproved, pageable);
   }
 
   @Override

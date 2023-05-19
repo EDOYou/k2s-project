@@ -7,6 +7,8 @@ import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.entities.payment.PaymentStatus;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * AppointmentService interface represents the service layer for Appointment related operations.
@@ -61,6 +63,8 @@ public interface AppointmentService {
    * @return The updated Appointment object.
    */
   Appointment updateAppointment(Long id, Appointment appointmentDetails);
+
+  Page<Appointment> findAllAppointments(Pageable pageable);
 
   Optional<Appointment> findById(Long id);
 

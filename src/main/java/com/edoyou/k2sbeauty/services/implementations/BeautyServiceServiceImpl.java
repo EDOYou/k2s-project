@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +25,8 @@ import java.util.Optional;
 @Service
 public class BeautyServiceServiceImpl implements BeautyServiceService {
 
-  private static final Logger LOGGER = LogManager.getLogger(BeautyServiceServiceImpl.class.getName());
+  private static final Logger LOGGER = LogManager.getLogger(
+      BeautyServiceServiceImpl.class.getName());
 
   private final BeautyServiceRepository beautyServiceRepository;
 
@@ -59,6 +62,11 @@ public class BeautyServiceServiceImpl implements BeautyServiceService {
   public List<BeautyService> findAll() {
     LOGGER.info("Find all services with approved hairdressers...");
     return beautyServiceRepository.findAllWithApprovedHairdressers();
+  }
+
+  @Override
+  public Page<BeautyService> findAll(Pageable pageable) {
+    return beautyServiceRepository.findAll(pageable);
   }
 
   @Override
