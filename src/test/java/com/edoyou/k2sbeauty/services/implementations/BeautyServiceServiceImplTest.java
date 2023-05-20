@@ -1,4 +1,4 @@
-package com.edoyou.k2sbeauty.services;
+package com.edoyou.k2sbeauty.services.implementations;
 
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.repositories.BeautyServiceRepository;
