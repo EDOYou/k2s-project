@@ -19,16 +19,6 @@ import java.util.List;
 @Repository
 public interface BeautyServiceRepository extends JpaRepository<BeautyService, Long> {
 
-  /**
-   * Fetches all beauty services along with their associated hairdressers using a single query. This
-   * method is useful for minimizing the number of database queries when both beauty services and
-   * their hairdressers are needed.
-   *
-   * @return a list of {@link BeautyService} instances with their associated hairdressers
-   */
-  @Query("SELECT DISTINCT s FROM BeautyService s JOIN FETCH s.hairdressers where s.name IS NOT NULL")
-  List<BeautyService> findAllWithHairdressers();
-
   @Query("SELECT DISTINCT b.name FROM BeautyService b")
   List<String> findDistinctServiceNames();
 
