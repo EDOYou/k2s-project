@@ -12,7 +12,6 @@ public class LanguageController {
 
   @GetMapping("/changeLanguage")
   public String changeLanguage(HttpServletRequest request, @RequestParam String lang) {
-    System.out.println("Language parameter: " + lang);
     Locale locale = Locale.forLanguageTag(lang);
     request.getSession().setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, locale);
     return "redirect:" + request.getHeader("referer");

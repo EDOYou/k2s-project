@@ -97,8 +97,8 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
   public List<Hairdresser> findAllHairdressersByServiceId(String sortBy, Long serviceId) {
     LOGGER.info("Find all hairdressers by service ID...");
     Sort sort;
-    if ("serviceName".equalsIgnoreCase(sortBy)) {
-      sort = createSortByServiceNameAndPrice(sortBy);
+    if (sortBy == null || "serviceName".equalsIgnoreCase(sortBy)) {
+      sort = createSortByServiceNameAndPrice("serviceName");
     } else {
       sort = createSortBy(sortBy);
     }
@@ -135,7 +135,7 @@ public class HairdresserServiceImpl extends UserServiceImpl implements Hairdress
     }
   }
 
-  private Sort createSortBy(String sortBy) {
+  public Sort createSortBy(String sortBy) {
     LOGGER.info("Sorting by last name or rating ...");
     if ("lastName".equalsIgnoreCase(sortBy)) {
       return Sort.by(Sort.Direction.ASC, "lastName");
