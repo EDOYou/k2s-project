@@ -38,6 +38,9 @@ public class BeautyServiceServiceImpl implements BeautyServiceService {
   @Override
   public void saveService(BeautyService service) {
     LOGGER.info("Saving a beauty service...");
+    if (service == null) {
+      throw new NullPointerException("Service cannot be NULL");
+    }
     beautyServiceRepository.save(service);
   }
 
@@ -49,6 +52,10 @@ public class BeautyServiceServiceImpl implements BeautyServiceService {
    */
   @Override
   public Optional<BeautyService> findById(Long id) {
+    if (id == null) {
+      LOGGER.error("Attempted to find service with null ID");
+      throw new IllegalArgumentException("ID cannot be null");
+    }
     LOGGER.info("Find service by its ID...");
     return beautyServiceRepository.findById(id);
   }
