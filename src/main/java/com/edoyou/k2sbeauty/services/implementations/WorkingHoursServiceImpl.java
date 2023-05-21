@@ -14,7 +14,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class WorkingHoursServiceImpl implements WorkingHoursService {
 
-  private static final Logger LOGGER = LogManager.getLogger(WorkingHoursServiceImpl.class.getName());
+  private static final Logger LOGGER = LogManager.getLogger(
+      WorkingHoursServiceImpl.class.getName());
   private final WorkingHoursRepository workingHoursRepository;
 
   @Autowired
