@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -167,7 +166,6 @@ public class AppointmentServiceImpl implements AppointmentService {
       return Page.empty();
     }
   }
-
 
   @Override
   public Optional<Appointment> findById(Long id) {
