@@ -3,6 +3,7 @@ package com.edoyou.k2sbeauty.services.facade;
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 import com.edoyou.k2sbeauty.exceptions.BeautyServiceNotFoundException;
+import com.edoyou.k2sbeauty.exceptions.HairdresserNotFoundException;
 import com.edoyou.k2sbeauty.pojo.ServicesData;
 import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import com.edoyou.k2sbeauty.services.interfaces.HairdresserService;
@@ -61,8 +62,12 @@ public class GuestServiceFacade {
 
   private ServicesData getServicesDataForHairdresser(Long hairdresserId) {
     Hairdresser hairdresser = hairdresserService.findById(hairdresserId);
-    Set<BeautyService> beautyServices = hairdresser.getBeautyServices();
 
+    if (hairdresser == null) {
+      throw new HairdresserNotFoundException("Hairdresser not found.");
+    }
+
+    Set<BeautyService> beautyServices = hairdresser.getBeautyServices();
     List<Pair<BeautyService, Hairdresser>> serviceHairdresserPairs = new ArrayList<>();
     beautyServices.forEach(service -> serviceHairdresserPairs.add(Pair.of(service, hairdresser)));
 
