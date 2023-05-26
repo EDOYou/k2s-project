@@ -50,12 +50,7 @@ public class TimeSlotService {
         end = end.plusDays(1);
       }
 
-      // Handling the case where working hours equal to service time
-      if (start.plusMinutes(ONE_SERVICE_TIME).equals(end) || start.plusMinutes(ONE_SERVICE_TIME).isBefore(end)) {
-        timeSlots.add(new TimeSlot(start, start.plusMinutes(ONE_SERVICE_TIME), null));
-      }
-
-      while (start.plusMinutes(ONE_SERVICE_TIME).isAfter(end)) {
+      while (!start.plusMinutes(ONE_SERVICE_TIME).isAfter(end)) {
         timeSlots.add(new TimeSlot(start, start.plusMinutes(ONE_SERVICE_TIME), null));
         start = start.plusMinutes(ONE_SERVICE_TIME);
       }
