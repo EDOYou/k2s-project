@@ -9,6 +9,7 @@ import com.edoyou.k2sbeauty.services.interfaces.BeautyServiceService;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -65,13 +66,27 @@ public class HairdresserController {
   @PostMapping("/register_hairdresser")
   public String processRegistrationForm(
       @Valid @ModelAttribute("hairdresser") Hairdresser hairdresser,
-      BindingResult bindingResult,
-      @Valid @ModelAttribute("workingHours") WorkingHoursWrapper workingHoursWrapper) {
+      BindingResult bindingResultHairdresser,
+      @Valid @ModelAttribute("workingHours") WorkingHoursWrapper workingHoursWrapper,
+      BindingResult bindingResultWorkingHours,
+      Model model) {
 
-    if (bindingResult.hasErrors()) {
-      LOGGER.warning("Binding result has errors: " + bindingResult.getAllErrors());
+    List<String> errors = new ArrayList<>();
+    if (bindingResultHairdresser.hasErrors()) {
+      bindingResultHairdresser.getAllErrors()
+          .forEach(error -> errors.add(error.getDefaultMessage()));
+    }
+
+    if (bindingResultWorkingHours.hasErrors()) {
+      bindingResultWorkingHours.getAllErrors()
+          .forEach(error -> errors.add(error.getDefaultMessage()));
+    }
+
+    if (!errors.isEmpty()) {
+      model.addAttribute("errors", errors);
       return "/hairdresser/register_hairdresser";
     }
+
     hairdresserServiceFacade.registerHairdresser(hairdresser,
         workingHoursWrapper.getWorkingHoursMap());
     return "redirect:home";

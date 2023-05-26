@@ -34,6 +34,11 @@
 <body>
 <div class="container">
   <h1 class="mt-4 mb-4" th:text="#{hairdresser.register.title}">Hairdresser Registration</h1>
+  <div th:if="${errors != null}" class="alert alert-danger">
+    <ul>
+      <li th:each="error : ${errors}" th:text="${error}"></li>
+    </ul>
+  </div>
   <form th:action="@{/hairdresser/register_hairdresser}" method="post">
     <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
     <div th:object="${hairdresser}">
