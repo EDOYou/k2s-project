@@ -164,7 +164,7 @@ public class AdminServiceFacade {
   }
 
   private void notifyHairdresser(Hairdresser hairdresser) {
-    LOGGER.info("Mail sent to the client !");
+    LOGGER.info("Mail sent to the hairdresser !");
     if (hairdresser.isApproved()) {
       String message = "Dear " + hairdresser.getFirstName()
           + ", your application has been approved. Welcome to our team!";
