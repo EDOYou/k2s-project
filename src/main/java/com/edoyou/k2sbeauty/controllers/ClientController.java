@@ -87,10 +87,8 @@ public class ClientController {
       @ModelAttribute("feedback") Feedback feedback,
       @RequestParam("appointmentId") Long appointmentId) {
     if (authentication == null || !authentication.isAuthenticated()) {
-      // User is not authenticated, redirect to login page
       return "redirect:/login";
     }
-    // User is authenticated, proceed with saving feedback
     clientServiceFacade.saveFeedback(authentication, appointmentId, feedback);
     return "redirect:/admin/appointments";
   }
