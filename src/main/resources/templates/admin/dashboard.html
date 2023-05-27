@@ -102,6 +102,9 @@
   </style>
 </head>
 <body>
+<div th:if="${errorMessage}" class="alert alert-danger">
+  <p th:text="${errorMessage}"></p>
+</div>
 <h1 th:text="#{admin_dashboard.title}"></h1>
 <table>
   <thead>

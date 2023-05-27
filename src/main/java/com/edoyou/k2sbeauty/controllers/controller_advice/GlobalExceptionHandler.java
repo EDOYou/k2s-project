@@ -1,11 +1,13 @@
-package com.edoyou.k2sbeauty.controllers;
+package com.edoyou.k2sbeauty.controllers.controller_advice;
 
 import com.edoyou.k2sbeauty.exceptions.UnauthorizedActionException;
 import com.edoyou.k2sbeauty.exceptions.UserNotFoundException;
+import java.time.format.DateTimeParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -24,4 +26,12 @@ public class GlobalExceptionHandler {
   public ResponseEntity<String> handleException(Exception ex) {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
   }
+
+  @ExceptionHandler(DateTimeParseException.class)
+  public String handleDateTimeParseException(RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute("errorMessage",
+        "Please enter the time slot in a correct format (YYYY-MM-DDTHH:MM:SS)");
+    return "redirect:/admin/dashboard";
+  }
+
 }
