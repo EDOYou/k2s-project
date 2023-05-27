@@ -153,7 +153,7 @@ public class AdminServiceFacade {
     return hairdresserService.findAllWithBeautyServices(pageable);
   }
 
-  private void deleteWorkingHours(Set<WorkingHours> workingHoursSet) {
+  public void deleteWorkingHours(Set<WorkingHours> workingHoursSet) {
     LOGGER.info("Deleting the working hours when hairdresser is rejected ...");
     for (WorkingHours workingHours : workingHoursSet) {
       entityManager.refresh(workingHours);
@@ -163,7 +163,7 @@ public class AdminServiceFacade {
     }
   }
 
-  private void notifyHairdresser(Hairdresser hairdresser) {
+  public void notifyHairdresser(Hairdresser hairdresser) {
     LOGGER.info("Mail sent to the hairdresser !");
     if (hairdresser.isApproved()) {
       String message = "Dear " + hairdresser.getFirstName()
