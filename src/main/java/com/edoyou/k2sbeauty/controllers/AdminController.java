@@ -113,7 +113,7 @@ public class AdminController {
     List<Hairdresser> hairdressers = adminServiceFacade.findAllHairdressers();
     model.addAttribute("services", services);
     model.addAttribute("hairdressers", hairdressers);
-    return "/admin/assign_service";
+    return "admin/assign_service";
   }
 
   @PostMapping("/assign_service")
