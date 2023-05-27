@@ -12,7 +12,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -28,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/hairdresser")
 public class HairdresserController {
 
-  private final static Logger LOGGER = Logger.getLogger(HairdresserController.class.getName());
   private final HairdresserServiceFacade hairdresserServiceFacade;
   private final BeautyServiceService beautyServiceService;
 
@@ -42,8 +40,8 @@ public class HairdresserController {
   @GetMapping("/appointments")
   public String getAppointments(Authentication authentication, Model model) {
     var appointments = hairdresserServiceFacade.getAppointments(authentication.getName());
-    model.addAttribute("completedAppointments", appointments.getCompletedAppointments());
-    model.addAttribute("pendingAppointments", appointments.getPendingAppointments());
+    model.addAttribute("completedAppointments", appointments.completedAppointments());
+    model.addAttribute("pendingAppointments", appointments.pendingAppointments());
     return "hairdresser/hairdresser_appointments";
   }
 
