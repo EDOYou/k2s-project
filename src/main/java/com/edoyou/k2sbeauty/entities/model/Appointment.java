@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * The Appointment entity class represents an appointment in the BeautySalon application.
+ */
 @Entity
 @Table(name = "appointments")
 public class Appointment {

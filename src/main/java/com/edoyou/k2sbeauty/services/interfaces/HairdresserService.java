@@ -3,64 +3,107 @@ package com.edoyou.k2sbeauty.services.interfaces;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
 
 import com.edoyou.k2sbeauty.entities.model.appointment_details.TimeSlot;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 
 /**
- * HairdresserService interface represents the service layer for Hairdresser related operations.
- *
- * @see Hairdresser
+ * {@code HairdresserService} is an interface providing specifications for business operations
+ * applicable to {@link Hairdresser} entities.
  */
 public interface HairdresserService extends UserService {
 
-  void saveHairdresser(Hairdresser hairdresser);
+    /**
+     * Persists a {@link Hairdresser} entity to the repository.
+     *
+     * @param hairdresser The {@link Hairdresser} entity to be saved.
+     */
+    void saveHairdresser(Hairdresser hairdresser);
 
-  /**
-   * Retrieve all hairdressers from the database with optional sorting.
-   *
-   * @param sortBy The sorting criteria, can be null.
-   * @return A list of Hairdresser objects.
-   */
-  List<Hairdresser> findAllHairdressers(String sortBy);
+    /**
+     * Retrieves a {@link List} of all {@link Hairdresser} entities sorted by a specified field.
+     *
+     * @param sortBy The field by which to sort the retrieved entities.
+     * @return A {@link List} of all {@link Hairdresser} entities, sorted as specified.
+     */
+    List<Hairdresser> findAllHairdressers(String sortBy);
 
-  List<Hairdresser> findAllHairdressers();
+    /**
+     * Retrieves a list of all hairdresser entities.
+     *
+     * @return a list of all {@link Hairdresser} entities
+     */
+    List<Hairdresser> findAllHairdressers();
 
-  /**
-   * Finds all hairdressers based on the given sorting criteria and service ID.
-   *
-   * @param sortBy    The field to sort hairdressers by.
-   * @param serviceId The ID of the beauty service to filter hairdressers by.
-   * @return A list of hairdressers sorted by the given criteria and filtered by the given service
-   * ID.
-   */
-  List<Hairdresser> findAllHairdressersByServiceId(String sortBy, Long serviceId);
+    /**
+     * Retrieves a list of all {@link Hairdresser} entities that provide a certain beauty service,
+     * sorted by a specific field.
+     *
+     * @param sortBy    the field by which to sort the retrieved entities
+     * @param serviceId the ID of the beauty service
+     * @return a sorted list of all {@link Hairdresser} entities that provide a certain beauty service
+     */
+    List<Hairdresser> findAllHairdressersByServiceId(String sortBy, Long serviceId);
 
-  Hairdresser findById(Long id);
+    /**
+     * Retrieves a {@link Hairdresser} entity by its ID.
+     *
+     * @param id the ID of the hairdresser
+     * @return a {@link Hairdresser} entity
+     */
+    Hairdresser findById(Long id);
 
-  @Query("SELECT h FROM Hairdresser h JOIN FETCH h.beautyServices")
-  List<Hairdresser> findAllWithBeautyServices();
+    /**
+     * Retrieves a list of all {@link Hairdresser} entities along with their associated beauty
+     * services.
+     *
+     * @return a list of all {@link Hairdresser} entities along with their associated beauty services
+     */
+    @Query("SELECT h FROM Hairdresser h JOIN FETCH h.beautyServices")
+    List<Hairdresser> findAllWithBeautyServices();
 
-  @Query("SELECT h FROM Hairdresser h JOIN FETCH h.beautyServices")
-  Page<Hairdresser> findAllWithBeautyServices(Pageable pageable);
+    /**
+     * Retrieves a page of {@link Hairdresser} entities along with their associated beauty services.
+     *
+     * @param pageable pagination information
+     * @return a page of {@link Hairdresser} entities along with their associated beauty services
+     */
+    @Query("SELECT h FROM Hairdresser h JOIN FETCH h.beautyServices")
+    Page<Hairdresser> findAllWithBeautyServices(Pageable pageable);
 
-  /**
-   * Deleted the hairdresser from the repository.
-   *
-   * @param id ID of the target hairdresser.
-   * @throws com.edoyou.k2sbeauty.exceptions.ResourceNotFoundException If the hairdresser is not
-   *                                                                   found in the repository.
-   */
-  void deleteHairdresser(Long id);
+    /**
+     * Deletes a {@link Hairdresser} entity by its ID.
+     *
+     * @param id the ID of the hairdresser to delete
+     */
+    void deleteHairdresser(Long id);
 
-  //List<Hairdresser> findAllHairdressersByApprovalStatus(boolean isApproved);
+    /**
+     * Retrieves a page of {@link Hairdresser} entities by their approval status.
+     *
+     * @param isApproved the approval status to filter by
+     * @param pageable   pagination information
+     * @return a page of {@link Hairdresser} entities with the provided approval status
+     */
+    Page<Hairdresser> findAllHairdressersByApprovalStatus(boolean isApproved, Pageable pageable);
 
-  Page<Hairdresser> findAllHairdressersByApprovalStatus(boolean isApproved, Pageable pageable);
+    /**
+     * Generates a schedule for a {@link Hairdresser} entity.
+     *
+     * @param hairdresser the hairdresser entity for which to generate a schedule
+     * @return a map of dates to time slots representing the schedule
+     */
+    Map<LocalDate, List<TimeSlot>> generateSchedule(Hairdresser hairdresser);
 
-  Map<LocalDate, List<TimeSlot>> generateSchedule(Hairdresser hairdresser);
-
-  void updateRating(Hairdresser hairdresser);
+    /**
+     * Updates the rating of a {@link Hairdresser} entity.
+     *
+     * @param hairdresser the hairdresser entity for which to update the rating
+     */
+    void updateRating(Hairdresser hairdresser);
 }

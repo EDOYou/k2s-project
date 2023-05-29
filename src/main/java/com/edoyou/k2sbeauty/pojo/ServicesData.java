@@ -2,74 +2,102 @@ package com.edoyou.k2sbeauty.pojo;
 
 import com.edoyou.k2sbeauty.entities.model.BeautyService;
 import com.edoyou.k2sbeauty.entities.model.Hairdresser;
+
 import java.util.List;
+
 import org.springframework.data.util.Pair;
 
+/**
+ * This class is a Plain Old Java Object (POJO) that is used to transfer data related to services and hairdressers.
+ * It contains a list of pairs of services and hairdressers, as well as separate lists of services and hairdressers.
+ * This object also holds sorting information and the selected hairdresser and service IDs.
+ *
+ * @author Taghiyev Kanan
+ * @since 2023-05-28
+ */
 public class ServicesData {
-  private List<Pair<BeautyService, Hairdresser>> serviceHairdresserPairs;
-  private List<BeautyService> services;
-  private List<Hairdresser> hairdressers;
-  private String sortBy;
-  private Long selectedHairdresser;
-  private Long selectedService;
 
-  public ServicesData(List<Pair<BeautyService, Hairdresser>> serviceHairdresserPairs,
-      List<BeautyService> services, List<Hairdresser> hairdressers, String sortBy,
-      Long selectedHairdresser, Long selectedService) {
-    this.serviceHairdresserPairs = serviceHairdresserPairs;
-    this.services = services;
-    this.hairdressers = hairdressers;
-    this.sortBy = sortBy;
-    this.selectedHairdresser = selectedHairdresser;
-    this.selectedService = selectedService;
-  }
+    /**
+     * A list of pairs, where each pair contains a service and the hairdresser providing that service.
+     */
+    private final List<Pair<BeautyService, Hairdresser>> serviceHairdresserPairs;
 
-  public List<Pair<BeautyService, Hairdresser>> getServiceHairdresserPairs() {
-    return serviceHairdresserPairs;
-  }
+    /**
+     * A list of beauty services.
+     */
+    private List<BeautyService> services;
 
-  public void setServiceHairdresserPairs(
-      List<Pair<BeautyService, Hairdresser>> serviceHairdresserPairs) {
-    this.serviceHairdresserPairs = serviceHairdresserPairs;
-  }
+    /**
+     * A list of hairdressers.
+     */
+    private List<Hairdresser> hairdressers;
 
-  public List<BeautyService> getServices() {
-    return services;
-  }
+    /**
+     * The field name used for sorting the list of hairdressers.
+     */
+    private final String sortBy;
 
-  public void setServices(List<BeautyService> services) {
-    this.services = services;
-  }
+    /**
+     * The ID of the selected hairdresser.
+     */
+    private final Long selectedHairdresser;
 
-  public List<Hairdresser> getHairdressers() {
-    return hairdressers;
-  }
+    /**
+     * The ID of the selected service.
+     */
+    private final Long selectedService;
 
-  public void setHairdressers(List<Hairdresser> hairdressers) {
-    this.hairdressers = hairdressers;
-  }
+    /**
+     * Constructs a new ServicesData object.
+     *
+     * @param serviceHairdresserPairs The list of service-hairdresser pairs
+     * @param services                The list of services
+     * @param hairdressers            The list of hairdressers
+     * @param sortBy                  The field name used for sorting
+     * @param selectedHairdresser     The ID of the selected hairdresser
+     * @param selectedService         The ID of the selected service
+     */
+    public ServicesData(List<Pair<BeautyService, Hairdresser>> serviceHairdresserPairs,
+                        List<BeautyService> services, List<Hairdresser> hairdressers, String sortBy,
+                        Long selectedHairdresser, Long selectedService) {
+        this.serviceHairdresserPairs = serviceHairdresserPairs;
+        this.services = services;
+        this.hairdressers = hairdressers;
+        this.sortBy = sortBy;
+        this.selectedHairdresser = selectedHairdresser;
+        this.selectedService = selectedService;
+    }
 
-  public String getSortBy() {
-    return sortBy;
-  }
+    public List<Pair<BeautyService, Hairdresser>> getServiceHairdresserPairs() {
+        return serviceHairdresserPairs;
+    }
 
-  public void setSortBy(String sortBy) {
-    this.sortBy = sortBy;
-  }
+    public List<BeautyService> getServices() {
+        return services;
+    }
 
-  public Long getSelectedHairdresser() {
-    return selectedHairdresser;
-  }
+    public void setServices(List<BeautyService> services) {
+        this.services = services;
+    }
 
-  public void setSelectedHairdresser(Long selectedHairdresser) {
-    this.selectedHairdresser = selectedHairdresser;
-  }
+    public List<Hairdresser> getHairdressers() {
+        return hairdressers;
+    }
 
-  public Long getSelectedService() {
-    return selectedService;
-  }
+    public void setHairdressers(List<Hairdresser> hairdressers) {
+        this.hairdressers = hairdressers;
+    }
 
-  public void setSelectedService(Long selectedService) {
-    this.selectedService = selectedService;
-  }
+    public String getSortBy() {
+        return sortBy;
+    }
+
+    public Long getSelectedHairdresser() {
+        return selectedHairdresser;
+    }
+
+    public Long getSelectedService() {
+        return selectedService;
+    }
+
 }

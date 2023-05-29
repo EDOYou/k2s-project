@@ -5,6 +5,13 @@ import java.util.Set;
 
 import jakarta.persistence.*;
 
+/**
+ * The Role entity represents a role that a {@link User} can have in the system.
+ * <p>
+ * Each Role is linked with multiple users, representing that the users have the role.
+ * Each Role has a unique name.
+ * </p>
+ */
 @Entity
 @Table(name = "roles")
 public class Role {

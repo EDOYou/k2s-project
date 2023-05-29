@@ -13,22 +13,25 @@ import java.util.Optional;
  * A service implementation for managing roles in the application. Provides methods for creating,
  * retrieving, updating, and deleting roles, as well as assigning roles to users.
  *
+ * @author Taghiyev Kanan
  * @see Role
  * @see RoleRepository
  * @see UserRepository
+ * @since 2023-05-28
  */
 @Service
 public class RoleServiceImpl implements RoleService {
 
-  private final RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
 
-  @Autowired
-  public RoleServiceImpl(RoleRepository roleRepository) {
-    this.roleRepository = roleRepository;
-  }
+    @Autowired
+    public RoleServiceImpl(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
 
-  @Override
-  public Optional<Role> getRoleByName(String name) {
-    return roleRepository.findByName(name);
-  }
+    @Override
+    public Optional<Role> getRoleByName(String name) {
+        return roleRepository.findByName(name);
+    }
+
 }

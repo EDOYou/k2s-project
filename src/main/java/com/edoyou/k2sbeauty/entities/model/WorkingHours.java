@@ -15,6 +15,14 @@ import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * The WorkingHours entity represents the working hours of a {@link Hairdresser} during a week.
+ * <p>
+ * Each WorkingHours instance represents the working hours for a particular day of the week.
+ * It includes the start and end times of the working hours.
+ * Each WorkingHours is linked with multiple hairdressers, representing that these hairdressers have these working hours.
+ * </p>
+ */
 @Entity
 @Table(name = "working_hours")
 public class WorkingHours {

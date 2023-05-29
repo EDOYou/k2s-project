@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * The BeautyService entity class represents a beauty service provided by the salon.
+ * It contains details about the service like name, description, duration, and price.
+ */
 @Entity
 @Table(name = "service")
 public class BeautyService {

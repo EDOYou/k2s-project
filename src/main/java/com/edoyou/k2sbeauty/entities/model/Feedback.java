@@ -6,6 +6,13 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 
+/**
+ * The Feedback entity represents a feedback left by a {@link Client} after an {@link Appointment}.
+ * <p>
+ * Each Feedback is linked with a client who has left the feedback, and the appointment which the feedback is about.
+ * It also contains a comment about the appointment, a rating from 1 to 5, and the time it was created.
+ * </p>
+ */
 @Entity
 @Table(name = "feedbacks")
 public class Feedback {

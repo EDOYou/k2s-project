@@ -3,6 +3,12 @@ package com.edoyou.k2sbeauty.entities.model.appointment_details;
 import com.edoyou.k2sbeauty.entities.model.Appointment;
 import java.time.LocalDateTime;
 
+/**
+ * The {@link TimeSlot} class represents a slot of time during which an {@link Appointment} can be scheduled.
+ * <p>
+ * Each TimeSlot has a start and end time, and it can be associated with an appointment.
+ * </p>
+ */
 public class TimeSlot {
 
   private LocalDateTime start;

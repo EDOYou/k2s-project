@@ -12,6 +12,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+/**
+ * The User entity class represents a user in the BeautySalon application.
+ * This is a parent class for specific types of users like Hairdresser and Client.
+ *
+ * @see Hairdresser
+ * @see Client
+ */
 @Entity
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)

@@ -9,6 +9,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * The Hairdresser entity class represents a hairdresser in the BeautySalon application.
+ * It extends the {@link User} class and adds the specific details related to a hairdresser.
+ */
 @Entity
 @Table(name = "hairdressers")
 public class Hairdresser extends User {
